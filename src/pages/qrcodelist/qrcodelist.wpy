@@ -1,0 +1,240 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page {
+    background-color: #d3e1fe;
+  }
+
+  .query-form {
+    margin: 20rpx 10rpx 10rpx;
+    padding: 16rpx;
+    background-color: #fff;
+    border-radius: 8rpx;
+
+    .query-item {
+      .flex-v-center();
+      margin-bottom: 10rpx;
+    }
+
+    .query-label {
+      width: 200rpx;
+      text-align: center;
+    }
+
+    .form-item {
+      margin-bottom: 0;
+      flex: 1;
+    }
+
+  }
+
+  .qrcode-table {
+    margin-left: 10rpx;
+    margin-right: 10rpx;
+    border-radius: 8rpx;
+    overflow: hidden;
+  }
+
+  .table-cell.opt {
+    flex:none;
+    width:80rpx;
+
+    .icon {
+      padding: 0;
+    }
+  }
+
+  .table-cell.status {
+    flex:none;
+    width:120rpx;
+  }
+
+</style>
+<template>
+  <view class="query-form">
+    <view class="query-item">
+      <veiw class="query-label">时间</veiw>
+      <datetimepicker value="2017-11-07"></datetimepicker>
+    </view>
+    <view class="query-item">
+      <veiw class="query-label">状态</veiw>
+      <statuspicker :items="statusArray" :selectIndex="statusIndex" @pickerchange.user="pickerChange"></statuspicker>
+    </view>
+    <view class="query-item">
+      <querybutton style="flex: 1;">查询</querybutton>
+    </view>
+  </view>
+
+  <view class="table qrcode-table">
+    <view class="table-row table-header">
+      <view class="table-cell th order">序号</view>
+      <view class="table-cell th">二维码</view>
+      <view class="table-cell th status">状态</view>
+      <view class="table-cell th opt"></view>
+    </view>
+    <view class="table-row" @tap="tablerowTap">
+      <view class="table-cell td order">1</view>
+      <view class="table-cell td">2017103101095358367</view>
+      <view class="table-cell td status">未上传</view>
+      <view class="table-cell td opt">
+        <deleteIcon name="delete.svg"></deleteIcon>
+      </view>
+    </view>
+    <view class="table-row" @tap="tablerowTap">
+      <view class="table-cell td order">2</view>
+      <view class="table-cell td">2017103101095358367</view>
+      <view class="table-cell td status">未上传</view>
+      <view class="table-cell td opt">
+        <deleteIcon name="delete.svg"></deleteIcon>
+      </view>
+    </view>
+    <view class="table-row" @tap="tablerowTap">
+      <view class="table-cell td order">3</view>
+      <view class="table-cell td">2017103101095358367</view>
+      <view class="table-cell td status">未上传</view>
+      <view class="table-cell td opt">
+        <deleteIcon name="delete.svg"></deleteIcon>
+      </view>
+    </view>
+    <view class="table-row" @tap="tablerowTap">
+      <view class="table-cell td order">4</view>
+      <view class="table-cell td">2017103101095358367</view>
+      <view class="table-cell td status">未上传</view>
+      <view class="table-cell td opt">
+        <deleteIcon name="delete.svg"></deleteIcon>
+      </view>
+    </view>
+    <view class="table-row" @tap="tablerowTap">
+      <view class="table-cell td order">5</view>
+      <view class="table-cell td">2017103101095358367</view>
+      <view class="table-cell td status">未上传</view>
+      <view class="table-cell td opt">
+        <deleteIcon name="delete.svg"></deleteIcon>
+      </view>
+    </view>
+    <view class="table-row" @tap="tablerowTap">
+      <view class="table-cell td order">6</view>
+      <view class="table-cell td">2017103101095358367</view>
+      <view class="table-cell td status">未上传</view>
+      <view class="table-cell td opt">
+        <deleteIcon name="delete.svg"></deleteIcon>
+      </view>
+    </view>
+    <view class="table-row" @tap="tablerowTap">
+      <view class="table-cell td order">7</view>
+      <view class="table-cell td">2017103101095358367</view>
+      <view class="table-cell td status">未上传</view>
+      <view class="table-cell td opt">
+        <deleteIcon name="delete.svg"></deleteIcon>
+      </view>
+    </view>
+
+  </view>
+
+  <tabbar :tabBar="tabBar" disabled="true" tabIndex="1" @tabbarChange.user="tabbarChange"></tabbar>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Button from '../../components/button'
+  import Icon from '../../components/icon'
+  import Picker from '../../components/picker'
+  import Datetimepicker from '../../components/datetimepicker'
+  import Tabbar from '../../components/tabbar'
+  import {showError, showToast} from '../../utils/util'
+
+  const STATUS_ARRAY = [
+    {
+      value: '',
+      name: '全部'
+    },
+    {
+      value: 'waiting',
+      name: '查询中'
+    },
+    {
+      value: 'sevenFailed',
+      name: '查询无结果'
+    },
+    {
+      value: 'noSales',
+      name: '销货明细需更新'
+    },
+    {
+      value: 'invoiceChange',
+      name: '信息需更新'
+    },
+    {
+      value: 'failed',
+      name: '无法识别'
+    },
+    {
+      value: 'success',
+      name: '已完成'
+    }
+  ]
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '二维码照片上报销量'
+    }
+
+    components = {
+      querybutton: Button,
+      deleteIcon: Icon,
+      statuspicker: Picker,
+      datetimepicker: Datetimepicker,
+      tabbar: Tabbar
+    }
+
+    data = {
+      statusArray: STATUS_ARRAY,
+      statusIndex: 0,
+      tabBar: {
+        color: '#777',
+        selectedColor: '#01458e',
+        borderStyle: '#ddd',
+        backgroundColor: '#fff',
+        list: [
+          {
+            text: '统计',
+            icon: 'stats.png',
+            selectedIcon: 'stats-selected.png'
+          },
+          {
+            text: '列表',
+            icon: 'list.svg',
+            selectedIcon: 'list-selected.png'
+          }
+        ]
+      }
+    }
+
+    computed = {
+
+    }
+
+    methods = {
+      queryTap (e) {
+        console.log('query tap')
+      },
+      pickerChange (e) {
+        console.log(e.detail.value)
+      },
+      tabbarChange (index) {
+        if (index === 0) {
+          this.$back()
+        }
+      },
+      tablerowTap () {
+        this.$navigate('/pages/qrcodedetail/qrcodedetail')
+      }
+    }
+
+    onLoad () {
+
+    }
+  }
+</script>

@@ -1,0 +1,98 @@
+<style type="less">
+  @import "../less/mixin";
+
+  .list-item{
+    .flex-v-center();
+    padding: 20rpx 40rpx;
+    background-color: #fff;
+    margin-bottom: 10rpx;
+    border-top:2rpx solid #dedede;
+    border-bottom:2rpx solid #dedede;
+
+    .list-item-bd{
+      .flex-v-center();
+      flex: 1;
+    }
+
+    .list-item-icon {
+      width: 72rpx;
+      height: 72rpx;
+
+      &.small {
+        width: @small;
+        height: @small;
+      }
+
+      &.left {
+        margin-right: 20rpx;
+      }
+
+      &.right {
+        margin-left: 20rpx;
+      }
+    }
+
+    .list-item-arrow {
+      width: 48rpx;
+      height: 48rpx;
+      margin-left: 12rpx;
+      margin-right: -20rpx;
+    }
+
+    &:active{
+      background-color: rgba(255,255,255,.7);
+    }
+  }
+</style>
+<template>
+  <view class="list-item {{className}}" style="{{style}}" @tap="tap">
+    <image wx:if="{{icon&&iconLeft&&!iconRight}}" class="list-item-icon {{iconSize}} left" src="../../images/{{icon}}" mode="aspectFit"></image>
+    <view class="list-item-bd">
+      <slot></slot>
+    </view>
+    <image wx:if="{{icon&&iconRight}}" class="list-item-icon {{iconSize}} right" src="../../images/{{icon}}" mode="aspectFit"></image>
+    <image wx:if="{{hasArrow||hasArrow==='true'}}" class="list-item-arrow" src="../../images/arrow-right-o.svg" mode="aspectFit"></image>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+
+  export default class Listitem extends wepy.component {
+    props = {
+      icon: String,
+      iconLeft: {
+        type: Boolean,
+        default: true
+      },
+      iconRight: {
+        type: Boolean,
+        default: false
+      },
+      iconSize: {
+        type: String,
+        default: 'large'
+      },
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      },
+      hasArrow: {
+        type: [Boolean, String],
+        default: false
+      }
+    }
+    components = {
+    }
+    data = {
+    }
+    methods = {
+      tap ($event) {
+        this.$emit('tap', Number(this.$index), $event)
+      }
+    }
+  }
+</script>

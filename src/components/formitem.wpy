@@ -1,0 +1,139 @@
+<style lang="less">
+  @import "../less/mixin";
+
+  .form-item {
+    background-color: #fff;
+    margin-bottom: 30rpx;
+    border-radius: 8rpx;
+    .flex-v-center();
+
+    > .input{
+      padding: 12rpx 24rpx;
+      font-size: 28rpx;
+      color: @gcolor;
+      display: block;
+      box-sizing: border-box;
+      flex: 1;
+
+      &.large {
+        height: @large;
+        font-size: 32rpx;
+      }
+      &.normal {
+        height: @normal;
+      }
+      &.small {
+        height: @small;
+      }
+    }
+
+    > .icon {
+      &.left {
+        margin-right: -24rpx;
+      }
+      &.right {
+        margin-left: -24rpx;
+      }
+    }
+
+    &.bordered{
+      border: 2rpx solid #ccc;
+    }
+  }
+</style>
+<template>
+  <view class="form-item {{className}} {{border ==='true' ? 'bordered' : ''}}" style="{{style}}">
+    <iconleft wx:if="{{icon&&iconLeft==='true'}}" className="left" :name="icon" :size="size" @tap.user="iconTap"></iconleft>
+    <input wx:if="{{!password}}" type="{{type}}" class="input {{size}}" disabled="{{disabled}}" placeholder="{{placeholder}}" value="{{value}}" @focus="focus" @blur="blur" @change="change" @input="input"/>
+    <input wx:if="{{password}}" password class="input {{size}}" placeholder="{{placeholder}}" value="{{value}}" @focus="focus" @blur="blur" @change="change" @input="input"/>
+    <iconright wx:if="{{icon&&iconRight==='true'}}" className="right" :name="icon" :size="size" @tap.user="iconTap"></iconright>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import Icon from './icon'
+
+  export default class Formitem extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      },
+      icon: String,
+      iconLeft: {
+        type: String,
+        default: 'true'
+      },
+      iconRight: {
+        type: String,
+        default: 'false'
+      },
+      size: {
+        type: String,
+        default: 'normal'
+      },
+      value: {
+        type: [String, Number],
+        default: ''
+      },
+      placeholder: {
+        type: String,
+        default: ''
+      },
+      border: {
+        type: String,
+        default: 'false'
+      },
+      type: {
+        type: String,
+        default: 'text'
+      },
+      password: {
+        type: [Boolean, String],
+        default: false
+      },
+      disabled: {
+        type: [Boolean, String],
+        default: false
+      }
+    }
+
+    components = {
+      iconleft: Icon,
+      iconright: Icon
+    }
+
+    data = {
+
+    }
+    computed = {
+      iconLeft () {
+        if (this.iconRight === 'true') {
+          return this.iconLeft = 'false'
+        }
+        return this.iconLeft
+      }
+    }
+    methods = {
+      focus ($event) {
+        this.$emit('focus', $event)
+      },
+      blur ($event) {
+        this.$emit('blur', $event)
+      },
+      change ($event) {
+        this.$emit('change', $event)
+      },
+      input ($event) {
+        this.$emit('input', $event)
+      },
+      iconTap ($event) {
+        this.$emit('iconTap', $event)
+      }
+    }
+  }
+</script>

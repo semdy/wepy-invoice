@@ -1,0 +1,224 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page {
+    background-color: #fff;
+  }
+
+  .query-form {
+    .flex();
+    margin: 40rpx 30rpx 20rpx;
+  }
+
+  .query-field {
+    position: relative;
+    .flex-v-center();
+    flex: 1;
+
+    .form-item {
+      margin-bottom: 0;
+      flex: 1;
+    }
+
+    .scan-icon {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+    }
+
+  }
+
+  .query-button {
+    margin-left: 30rpx;
+  }
+
+  .query-history {
+    margin-top: 60rpx;
+  }
+
+  .history-heading {
+    .flex();
+    justify-content: space-between;
+    margin-left: 60rpx;
+    margin-right: 60rpx;
+  }
+
+  .history-list {
+    margin-top: 40rpx;
+  }
+
+  .history-item {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 60rpx;
+    margin-bottom: 40rpx;
+    padding: 0 30rpx;
+    height: 60rpx;
+    background-color: #e9e9e9;
+    border-radius: 60rpx;
+
+    &:active {
+      background-color: darken(#e9e9e9, 5%);
+    }
+  }
+
+  .qrinfo-panel {
+    border-radius: 16rpx;
+    padding: 20rpx;
+    font-size: 30rpx;
+    color: #01458d;
+    background-color: #e1edf2;
+    margin-left: 30rpx;
+    margin-right: 30rpx;
+    margin-bottom: 20rpx;
+  }
+
+  .qrinfo-item {
+    .flex();
+    padding: 5rpx 0;
+
+    .qr-label {
+      width: 226rpx;
+      text-align: right;
+    }
+
+    .qr-info {
+      flex: 1;
+      text-indent: 40rpx;
+    }
+  }
+
+  .tech-supply {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 20rpx;
+    text-align: center;
+  }
+
+</style>
+<template>
+  <view class="query-form">
+    <view class="query-field">
+      <queryinput placeholder="搜索二维码" border="true" icon="find.svg" @iconTap.user="queryTap"></queryinput>
+      <scanIcon name="scan.svg" className="scan-icon" @tap.user="scanTap"></scanIcon>
+    </view>
+    <queryButton class="query-button">查询</queryButton>
+  </view>
+
+  <view class="query-history" wx:if="{{false}}">
+    <view class="history-heading">
+      <view>历史记录</view>
+      <view>清除</view>
+    </view>
+    <view class="history-list">
+      <view class="history-item">211345678791234</view>
+      <view class="history-item">211345678791234</view>
+      <view class="history-item">211345678791234</view>
+      <view class="history-item">211345678791234</view>
+      <view class="history-item">211345678791234</view>
+      <view class="history-item">211345678791234</view>
+    </view>
+  </view>
+
+  <view class="qrinfo-panel">
+    <view class="qrinfo-item">
+      <view class="qr-label">二维码：</view>
+      <view class="qr-info">12363722991923</view>
+    </view>
+    <view class="qrinfo-item">
+      <view class="qr-label">型号：</view>
+      <view class="qr-info">H74901283294928</view>
+    </view>
+    <view class="qrinfo-item">
+      <view class="qr-label">批号：</view>
+      <view class="qr-info">18788879</view>
+    </view>
+    <view class="qrinfo-item">
+      <view class="qr-label">有效日期：</view>
+      <view class="qr-info">2020年10月31日</view>
+    </view>
+  </view>
+
+  <view class="flow-container">
+    <repeat for="{{flows}}">
+      <flowitem :icon="item.icon" @flowtap.user="flowTap">
+        <text slot="time">{{item.time}}</text>
+        <text>{{item.text}}</text>
+      </flowitem>
+    </repeat>
+  </view>
+
+  <view class="tech-supply">本数据由<text class="h">波士顿科学</text>提供</view>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Formitem from '../../components/formitem'
+  import Icon from '../../components/icon'
+  import Button from '../../components/button'
+  import Flowitem from '../../components/flowitem'
+  import {showError, showToast} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '二维码流向查询'
+    }
+
+    components = {
+      queryinput: Formitem,
+      scanIcon: Icon,
+      queryButton: Button,
+      flowitem: Flowitem
+    }
+
+    data = {
+      flows: [
+        {
+          icon: 'truck.svg',
+          time: '15:12 2017.10.11',
+          text: '上海方承仓库-上海佑诚有限公司主仓库'
+        },
+        {
+          icon: 'transport.png',
+          time: '15:12 2017.10.11',
+          text: '上海方承仓库-上海佑诚有限公司主仓库'
+        },
+        {
+          icon: 'transport.png',
+          time: '15:12 2017.10.11',
+          text: '上海方承仓库-上海佑诚有限公司主仓库'
+        },
+        {
+          icon: 'report.svg',
+          time: '15:12 2017.10.11',
+          text: '上报销量'
+        }
+      ]
+    }
+
+    computed = {
+
+    }
+
+    methods = {
+      queryTap (e) {
+        console.log('query tap')
+      },
+      scanTap (e) {
+        console.log('clear tap')
+      },
+      flowTap (index) {
+        console.log(index)
+      }
+    }
+
+    onLoad () {
+
+    }
+  }
+</script>

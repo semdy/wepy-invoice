@@ -1,0 +1,132 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  .login-logo{
+    margin: 10% 30%;
+
+    > image{
+      display: block;
+      width: 500rpx;
+      height: 300rpx;
+    }
+  }
+
+  .login-form{
+    width: 60%;
+    max-width: 1000rpx;
+    .marign-auto();
+
+    .login-button{
+      width: 50%;
+      .marign-auto();
+      margin-top: 100rpx;
+    }
+  }
+
+  .login-footer{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 80rpx;
+    color: #002178;
+    text-align: center;
+  }
+</style>
+<template>
+  <view class="container">
+    <view class="login-logo">
+      <image src="../../images/login_logo.png" mode="aspectFit"></image>
+    </view>
+  </view>
+  <view class="login-form">
+    <formitemuser icon="user.svg" :value="username" @input.user="userChange"></formitemuser>
+    <formitemmobile icon="mobile.svg" :value="mobile" @input.user="mobileChange"></formitemmobile>
+    <loginButton class="login-button" @tap.user="loginButtonTap">登录</loginButton>
+  </view>
+  <view class="login-footer">服务热线：021-33563567</view>
+  <toast></toast>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Toast from 'wepy-com-toast'
+  import fetch from '../../service/fetch'
+  import Formitem from '../../components/formitem'
+  import Button from '../../components/button'
+  import {showError, showToast} from '../../utils/util'
+  import {login} from '../../service/user'
+  import {session} from '../../service/auth'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '登录'
+    }
+
+    components = {
+      toast: Toast,
+      formitemuser: Formitem,
+      formitemmobile: Formitem,
+      loginButton: Button
+    }
+
+    data = {
+      username: '2310',
+      mobile: '12313451678'
+    }
+
+    isLogining = false
+
+    computed = {
+
+    }
+
+    events = {
+
+    }
+
+    methods = {
+      userChange (e) {
+        this.username = e.detail.value
+      },
+      mobileChange (e) {
+        this.mobile = e.detail.value
+      },
+      loginButtonTap () {
+        if (this.isLogining) return
+
+        if (!this.username) {
+          return showError('请输入用户名')
+        }
+        if (!this.mobile) {
+          return showError('请输入手机号')
+        }
+
+        this.isLogining = true
+
+        let errorHandler = errMsg => {
+          this.isLogining = false
+          showError(errMsg)
+        }
+
+        //this.$parent.getUserInfo().then(userInfo => {
+          login(this.username, this.mobile).then((res) => {
+            this.isLogining = false
+            session.set(Object.assign({}, this.$parent.globalData.userInfo, res.data))
+            this.$switch('/pages/home/home')
+          }, errorHandler)
+        //}, errorHandler)
+      }
+    }
+
+    toast (msg) {
+      return this.$invoke('toast', 'show', {
+        title: msg,
+        img: 'images/error.png'
+      })
+    }
+
+    onLoad () {
+
+    }
+  }
+</script>

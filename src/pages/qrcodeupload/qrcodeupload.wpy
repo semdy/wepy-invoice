@@ -1,0 +1,192 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  .index-main {
+    position: relative;
+    padding: 24rpx 10rpx;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .top-main{
+    display: flex;
+    background-color: #fff;
+    border-radius: 8rpx;
+    margin-bottom: 20rpx;
+    padding: 30rpx;
+  }
+
+  .circle-pie-wrap{
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .circle-pie{
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+  }
+
+  .circle-text{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .circle-canvas{
+    width: 92px;
+    height: 92px;
+  }
+
+  .filter-buttons{
+    width: 200rpx;
+    .flex-v-center();
+  }
+
+  .button-group-item {
+    background-color: #dae3f3;
+    color: #fff;
+    border: 0;
+  }
+
+  .list-item {
+    border: 0;
+    border-radius: 6rpx;
+  }
+
+  .list-item-bd {
+    justify-content: space-between;
+  }
+
+  .camera-btn {
+    margin-top: 120rpx;
+    margin-left: 60rpx;
+    margin-right: 60rpx;
+  }
+
+</style>
+<template>
+  <view class="index-main">
+    <view class="top-main">
+      <view class="circle-pie-wrap">
+        <view class="circle-pie">
+          <canvas class="circle-canvas" canvas-id="percentage-pie"></canvas>
+          <text class="circle-text">{{formula}}</text>
+        </view>
+      </view>
+      <view class="filter-buttons">
+        <buttongroup :items="buttongroupitems" @tap.user="buttonitemTap"></buttongroup>
+      </view>
+    </view>
+
+    <view class="index-entrace">
+      <repeat for="{{listgroup}}">
+        <listitem :icon="item.icon" :iconSize="item.iconSize" :hasArrow="item.hasArrow" @tap.user="listitemTap">
+          <text>{{item.text}}</text>
+          <text>{{item.subtext}}</text>
+        </listitem>
+      </repeat>
+    </view>
+
+    <camerabutton icon="camera.svg" size="large" className="camera-btn">拍照</camerabutton>
+
+  </view>
+  <tabbar :tabBar="tabBar" disabled="true" @tabbarChange.user="tabbarChange"></tabbar>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Button from '../../components/button'
+  import Buttongroup from '../../components/buttongroup'
+  import Listitem from '../../components/listitem'
+  import Tabbar from '../../components/tabbar'
+  import PercentageCircle from '../../components/percentagecircle/'
+  import {showError, showToast} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '二维码照片上报销量'
+    }
+
+    components = {
+      camerabutton: Button,
+      buttongroup: Buttongroup,
+      listitem: Listitem,
+      tabbar: Tabbar
+    }
+
+    data = {
+      percent: 0,
+      formula: '0/0',
+      buttongroupitems: ['当天上传', '本月上传', '全部上传'],
+      listgroup: [
+        {
+          icon: 'lookover.svg',
+          iconSize: 'small',
+          text: '等审核',
+          subtext: '0',
+          hasArrow: true
+        },
+        {
+          icon: 'refuse.svg',
+          iconSize: 'small',
+          text: '审核未通过',
+          subtext: '0',
+          hasArrow: true
+        },
+        {
+          icon: 'unkown.svg',
+          iconSize: 'small',
+          text: '无法识别',
+          subtext: '0',
+          hasArrow: true
+        }
+      ],
+      tabBar: {
+        color: '#777',
+        selectedColor: '#01458e',
+        borderStyle: '#ddd',
+        backgroundColor: '#fff',
+        list: [
+          {
+            text: '统计',
+            icon: 'stats.png',
+            selectedIcon: 'stats-selected.png'
+          },
+          {
+            text: '列表',
+            icon: 'list.svg',
+            selectedIcon: 'list-selected.png'
+          }
+        ]
+      }
+    }
+
+    computed = {
+    }
+    methods = {
+      buttonitemTap (index) {
+        console.log(index)
+      },
+      listitemTap (index, e) {
+        this.$navigate('/pages/qrcodelist/qrcodelist')
+      },
+      tabbarChange (index) {
+        if (index === 1) {
+          this.$navigate('/pages/qrcodelist/qrcodelist')
+        }
+      }
+    }
+    onLoad () {
+      this.circle = new PercentageCircle('percentage-pie', {percent: 0, radius: 40, borderWidth: 12})
+    }
+  }
+</script>

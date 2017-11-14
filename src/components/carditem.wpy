@@ -1,0 +1,65 @@
+<style type="less">
+  @import "../less/mixin";
+
+  .card-item{
+    .flex();
+    padding: 20rpx 40rpx;
+    background-color: #fff;
+    margin-bottom: 10rpx;
+    border:2rpx solid #dedede;
+    border-radius: 16rpx;
+
+    .card-cover {
+      width: 250rpx;
+      height: 154rpx;
+    }
+
+    .card-body {
+      .flex();
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+      margin-left: 40rpx;
+    }
+
+    .card-desc {
+      font-size: 32rpx;
+    }
+  }
+</style>
+<template>
+  <view class="card-item {{className}}" style="{{style}}">
+    <image class="card-cover" src="../../images/{{cover}}" mode="aspectFit"></image>
+    <view class="card-body">
+      <view class="card-desc">
+        <slot></slot>
+      </view>
+      <counter></counter>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import Counter from './counter'
+
+  export default class Carditem extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      },
+      cover: String
+    }
+    components = {
+      counter: Counter
+    }
+    data = {
+    }
+    methods = {
+    }
+  }
+</script>

@@ -1,0 +1,238 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page{
+    background-color: #fff;
+  }
+
+  .query-form-wrap {
+    margin: 30rpx;
+    .flex();
+
+    .query-form {
+      flex: 1;
+      margin-right: 20rpx;
+    }
+  }
+
+  .query-form {
+    position: relative;
+    .flex-v-center();
+
+    .form-item {
+      margin-bottom: 0;
+      flex: 1;
+    }
+
+    .clear-icon {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+    }
+
+  }
+
+  .table-cell.opt {
+    flex:none;
+    width:80rpx;
+
+    .icon {
+      padding: 0;
+    }
+  }
+
+</style>
+<template>
+  <view class="query-form-wrap">
+    <view class="query-form">
+      <queryinput placeholder="搜索二维码" border="true" icon="find-g.svg" :value.sync="receiptNo" @input.user="queryChange"></queryinput>
+      <clearIcon name="clear.svg" className="clear-icon" @tap.user="clearTap"></clearIcon>
+    </view>
+    <querybutton @tap.user="queryTap">查询</querybutton>
+  </view>
+
+  <view class="table">
+    <view class="table-row table-header">
+      <view class="table-cell th order">序号</view>
+      <view class="table-cell th">单据编号</view>
+      <view class="table-cell th">单据类型</view>
+      <view class="table-cell th">明细数</view>
+      <view class="table-cell th">单据状态</view>
+      <view class="table-cell th opt"></view>
+    </view>
+
+    <scroll-view scroll-y="true" class="table-body" lower-threshold="0" style="height:{{tableHeight}}px;" bindscrolltolower="onEndReached">
+      <block wx:for="{{dataList}}" wx:key="index">
+        <view class="table-row">
+          <view class="table-cell td order">{{index+1}}</view>
+          <view class="table-cell td">{{item.receiptNo}}</view>
+          <view class="table-cell td">{{item.type}}</view>
+          <view class="table-cell td">{{item.num}}</view>
+          <view class="table-cell td">{{item.statusText}}</view>
+          <view class="table-cell td opt">
+            <view @tap="delTap({{item}})" wx:if="{{item.status === 'unSubmit'}}">
+              <deleteIcon name="delete.svg"></deleteIcon>
+            </view>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+
+  </view>
+
+  <tabbar :tabBar="tabBar" disabled="true" tabIndex="1" @tabbarChange.user="tabbarChange"></tabbar>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Formitem from '../../components/formitem'
+  import Button from '../../components/button'
+  import Icon from '../../components/icon'
+  import Tabbar from '../../components/tabbar'
+  import {showError, showToast} from '../../utils/util'
+
+  const STATUS_MAP = {
+    'unSubmit': '未提交',
+    'submit' : '已提交'
+  }
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '单据列表'
+    }
+
+    components = {
+      queryinput: Formitem,
+      clearIcon: Icon,
+      deleteIcon: Icon,
+      tabbar: Tabbar,
+      querybutton: Button
+    }
+
+    page = 1
+    loaded = false
+
+    data = {
+      dataList: [],
+      total: 0,
+      receiptNo: '',
+      tableHeight: wx.getSystemInfoSync().windowHeight - 180,
+      tabBar: {
+        color: '#777',
+        selectedColor: '#01458e',
+        borderStyle: '#ddd',
+        backgroundColor: '#fff',
+        list: [
+          {
+            text: '新建',
+            icon: 'create.svg',
+            selectedIcon: 'create-selected.png'
+          },
+          {
+            text: '列表',
+            icon: 'list.svg',
+            selectedIcon: 'list-selected.png'
+          }
+        ]
+      }
+    }
+
+    computed = {
+
+    }
+
+    methods = {
+      queryTap (e) {
+        this.handleQuery()
+      },
+      clearTap (e) {
+        this.receiptNo = ''
+      },
+      queryChange (e) {
+        this.receiptNo = e.detail.value
+      },
+      tabbarChange (index) {
+        if (index === 0) {
+          this.$back()
+        }
+      },
+      delTap (e) {
+        let item = e.currentTarget.dataset.wepyParamsA
+        wepy.showModal({
+          title: '提示',
+          content: '确定要删除吗?',
+          confirmText: '确定',
+          cancelText: '取消'
+        }).then(res => {
+          if (res.confirm) {
+            this.deleteReceipt(item.id)
+          }
+        })
+      }
+    }
+
+    handleQuery () {
+      this.page = 1
+      this.dataList = []
+      this.queryReceipt(this.receiptNo, this.page)
+    }
+
+    appendQuery () {
+      if(!this.loaded) return
+      this.queryReceipt(this.receiptNo, ++this.page)
+    }
+
+    queryReceipt(receiptNo, page) {
+      let params = {
+        receiptNo: receiptNo,
+        page: page
+      }
+      this.loaded = false
+      return new Promise((resolve, reject) => {
+        fetch.get('find/receipt', params).then(res => {
+          if (res.success) {
+            this.total = res.data.total
+            res.data.docs.forEach(item => {
+              item.statusText = STATUS_MAP[item.status]
+            })
+            Array.prototype.push.apply(this.dataList, res.data.docs)
+            resolve(res.data)
+            this.$apply()
+          } else {
+            reject(res.message)
+            showError(res.message)
+          }
+        }, errMsg => {
+          reject(errMsg)
+          showError(errMsg)
+        }).finally(res => {
+          this.loaded = true
+        })
+      })
+    }
+
+    deleteReceipt (receiptId) {
+      fetch.get(`remove/receipt/${receiptId}`).then(res => {
+        if (res.success) {
+          showToast(res.message)
+          this.handleQuery()
+        } else {
+          showError(res.message)
+        }
+      }, errMsg => {
+        showError(errMsg)
+      })
+    }
+
+    onEndReached () {
+      this.appendQuery()
+    }
+
+    onLoad () {
+    }
+  }
+</script>

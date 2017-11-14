@@ -1,0 +1,104 @@
+<style lang="less">
+  @import "../less/mixin";
+
+  .tabbar-wrap{
+    .flex();
+    border-width: 2rpx 0 0;
+    border-style: solid;
+    border-top-color: transparent;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    .tabbar-item {
+      flex: 1;
+      .flex-center();
+      flex-direction: column;
+      padding: 10rpx;
+      font-size: 24rpx;
+
+      .icon {
+        padding: 6rpx;
+
+        .icon-img {
+          width: 50rpx;
+          height: 50rpx;
+        }
+      }
+    }
+  }
+</style>
+
+<template>
+  <view class="tabbar-wrap {{className}}" style="{{style}}" wx:if="{{tabBar.list.length>0}}">
+    <repeat for="{{tabBar.list}}">
+      <view class="tabbar-item {{tabIndex == index ? 'selected' : ''}}" style="color:{{tabIndex == index ? tabBar.selectedColor : tabBar.color}}" data-index="{{index}}" @tap="tap('{{index}}')">
+        <icon wx:if="{{tabIndex != index}}" :name="item.icon"></icon>
+        <icon wx:if="{{tabIndex == index}}" :name="item.selectedIcon"></icon>
+        <view>{{item.text}}</view>
+      </view>
+    </repeat>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Icon from './icon'
+
+  export default class Tabbar extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      },
+      tabIndex: {
+        type: [String, Number],
+        default: 0,
+        coerce: function (n) {
+          return +n
+        }
+      },
+      tabBar: {
+        type: Object,
+        default: {
+          list: []
+        }
+      },
+      disabled: {
+        type: [Boolean, String],
+        default: false
+      }
+    }
+
+    components = {
+      icon: Icon
+    }
+
+    data = {
+    }
+    computed = {
+      style () {
+        let {borderStyle, backgroundColor} = this.tabBar
+        return `border-top-color:${borderStyle};background-color:${backgroundColor}`
+      }
+    }
+    methods = {
+      tap ($event) {
+        var index = Number($event.currentTarget.dataset.index)
+        if (this.tabIndex === index) return
+        if (!(this.disabled === true || this.disabled === 'true')) {
+          this.tabIndex = index
+        }
+        this.$emit('tabbarChange', index, $event)
+      }
+    }
+    onLoad (e) {
+      this.$emit('tabbarChange', this.tabIndex, e)
+    }
+  }
+</script>

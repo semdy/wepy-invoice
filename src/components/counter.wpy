@@ -1,0 +1,92 @@
+<style lang="less">
+  @import "../less/mixin";
+
+  .counter {
+    .flex-v-center();
+
+    .count {
+      width: 104rpx;
+      height: 52rpx;
+      margin-left: 16rpx;
+      margin-right: 16rpx;
+      text-align: center;
+      border: 1px solid #ccc;
+    }
+
+    .counter-action {
+      border: 2rpx solid #ccc;
+      width: 52rpx;
+      height: 52rpx;
+
+      .icon {
+        padding: 10rpx;
+      }
+
+      &:active {
+        background-color: #f0f0f0;
+      }
+    }
+  }
+</style>
+<template>
+  <view class="counter {{style}}">
+    <view class="counter-action" @tap="minus">
+      <minusicon name="minus.svg" size="small"></minusicon>
+    </view>
+    <input type="number" class="count" value="{{num}}" @input="numChange" @blur="numBlur" />
+    <view class="counter-action" @tap="plus">
+      <plusicon name="plus.svg" size="small"></plusicon>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import Icon from './icon'
+
+  export default class Counter extends wepy.component {
+    props = {
+      num: {
+        type: [Number, String],
+        coerce: function (v) {
+          return +v
+        },
+        default: 0
+      }
+    }
+    components = {
+      plusicon: Icon,
+      minusicon: Icon
+    }
+    data = {
+    }
+    events = {
+    }
+    methods = {
+      numChange (e) {
+        var value = e.detail.value
+        if (isNaN(value)) {
+          value = 0
+        }
+
+        this.num = parseInt(value)
+        this.$emit('counter-change', this.num)
+      },
+      numBlur (e) {
+        var value = parseInt(e.detail.value)
+        if (isNaN(value)) {
+          value = 0
+        }
+        this.num = value
+        this.$emit('counter-change', this.num)
+      },
+      plus () {
+        this.num = this.num + 1
+        this.$emit('counter-change', this.num)
+      },
+      minus () {
+        this.num = Math.max(0, this.num - 1)
+        this.$emit('counter-change', this.num)
+      }
+    }
+  }
+</script>

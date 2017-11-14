@@ -1,0 +1,110 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  .point-listgroup {
+    height: 400rpx;
+  }
+  .point-listgroup {
+    .list-item {
+      margin-bottom: 0;
+      margin-top: -2rpx;
+    }
+  }
+
+  .list-item:nth-child(3){
+    background-color: #f8f8f8;
+  }
+
+  .list-item-text{
+    flex: 1;
+    font-size: 32rpx;
+  }
+
+  .list-subview {
+    background-color: #fff;
+  }
+
+  .record-item {
+    .flex-v-center();
+    padding: 40rpx;
+    border-bottom: 2rpx solid #dedede;
+
+    &:before {
+      content: "•";
+      font-size: 50rpx;
+      font-weight: bold;
+      margin-right: 16rpx;
+      line-height: 0.1;
+    }
+  }
+</style>
+<template>
+  <view class="point-listgroup">
+    <repeat for="{{listgroup}}">
+      <listitem :icon="item.icon" :hasArrow="item.hasArrow" @tap.user="listitemTap">
+        <view class="list-item-text">{{item.text}}</view>
+      </listitem>
+      <view class="list-subview" wx:if="{{item.subList&&item.subList.length>0}}">
+        <repeat for="{{item.subList}}" item="sub">
+          <view class="record-item">{{sub}}</view>
+        </repeat>
+      </view>
+    </repeat>
+  </view>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Listitem from '../../components/listitem'
+  import Button from '../../components/button'
+  import {showError, showToast} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的积分'
+    }
+
+    components = {
+      listitem: Listitem
+    }
+
+    data = {
+      listgroup: [
+        {
+          icon: 'point.svg',
+          text: '剩余积分：550积分',
+          subList: []
+        },
+        {
+          icon: 'gift.svg',
+          text: '积分兑换',
+          hasArrow: true,
+          subList: []
+        },
+        {
+          icon: 'point-record.svg',
+          text: '兑换记录',
+          subList: ['2017年10月26日手机充值卡100元已到账']
+        }
+      ]
+    }
+
+    computed = {
+
+    }
+
+    methods = {
+      listitemTap (index, e) {
+        if (index === 1) {
+          this.$navigate('/pages/exchange/exchange')
+        }
+      }
+    }
+
+    onLoad () {
+
+    }
+  }
+</script>

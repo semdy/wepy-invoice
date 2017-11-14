@@ -1,0 +1,72 @@
+<style lang="less">
+  @import "../less/mixin";
+
+  .modal {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,.4);
+    .flex-center();
+    z-index: 1000;
+
+    &.show {
+      display: flex;
+    }
+
+    &.hide {
+      display: none;
+    }
+  }
+
+  .modal-content {
+    width: 80%;
+    max-width: 640rpx;
+    background-color: #fff;
+    border-radius: 16rpx;
+    padding: 40rpx;
+    box-sizing: border-box;
+  }
+
+</style>
+
+<template>
+  <view class="modal {{className}} {{show ? 'show' : 'hide'}}" style="{{style}}">
+    <view class="modal-content">
+      <slot name="title"></slot>
+      <slot></slot>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class Button extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      },
+      show: {
+        type: Boolean,
+        default: false
+      }
+    }
+
+    components = {
+    }
+
+    data = {
+
+    }
+
+    methods = {
+    }
+  }
+</script>

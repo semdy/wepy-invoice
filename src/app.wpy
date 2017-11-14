@@ -1,0 +1,261 @@
+<style lang='less'>
+  @import "less/mixin";
+
+  page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background-color: #e6edf4;
+    font-size: 28rpx;
+    font-family: -apple-system-font, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', sans-serif;
+  }
+
+  .page {
+    flex: 1;
+    display: flex;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  image {
+    vertical-align: top;
+  }
+
+  .h {
+    color: #03468f;
+  }
+
+  /*=====picker=====*/
+  picker {
+    flex: 1;
+    width: 100%;
+    border: 2rpx solid #ccc;
+    background-color: #fff;
+    border-radius: 8rpx;
+
+    &.disabled {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+  }
+
+  .picker{
+    padding: 12rpx 24rpx;
+    font-size: 28rpx;
+    box-sizing: border-box;
+    .flex-v-center();
+    justify-content: space-between;
+
+    &.large {
+      height: @large;
+      font-size: 32rpx;
+    }
+    &.normal {
+      height: @normal;
+    }
+    &.small {
+      height: @small;
+    }
+
+    .icon {
+      padding: 0;
+
+      .icon-img {
+        width: 24rpx !important;
+        height: 24rpx !important;
+        vertical-align: middle;
+      }
+    }
+  }
+
+  /*======table======*/
+  .table-row {
+    .flex-v-center();
+    &:not(:last-child) {
+      border-bottom: 1px solid #eee;
+    }
+    background-color: #fff;
+  }
+  .table-header{
+    background-color: #f2f2f2;
+    border-bottom: 0;
+  }
+  .table-cell{
+    flex: 1;
+    padding: 24rpx 10rpx;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &.order {
+      flex: none;
+      width: 60rpx;
+    }
+
+    &.th{
+      color: #777;
+    }
+
+    .icon {
+      padding: 0;
+    }
+  }
+</style>
+
+<script>
+  import wepy from 'wepy'
+  import 'wepy-async-function'
+  import './pollyfill'
+  import wechat from './utils/wechat'
+  import {showError} from './utils/util'
+  import {session} from './service/auth'
+
+  export default class extends wepy.app {
+    config = {
+      pages: [
+        'pages/login/login',
+        'pages/home/home',
+        'pages/dms/dms',
+        'pages/dmslist/dmslist',
+        'pages/flow/flow',
+        'pages/my/my',
+        'pages/point/point',
+        'pages/exchange/exchange',
+        'pages/qrcodeupload/qrcodeupload',
+        'pages/qrcodelist/qrcodelist',
+        'pages/qrcodedetail/qrcodedetail'
+      ],
+      window: {
+        // 类型：HexColor；默认值：#000000
+        // 导航栏背景颜色，如'#000000'
+        navigationBarBackgroundColor: '#01458e',
+        // 类型：String；默认值：white
+        // 导航栏标题颜色，仅支持 black/white
+        navigationBarTextStyle: '#fff',
+        // 类型：String；默认值：无
+        // 导航栏标题文字内容
+        navigationBarTitleText: '物联网',
+        // 类型：HexColor；默认值：#ffffff
+        // 窗口的背景色
+        backgroundColor: '#e6edf4',
+        // 类型：String；默认值：dark
+        // 下拉背景字体、loading 图的样式，仅支持 dark/light
+        backgroundTextStyle: 'dark',
+        // 类型：Boolean；默认值：false
+        // 是否开启下拉刷新，详见页面相关事件处理函数。
+        // https://mp.weixin.qq.com/debug/wxadoc/dev/framework/app-service/page.html?t=1476197491005#页面相关事件处理函数
+        enablePullDownRefresh: false
+      },
+      // Tab bar configuration
+      // https://mp.weixin.qq.com/debug/wxadoc/dev/framework/config.html#tabBar
+      tabBar: {
+        color: '#777',
+        selectedColor: '#01458e',
+        borderStyle: 'white',
+        backgroundColor: '#fff',
+        list: [
+          {
+            text: '主页',
+            pagePath: 'pages/home/home',
+            iconPath: 'images/home.png',
+            selectedIconPath: 'images/home-selected.png'
+          },
+          {
+            text: '我的',
+            pagePath: 'pages/my/my',
+            iconPath: 'images/my.png',
+            selectedIconPath: 'images/my-selected.png'
+          }
+        ]
+      },
+      // Network timeout configuration
+      // https://mp.weixin.qq.com/debug/wxadoc/dev/framework/config.html#networkTimeout
+      networkTimeout: {
+        request: 10000,
+        downloadFile: 10000
+      },
+      // Debug log to console
+      // https://mp.weixin.qq.com/debug/wxadoc/dev/framework/config.html#debug
+      debug: true
+    }
+
+    constructor () {
+      super()
+      this.use('requestfix')
+      this.use('promisify')
+    }
+
+    /**
+     * Global shared
+     * 可以定义任何成员，用于在整个应用中共享
+     */
+    globalData = {
+      userInfo: null
+    }
+
+    /**
+     * 获取用户信息
+     * @return {Promise} 包含获取用户信息的`Promise`
+     */
+    getUserInfo () {
+      return new Promise((resolve, reject) => {
+        if (this.globalData.userInfo) return resolve(this.globalData.userInfo);
+
+        wx.showLoading({
+          mask: true,
+          title: '请稍候...'
+        });
+
+        wechat.login()
+          .then((res) => wechat.getUserInfo(res))
+          .then(res => (this.globalData.userInfo = res.userInfo))
+          .then(info => resolve(info))
+          .catch(error => {
+            error = JSON.stringify(error);
+            reject(error);
+            console.error('failed to get user info, error: ' + error);
+            setTimeout(function () {
+              showError('用户信息获取失败: ' + error);
+            })
+          })
+          .finally(wx.hideLoading)
+      })
+    }
+
+    /**
+     * 生命周期函数--监听小程序初始化
+     * 当小程序初始化完成时，会触发 onLaunch（全局只触发一次）
+     */
+    onLaunch () {
+      //this.getUserInfo()
+      if (!session.get()) {
+        wx.redirectTo({
+          url: '/pages/login/login'
+        })
+      }
+    }
+
+    /**
+     * 生命周期函数--监听小程序显示
+     * 当小程序启动，或从后台进入前台显示，会触发 onShow
+     */
+    onShow () {
+
+    }
+    /**
+     * 生命周期函数--监听小程序隐藏
+     * 当小程序从前台进入后台，会触发 onHide
+     */
+    onHide () {
+
+    }
+  }
+</script>

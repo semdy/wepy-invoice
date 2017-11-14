@@ -1,0 +1,113 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  .home-swiper {
+    height: 400rpx;
+  }
+  .swiper-item {
+    > image {
+      width: 100%;
+    }
+  }
+  .list-item-text{
+    flex: 1;
+    font-size: 32rpx;
+    font-weight: bold;
+    color: @gcolor;
+  }
+  .list-item-ctext{
+    flex: 1;
+    color: @gcolor;
+  }
+</style>
+<template>
+  <view class="home-swiper-container">
+    <swiper class="swiper home-swiper" autoplay="true" interval="5000" duration="300" indicatorDots="true" circular="true">
+      <swiper-item class="swiper-item">
+        <image src="../../images/carousel_1.png"></image>
+      </swiper-item>
+      <swiper-item class="swiper-item">
+        <image src="../../images/carousel_2.png"></image>
+      </swiper-item>
+      <swiper-item class="swiper-item">
+        <image src="../../images/carousel_3.png"></image>
+      </swiper-item>
+    </swiper>
+  </view>
+  <notice :notices="notices"></notice>
+  <view class="list-group">
+    <repeat for="{{listgroup}}" key="index">
+      <listitem :icon="item.icon" :iconRight="true" @tap.user="listitemTap">
+        <view class="list-item-text">{{item.text}}</view>
+        <view class="list-item-ctext">{{item.ctext}}</view>
+      </listitem>
+    </repeat>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Notice from '../../components/notice'
+  import Listitem from '../../components/listitem'
+  import {showError, showToast} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '主页'
+    }
+
+    components = {
+      notice: Notice,
+      listitem: Listitem
+    }
+
+    data = {
+      notices: ['站内通知'],
+      listgroup: [
+        {
+          icon: 'exchange.svg',
+          text: '移库/上报销量',
+          ctext: '二维码上传DMS'
+        },
+        {
+          icon: 'find.svg',
+          text: '二维码流向查询'
+        },
+        {
+          icon: 'picture.svg',
+          text: '二维码照片上报'
+        }
+      ]
+    }
+
+    computed = {
+
+    }
+
+    methods = {
+      listitemTap (index, e) {
+        if(index === 0) {
+          this.$navigate('/pages/dms/dms')
+        }
+        else if(index === 1) {
+          this.$navigate('/pages/flow/flow')
+        }
+        else if(index === 2) {
+          this.$navigate('/pages/qrcodeupload/qrcodeupload')
+        }
+      }
+    }
+
+    toast (msg) {
+      return this.$invoke('toast', 'show', {
+        title: msg,
+        img: 'https://raw.githubusercontent.com/kiinlam/wetoast/master/images/star.png'
+      })
+    }
+
+    onLoad () {
+
+    }
+  }
+</script>

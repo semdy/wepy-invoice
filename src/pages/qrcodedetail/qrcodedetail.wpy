@@ -1,0 +1,125 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page {
+    background-color: #fff;
+  }
+
+  .imgView-container {
+    .flex-center();
+    height: 280rpx;
+    margin: 20rpx 10rpx;
+    border-radius: 16rpx;
+    overflow: hidden;
+
+    .inv-image{
+      width: 100%;
+
+      &.portrait{
+        transform: rotate(-90deg);
+      }
+    }
+
+  }
+
+  .detail-list {
+    padding-top: 40rpx;
+    border-top: 2rpx solid #ddd;
+  }
+
+  .detail-item {
+    .flex-v-center();
+    justify-content: space-between;
+    padding: 30rpx;
+    border-bottom: 2rpx solid #eee;
+  }
+
+  .r {
+    color: #cc0000;
+  }
+
+  .detail-actions {
+    .flex();
+    justify-content: space-around;
+    margin-top: 60rpx;
+
+    .button {
+      width: 20%;
+    }
+  }
+
+</style>
+<template>
+  <view class="imgView-container">
+    <image class="inv-image {{isPortrait ? 'portrait': ''}}" src="{{picturePath}}"
+           mode="aspectFit"
+           style="height:{{imgHeight}}px"
+           bindtap="thumbTap"
+    >
+    </image>
+  </view>
+  <view class="detail-list">
+    <view class="detail-item">
+      <view class="detail-label">
+        <text>状态：</text>
+        <text class="r">未通过</text>
+      </view>
+      <text class="detail-value r">重拍</text>
+    </view>
+    <view class="detail-item">
+      <text class="detail-label">状态说明</text>
+      <text class="detail-value">单据审核后未通过</text>
+    </view>
+    <view class="detail-item">
+      <text class="detail-label">二维码</text>
+      <text class="detail-value">123485454267825635</text>
+    </view>
+    <view class="detail-item">
+      <text class="detail-label">型号</text>
+      <text class="detail-value">H748034806644</text>
+    </view>
+    <view class="detail-item">
+      <text class="detail-label">批号</text>
+      <text class="detail-value">199884345</text>
+    </view>
+  </view>
+  <view class="detail-actions">
+    <delbutton>删除</delbutton>
+    <savebutton>保存</savebutton>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Button from '../../components/button'
+
+  import {showError, showToast} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '二维码照片上报销量'
+    }
+    components = {
+      delbutton: Button,
+      savebutton: Button
+    }
+    data = {
+      imgHeight: wx.getSystemInfoSync().windowWidth,
+      picturePath: '../../images/carousel_1.png',
+      isPortrait: false
+    }
+    computed = {
+    }
+    methods = {
+      thumbTap(){
+        wx.previewImage({
+          urls:[this.data.picturePath]
+        })
+      }
+    }
+    onLoad () {
+
+    }
+  }
+</script>

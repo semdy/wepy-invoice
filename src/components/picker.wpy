@@ -1,0 +1,77 @@
+<style lang="less">
+
+</style>
+
+<template>
+  <picker mode="selector"
+          @change="change"
+          @columnchange="columnchange"
+          class="{{disabled ? 'disabled' : ''}}"
+          value="{{selectIndex}}"
+          range="{{names}}"
+          disabled="{{disabled}}"
+  >
+    <view class="picker {{size}} {{className}}" style="{{style}}">
+      <text>{{names[selectIndex]}}</text>
+      <icon name="angle-down-black.png"></icon>
+    </view>
+  </picker>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Icon from './icon'
+
+  export default class Button extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      },
+      size: {
+        type: String,
+        default: 'normal'
+      },
+      items: {
+        type: Array,
+        default: []
+      },
+      selectIndex: {
+        type: [Number, String],
+        coerce: function (v) {
+          return +v
+        },
+        default: 0
+      },
+      disabled: {
+        type: Boolean,
+        default: false
+      }
+    }
+
+    components = {
+      icon: Icon
+    }
+    computed = {
+      names () {
+        return this.items.map(item => item.name)
+      }
+    }
+    data = {
+    }
+    methods = {
+      change ($event) {
+        this.selectIndex = $event.detail.value
+        this.$emit('pickerchange', $event)
+      },
+      columnchange ($event) {
+        this.selectIndex = $event.detail.value
+        this.$emit('pickercolumnchange', $event)
+      }
+    }
+  }
+</script>

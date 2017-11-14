@@ -1,0 +1,131 @@
+<style lang="less">
+  @import "../less/mixin";
+
+  .button {
+    .flex-center();
+    padding-left: 40rpx;
+    padding-right: 40rpx;
+    border-radius: 8rpx;
+    flex-direction: row;
+    color: #fff;
+    border: 2rpx solid transparent;
+
+    &.inline {
+      display: inline-flex;
+    }
+
+    &.primary {
+      background-color: @gcolor;
+      &:active{
+        background-color: darken(@gcolor, 10%);
+      }
+    }
+    &.success {
+      background-color: #5cb85c;
+      &:active{
+        background-color: darken(#5cb85c, 10%);
+      }
+    }
+    &.info {
+      background-color: #5bc0de;
+      &:active{
+        background-color: darken(#5bc0de, 10%);
+      }
+    }
+    &.warning {
+      background-color: #f0ad4e;
+      &:active{
+        background-color: darken(#f0ad4e, 10%);
+      }
+    }
+    &.danger {
+      background-color: #d9534f;
+      &:active{
+        background-color: darken(#d9534f, 10%);
+      }
+    }
+    &.disabled {
+      background-color: #ccc;
+      pointer-events: none;
+    }
+
+    &.large {
+      height: @large;
+      font-size: 36rpx;
+      > .icon {
+        margin-left: -48rpx;
+      }
+    }
+    &.normal {
+      height: @normal;
+      > .icon {
+        margin-left: -72rpx;
+      }
+    }
+    &.small {
+      height: @small;
+      > .icon {
+        margin-left: -64rpx;
+      }
+    }
+
+  }
+</style>
+
+<template>
+  <view class="button {{inline === 'true' ? 'inline' : ''}} {{disabled ? 'disabled' : ''}} {{size}} {{type}} {{className}}" style="{{style}}" @tap="tap">
+    <icon wx:if="{{icon}}" :name="icon" :size="size"></icon>
+    <slot></slot>
+    {{text}}
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Icon from './icon'
+
+  export default class Button extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      },
+      icon: String,
+      size: {
+        type: String,
+        default: 'normal'
+      },
+      type: {
+        type: String,
+        default: 'primary'
+      },
+      inline: {
+        type: String,
+        default: 'false'
+      },
+      disabled: {
+        type: Boolean,
+        default: false
+      },
+      text: String
+    }
+
+    components = {
+      icon: Icon
+    }
+
+    data = {
+
+    }
+
+    methods = {
+      tap ($event) {
+        this.$emit('tap', $event)
+      }
+    }
+  }
+</script>

@@ -1,0 +1,59 @@
+<style lang="less">
+  @import "../less/mixin";
+
+  .notice {
+    .flex-v-center();
+    padding: 16rpx;
+    background-color: #fff;
+  }
+  .notice-messages{
+    > text{
+      margin-right: 16rpx;
+    }
+  }
+</style>
+
+<template>
+  <view class="notice {{className}}" style="{{style}}">
+    <icon name="notice.svg"></icon>
+    <view class="notice-messages">
+      <repeat for="{{notices}}" key="index">
+        <text>{{item}}</text>
+      </repeat>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Icon from './icon'
+
+  export default class Notice extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      },
+      notices: {
+        type: Array,
+        default: []
+      }
+    }
+
+    components = {
+      icon: Icon
+    }
+
+    data = {
+
+    }
+
+    methods = {
+
+    }
+  }
+</script>

@@ -1,0 +1,82 @@
+<style type="less">
+  @import "../less/mixin";
+
+  .flow-item{
+    .flex();
+    padding: 0 30rpx;
+
+    &:last-child {
+      .flow-item-bd {
+        padding-bottom: 120rpx;
+      }
+    }
+  }
+
+  .flow-item-date {
+    width: 180rpx;
+    padding-top: 30rpx;
+    padding-right: 20rpx;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .flow-item-bd{
+    position: relative;
+    flex: 1;
+    .flex-v-center();
+    min-height: 76rpx;
+    border-left: 2rpx solid #dedede;
+    padding: 30rpx 0 30rpx 60rpx;
+  }
+
+  .flow-item-icon {
+    position: absolute;
+    left: 0;
+    top: 30rpx;
+    width: 72rpx;
+    height: 72rpx;
+    transform: translateX(-50%);
+    background-color: #fff;
+  }
+
+</style>
+<template>
+  <view class="flow-item {{className}}" style="{{style}}" @tap="tap({{index}})">
+    <view class="flow-item-date">
+      <slot name="time"></slot>
+    </view>
+    <view class="flow-item-bd">
+      <image class="flow-item-icon" src="../../images/{{icon}}" mode="aspectFit"></image>
+      <view class="flow-item-text">
+        <slot></slot>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+
+  export default class Flowitem extends wepy.component {
+    props = {
+      icon: String,
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      }
+    }
+    components = {
+
+    }
+    data = {
+    }
+    methods = {
+      tap ($event) {
+        this.$emit('flowtap', Number(this.$index), $event)
+      }
+    }
+  }
+</script>

@@ -1,0 +1,159 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  .top-message {
+    .flex();
+    padding: 20rpx;
+    border: 4rpx solid #ddd;
+    border-radius: 16rpx;
+    background-color: #fff;
+    margin: 20rpx;
+
+    .icon {
+      padding: 0;
+      margin-right: 40rpx;
+      margin-left: 20rpx;
+    }
+
+    .tmessage {
+      flex: 1;
+    }
+
+    .tmsg-title {
+      font-size: 32rpx;
+    }
+  }
+
+  .exchange-listgroup {
+    background-color: #fff;
+  }
+
+  .exchange-legend {
+    position: relative;
+    text-align: center;
+    margin-bottom: 20rpx;
+
+    &:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      margin-top: -2rpx;
+      border-top: 4rpx solid #666;
+    }
+
+    > text {
+      position: relative;
+      display: inline-block;
+      padding: 16rpx 20rpx;
+      background-color: #fff;
+      color: @gcolor;
+      font-size: 36rpx;
+      font-weight: bold;
+    }
+  }
+
+  .exchange-list {
+    margin: 20rpx;
+  }
+
+  .page-actions {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 20rpx 40rpx;
+    background-color: #fff;
+    border-top: 2rpx solid #ccc;
+    .flex-v-center();
+    justify-content: space-between;
+  }
+
+  .cur-piont-label {
+    color: @gcolor;
+    margin-right: 40rpx;
+  }
+
+</style>
+<template>
+  <view class="top-message">
+    <gifticon name="gift.svg" size="large"></gifticon>
+    <view class="tmessage">
+      <view class="tmsg-title">积分兑换详情</view>
+      <view class="tmsg-bd">1、活动日期：当前至2018年12月底</view>
+    </view>
+  </view>
+
+  <view class="exchange-listgroup">
+    <view class="exchange-legend">
+      <text>积分兑换区</text>
+    </view>
+    <view class="exchange-list">
+      <repeat for="{{cardgroup}}">
+        <carditem :cover="item.cover" :num="item.num">
+          <text>{{item.desc}}</text>
+        </carditem>
+      </repeat>
+    </view>
+  </view>
+
+  <view class="page-actions">
+    <view class="cur-point-msg">
+      <text class="cur-piont-label">当前积分</text>
+      <text class="cur-piont-val">550</text>
+    </view>
+    <excbutton>确认兑换</excbutton>
+  </view>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Icon from '../../components/icon'
+  import Button from '../../components/button'
+  import Carditem from '../../components/carditem'
+  import {showError, showToast} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的积分'
+    }
+
+    components = {
+      gifticon: Icon,
+      carditem: Carditem,
+      excbutton: Button
+    }
+
+    data = {
+      cardgroup: [
+        {
+          cover: 'card1.jpg',
+          desc: '5元话费卡 100积分'
+        },
+        {
+          cover: 'card2.jpg',
+          desc: '100元话费卡 1000积分'
+        },
+        {
+          cover: 'card3.jpg',
+          desc: '50元京东卡 500积分'
+        },
+        {
+          cover: 'card4.jpg',
+          desc: '300元京东卡 1000积分'
+        }
+      ]
+    }
+
+    computed = {
+    }
+    methods = {
+    }
+    onLoad () {
+      console.log(this)
+    }
+  }
+</script>

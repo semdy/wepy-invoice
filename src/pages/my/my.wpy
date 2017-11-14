@@ -1,0 +1,146 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  .my-logo{
+    margin: 5% 30%;
+
+    > image{
+      display: block;
+      width: 500rpx;
+      height: 300rpx;
+    }
+  }
+
+  .my-avatar-holder {
+    background-color: #fff;
+    padding-bottom: 30rpx;
+  }
+
+  .my-avatar {
+    .flex-center();
+    width: 150rpx;
+    height: 150rpx;
+    background-color: #fff;
+    border: 4rpx solid #ccc;
+    border-radius: 50%;
+    margin-left: 20rpx;
+    margin-top: -75rpx;
+    overflow: hidden;
+
+     image {
+       width: 110rpx;
+       height: 110rpx;
+     }
+  }
+
+  .point-listgroup {
+    .list-item {
+      margin-bottom: 0;
+      margin-top: -2rpx;
+
+      &:last-child {
+        margin-top: 10rpx;
+      }
+    }
+  }
+
+  .list-item-text{
+    flex: 1;
+  }
+
+  .page-actions {
+    padding: 50rpx 60rpx;
+  }
+</style>
+<template>
+  <view class="container">
+    <view class="my-logo">
+      <image src="../../images/login_logo.png" mode="aspectFit"></image>
+    </view>
+  </view>
+  <veiw class="my-avatar-holder">
+    <view class="my-avatar">
+      <image src="../../images/avatar.svg" mode="aspectFit"></image>
+    </view>
+  </veiw>
+  <view class="point-listgroup">
+    <repeat for="{{listgroup}}">
+      <listitem :icon="item.icon" :iconSize="item.iconSize" :hasArrow="item.hasArrow" @tap.user="listitemTap">
+        <view class="list-item-text">
+          <text>{{item.label}}</text>
+          <text>{{item.content}}</text>
+        </view>
+      </listitem>
+    </repeat>
+  </view>
+
+  <view class="page-actions">
+    <logout-button>退出登录</logout-button>
+  </view>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Listitem from '../../components/listitem'
+  import Button from '../../components/button'
+  import {showError, showToast} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的'
+    }
+
+    components = {
+      listitem: Listitem,
+      'logout-button': Button
+    }
+
+    data = {
+      listgroup: [
+        {
+          icon: 'user.svg',
+          iconSize: 'small',
+          label: '公司名：',
+          content: '波士顿科学物联网',
+          hasArrow: true
+        },
+        {
+          icon: 'mobile2.svg',
+          iconSize: 'small',
+          label: '手机号：',
+          content: '13761803445'
+        },
+        {
+          icon: 'email.svg',
+          iconSize: 'small',
+          label: '邮箱：',
+          content: '37998434434@qq.com'
+        },
+        {
+          icon: 'gift.svg',
+          iconSize: 'small',
+          label: '我的积分',
+          hasArrow: true
+        }
+      ]
+    }
+
+    computed = {
+
+    }
+
+    methods = {
+      listitemTap (index, e) {
+        if(index === 3) {
+          this.$navigate('/pages/point/point')
+        }
+      }
+    }
+
+    onLoad () {
+
+    }
+  }
+</script>

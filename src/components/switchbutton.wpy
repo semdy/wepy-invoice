@@ -1,0 +1,100 @@
+<style lang="less">
+  @import "../less/mixin";
+
+  .switch-button-wrap{
+    display: inline-block;
+  }
+
+  .switch-button-body{
+    .flex();
+    background-color: #e5e5e7;
+    border-radius: 42rpx;
+  }
+
+  .switch-button {
+    .flex-center();
+    flex: 1;
+    padding-left: 30rpx;
+    padding-right: 30rpx;
+    color: #88a8c1;
+    font-size: 12px;
+    white-space: nowrap;
+
+    &.large {
+      height: @large;
+      font-size: 32rpx;
+      border-radius: @large/2;
+    }
+    &.normal {
+      height: @normal;
+      border-radius: @normal/2;
+    }
+    &.small {
+      height: @small;
+      border-radius: @small/2;
+    }
+
+    &.selected{
+      background-color: #01458e;
+      color: #fff;
+    }
+
+  }
+</style>
+
+<template>
+  <view class="switch-button-wrap {{className}}" style="{{style}}" @tap="tap" wx:if="{{buttons.length>0}}">
+    <view class="switch-button-body">
+      <repeat for="{{buttons}}">
+        <view class="switch-button {{size}} {{switchIndex == index ? 'selected' : ''}}">{{item}}</view>
+      </repeat>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class Switchbutton extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      },
+      switchIndex: {
+        type: [String, Number],
+        default: 0,
+        coerce: function (n) {
+          return +n
+        }
+      },
+      size: {
+        type: String,
+        default: 'normal'
+      },
+      buttons: {
+        type: Array,
+        default: []
+      }
+    }
+
+    components = {
+
+    }
+
+    data = {
+      switchIndex: this.switchIndex
+    }
+
+    methods = {
+      tap ($event) {
+        this.switchIndex = (this.switchIndex + 1) % this.buttons.length
+        this.$emit('tap', this.switchIndex, $event)
+      }
+    }
+  }
+</script>

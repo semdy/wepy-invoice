@@ -1,0 +1,67 @@
+<style lang="less">
+
+</style>
+
+<template>
+  <picker mode="region"
+          @change="change"
+          value="{{value}}"
+          custom-item="{{custom-item}}"
+          class="{{disabled ? 'disabled' : ''}}"
+          disabled="{{disabled}}"
+  >
+    <view class="picker {{size}} {{className}}" style="{{style}}">
+      <text>{{value}}</text>
+      <icon name="angle-down-black.png"></icon>
+    </view>
+  </picker>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Icon from './icon'
+
+  export default class Button extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      },
+      size: {
+        type: String,
+        default: 'normal'
+      },
+      value: {
+        type: String,
+        default: ''
+      },
+      'custom-item': {
+        type: String,
+        default: ''
+      },
+      disabled: {
+        type: Boolean,
+        default: false
+      }
+    }
+
+    components = {
+      icon: Icon
+    }
+
+    data = {
+    }
+
+    methods = {
+      change ($event) {
+        this.value = $event.detail.value
+        console.log(this.value)
+        this.$emit('datetimechange', $event)
+      }
+    }
+  }
+</script>
