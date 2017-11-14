@@ -116,6 +116,16 @@
     &:active {
       background-color: darken(@gcolor, 10%);
     }
+
+    &.cancel {
+      color: #666;
+      background-color: #e0e0e0;
+      margin-right: 20rpx;
+      &:active{
+        background-color: darken(#e5e5e5, 10%);
+      }
+    }
+
   }
 
 </style>
@@ -124,18 +134,18 @@
     <text class="bill-number">单据号：{{lastReceiptNo}}</text>
     <view class="switch">
       <text class="switch-hint">连扫</text>
-      <switch color="#01458e" class="switcher" checked @change="switchChange"/>
+      <switch color="#01458e" class="switcher" checked="{{scanContinue}}" @change="switchChange"/>
     </view>
   </view>
   <view class="bill-form">
     <view class="bill-form-body">
       <view class="bill-field">
         <text class="bill-label">单据类型：</text>
-        <switchbutton :buttons="switchButtons" className="dms-switch-button" @tap.user="switchButton1Tap"></switchbutton>
+        <switchbutton :buttons="switchButtons" :switchIndex.sync="switchIndex" className="dms-switch-button" @tap.user="switchButton1Tap"></switchbutton>
       </view>
       <view class="bill-field">
         <text class="bill-label">备 注：</text>
-        <remarkinput placeholder="备注可以为空" border="true" @change.user="remarkChange"></remarkinput>
+        <remarkinput placeholder="备注可以为空" border="true" :value.sync="remark" @change.user="remarkChange"></remarkinput>
       </view>
     </view>
   </view>
@@ -155,13 +165,13 @@
       <block wx:for="{{dataList}}" wx:key="index">
         <view class="table-row">
           <view class="table-cell td order">{{item.listIndex}}</view>
-          <view class="table-cell td">{{item.product.qrcode}}</view>
+          <view class="table-cell td">{{item.qrcode}}</view>
           <view class="table-cell td">
-            <text>{{item.receipt.statusText}}</text>
-            <cauthIcon name="cauth.svg" class="cauth-icon" size="small" wx:if="{{item.receipt.status === 'unSubmit'}}"></cauthIcon>
+            <text>{{item.statusText}}</text>
+            <cauthIcon name="cauth.svg" class="cauth-icon" size="small" wx:if="{{item.status === 'unSubmit'}}"></cauthIcon>
           </view>
           <view class="table-cell td last">
-            <view @tap="delTap({{item}})" wx:if="{{item.receipt.status === 'unSubmit'}}">
+            <view @tap="delTap({{item}})" wx:if="{{item.status === 'unSubmit'}}">
               <deleteIcon name="delete.svg"></deleteIcon>
             </view>
           </view>
@@ -174,7 +184,7 @@
     <submitbutton inline="true" :disabled.sync="submitDisabled" @tap.user="submitReceipt">提交</submitbutton>
   </view>
 
-  <modal :show.sync="showModal">
+  <modal :show.sync="isModalShow">
     <view class="modal-formitem">
       <text class="modal-label">二维码：</text>
       <qrinput border="true" :value.sync="lastQrcode" disabled="true"></qrinput>
@@ -187,7 +197,10 @@
       <text class="modal-label">lot：</text>
       <lotinput placeholder="请输入lot" border="true" :value.sync="lot" @input.user="lotChange"></lotinput>
     </view>
-    <view class="update-button" @tap="updateReceiptQrcode">更新</view>
+    <view class="modal-formitem">
+      <view class="update-button cancel" @tap="closeModal">取消</view>
+      <view class="update-button" @tap="updateReceiptQrcode" style="flex: 1;">更新</view>
+    </view>
   </modal>
 
   <tabbar :tabBar="tabBar" disabled="true" @tabbarChange.user="tabbarChange"></tabbar>
@@ -236,7 +249,7 @@
       tableHeight: wx.getSystemInfoSync().windowHeight - 380,
       submitDisabled: true,
       scanContinue: true,
-      showModal: false,
+      isModalShow: false,
       uploadType: '移库',
       remark: '',
       lastReceiptId: '',
@@ -245,7 +258,8 @@
       upn: '',
       lot: '',
       dataList: [],
-      switchButtons: ['移库', '销量上报'],
+      switchIndex: 0,
+      switchButtons: ['移库', '上报销量'],
       tabBar: {
         color: '#777',
         selectedColor: '#01458e',
@@ -280,12 +294,18 @@
       lastReceiptId (newVal, oldVal) {
         if (!oldVal) {
           this.submitDisabled = false
+          this.$apply()
+        }
+        if(!newVal) {
+          this.submitDisabled = true
+          this.$apply()
         }
       }
     }
 
     methods = {
       switchButton1Tap (index) {
+        this.switchIndex = index
         this.uploadType = this.switchButtons[index]
       },
       remarkChange (e) {
@@ -310,24 +330,45 @@
       },
       delTap (e) {
         let item = e.currentTarget.dataset.wepyParamsA
-        wepy.showModal({
-          title: '提示',
-          content: '确定要删除吗?',
-          confirmText: '确定',
-          cancelText: '取消'
-        }).then(res => {
-          if (res.confirm) {
-            this.deleteQrcode(item.receipt.id, item.product.id)
-          }
-        })
-
+        this.deleteQrcode(item.receiptId, item.productId)
       },
       submitReceipt () {
         this.uploadReceipt()
       },
       updateReceiptQrcode () {
         this.updateReceiptQr()
+      },
+      closeModal() {
+        this.hideModal()
       }
+    }
+
+    showModal () {
+      this.isModalShow = true
+      this.$apply()
+    }
+
+    hideModal() {
+      this.isModalShow = false
+      this.upn = ''
+      this.lot = ''
+      this.$apply()
+    }
+
+    reset () {
+      this.switchIndex = 0
+      this.uploadType = this.switchButtons[this.switchIndex]
+      this.remark = ''
+      this.scanContinue = true
+      this.dataList = []
+      this.isModalShow = false
+      this.lastReceiptId = ''
+      this.lastReceiptNo = ''
+      this.lastQrcode = ''
+      this.upn = ''
+      this.lot = ''
+
+      this.$apply()
     }
 
     launchScaner () {
@@ -338,8 +379,7 @@
             this.lastQrcode = res.result
             this.lastReceiptNo = data.receipt.receiptNo
             if (!data.product || (!data.product.upn && !data.product.lot)) {
-              this.showModal = true
-              this.$apply()
+              this.showModal()
             } else {
               this.addData(data)
               if (this.scanContinue) {
@@ -360,13 +400,6 @@
         })
     }
 
-    resetModal () {
-      this.showModal = false
-      this.upn = ''
-      this.lot = ''
-      this.$apply()
-    }
-
     queryQrCode(data) {
       let params = {
         qrcode: data,
@@ -376,6 +409,20 @@
       }
       return new Promise((resolve, reject) => {
         fetch.get('find/scan', params).then(res => {
+          if (res.success) {
+            resolve(res.data)
+          } else {
+            reject(res.message)
+          }
+        }, errMsg => {
+          reject(errMsg)
+        })
+      })
+    }
+
+    queryReceipt(receiptId) {
+      return new Promise((resolve, reject) => {
+        fetch.get(`find/receipt/${receiptId}`).then(res => {
           if (res.success) {
             resolve(res.data)
           } else {
@@ -400,9 +447,7 @@
         } else {
           showError(res.message)
         }
-      }, errMsg => {
-        showError(errMsg)
-      })
+      }, showError)
     }
 
     updateReceiptQr () {
@@ -413,19 +458,19 @@
         upn: this.upn,
         lot: this.lot
       }
+
       if (!params.upn) return showError('请填写upn')
       if (!params.lot) return showError('请填写lot')
+
       fetch.post('update/receiptqr', params).then(res => {
         if (res.success) {
           this.addData(res.data)
-          this.resetModal()
+          this.hideModal()
           showToast(res.message)
         } else {
           showError(res.message)
         }
-      }, errMsg => {
-        showError(errMsg)
-      })
+      }, showError)
     }
 
     uploadReceipt () {
@@ -436,12 +481,11 @@
       fetch.get('upload/receipt', params).then(res => {
         if (res.success) {
           showToast(res.message)
+          this.reset()
         } else {
           showError(res.message)
         }
-      }, errMsg => {
-        showError(errMsg)
-      })
+      }, showError)
     }
 
     deleteQrcode (receiptId, qrId) {
@@ -456,16 +500,38 @@
         } else {
           showError(res.message)
         }
-      }, errMsg => {
-        showError(errMsg)
-      })
+      }, showError)
     }
 
     addData (data) {
-      data.listIndex = ++this.listIndex
-      data.receipt.statusText = STATUS_MAP[data.receipt.status]
-      //倒序排序
-      this.dataList.unshift(data)
+      let rowData = {}
+      rowData.listIndex = ++this.listIndex
+      rowData.status = data.receipt.status
+      rowData.statusText = STATUS_MAP[rowData.status]
+      rowData.qrcode = data.product.qrcode
+      rowData.productId = data.product.id
+      rowData.receiptId = data.receipt.id
+      /**
+       * 倒序排序
+       */
+      this.dataList.unshift(rowData)
+      this.$apply()
+    }
+
+    addDataByReceipt (data) {
+      this.listIndex = 0
+      this.dataList = []
+      data.receiptQr.forEach(item => {
+        let rowData = {}
+        rowData.listIndex = ++this.listIndex
+        rowData.status = data.status
+        rowData.statusText = STATUS_MAP[rowData.status]
+        rowData.qrcode = item.qrcode
+        rowData.productId = item.id
+        rowData.receiptId = data._id
+        this.dataList.unshift(rowData)
+      })
+
       this.$apply()
     }
 
@@ -473,7 +539,7 @@
       let index
 
       for (let i = 0; i < this.dataList.length; i++) {
-        if (this.dataList[i].product.id === qrId) {
+        if (this.dataList[i].id === qrId) {
           index = i
           break
         }
@@ -485,7 +551,16 @@
       }
     }
 
-    onLoad () {
+    onShow () {
+      const receiptId = wx.getStorageSync('receiptId')
+      if (receiptId) {
+        wx.removeStorageSync('receiptId')
+        this.queryReceipt(receiptId).then(data => {
+          this.lastReceiptId = receiptId
+          this.lastReceiptNo = data.receiptNo
+          this.addDataByReceipt(data)
+        }, showError)
+      }
     }
   }
 </script>

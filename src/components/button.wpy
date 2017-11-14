@@ -44,6 +44,12 @@
         background-color: darken(#d9534f, 10%);
       }
     }
+    &.default {
+      background-color: #e5e5e5;
+      &:active{
+        background-color: darken(#e5e5e5, 10%);
+      }
+    }
     &.disabled {
       background-color: #ccc;
       pointer-events: none;

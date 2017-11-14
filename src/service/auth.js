@@ -1,23 +1,23 @@
 export const session = {
-  set(info){
+  set(info) {
     try {
-      wx.setStorageSync('session', info);
+      wx.setStorageSync('session', info)
     } catch (e) {
-      console.error("storage save fail with key 'session'");
+      console.error("storage save fail with key 'session'")
     }
   },
-  get(){
+  get() {
     try {
-      return wx.getStorageSync('session');
+      return wx.getStorageSync('session')
     } catch (e) {
       return null;
     }
   },
-  clear(){
+  clear() {
     try {
-      wx.removeStorageSync('session');
+      wx.removeStorageSync('session')
     } catch (e) {
-      console.error("storage remove fail with key 'session'");
+      console.error("storage remove fail with key 'session'")
     }
   }
-};
+}

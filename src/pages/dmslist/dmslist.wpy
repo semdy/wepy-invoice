@@ -34,9 +34,26 @@
 
   }
 
-  .table-cell.opt {
-    flex:none;
-    width:80rpx;
+  .table-cell {
+    &.opt {
+      flex: none;
+      width: 60rpx;
+    }
+
+    &.num {
+      flex: none;
+      width: 90rpx;
+    }
+
+    &.type {
+      flex: none;
+      width: 120rpx;
+    }
+
+    &.status {
+      flex: none;
+      width: 120rpx;
+    }
 
     .icon {
       padding: 0;
@@ -57,20 +74,20 @@
     <view class="table-row table-header">
       <view class="table-cell th order">序号</view>
       <view class="table-cell th">单据编号</view>
-      <view class="table-cell th">单据类型</view>
-      <view class="table-cell th">明细数</view>
-      <view class="table-cell th">单据状态</view>
+      <view class="table-cell th type">单据类型</view>
+      <view class="table-cell th num">明细数</view>
+      <view class="table-cell th status">单据状态</view>
       <view class="table-cell th opt"></view>
     </view>
 
     <scroll-view scroll-y="true" class="table-body" lower-threshold="0" style="height:{{tableHeight}}px;" bindscrolltolower="onEndReached">
       <block wx:for="{{dataList}}" wx:key="index">
-        <view class="table-row">
+        <view class="table-row" @tap="rowTap({{item}})">
           <view class="table-cell td order">{{index+1}}</view>
           <view class="table-cell td">{{item.receiptNo}}</view>
-          <view class="table-cell td">{{item.type}}</view>
-          <view class="table-cell td">{{item.num}}</view>
-          <view class="table-cell td">{{item.statusText}}</view>
+          <view class="table-cell td type">{{item.type}}</view>
+          <view class="table-cell td num">{{item.num}}</view>
+          <view class="table-cell td status">{{item.statusText}}</view>
           <view class="table-cell td opt">
             <view @tap="delTap({{item}})" wx:if="{{item.status === 'unSubmit'}}">
               <deleteIcon name="delete.svg"></deleteIcon>
@@ -172,6 +189,11 @@
             this.deleteReceipt(item.id)
           }
         })
+      },
+      rowTap (e) {
+        let item = e.currentTarget.dataset.wepyParamsA
+        wx.setStorageSync('receiptId', item.id)
+        this.$back()
       }
     }
 
@@ -233,6 +255,7 @@
     }
 
     onLoad () {
+      this.handleQuery()
     }
   }
 </script>
