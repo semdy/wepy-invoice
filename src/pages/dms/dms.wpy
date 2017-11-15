@@ -168,7 +168,7 @@
           <view class="table-cell td">{{item.qrcode}}</view>
           <view class="table-cell td">
             <text>{{item.statusText}}</text>
-            <cauthIcon name="cauth.svg" class="cauth-icon" size="small" wx:if="{{item.status === 'unSubmit'}}"></cauthIcon>
+            <cauthIcon name="cauth.svg" class="cauth-icon" size="small" wx:if="{{item.status === 'unSubmit'&&item.type==='manual'}}"></cauthIcon>
           </view>
           <view class="table-cell td last">
             <view @tap="delTap({{item}})" wx:if="{{item.status === 'unSubmit'}}">
@@ -356,6 +356,7 @@
     }
 
     reset () {
+      this.listIndex = 0
       this.switchIndex = 0
       this.uploadType = this.switchButtons[this.switchIndex]
       this.remark = ''
@@ -509,6 +510,7 @@
       rowData.status = data.receipt.status
       rowData.statusText = STATUS_MAP[rowData.status]
       rowData.qrcode = data.product.qrcode
+      rowData.type = data.product.type
       rowData.productId = data.product.id
       rowData.receiptId = data.receipt.id
       /**
@@ -527,6 +529,7 @@
         rowData.status = data.status
         rowData.statusText = STATUS_MAP[rowData.status]
         rowData.qrcode = item.qrcode
+        rowData.type = item.type
         rowData.productId = item.id
         rowData.receiptId = data.id
         this.dataList.unshift(rowData)

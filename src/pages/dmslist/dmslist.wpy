@@ -116,7 +116,7 @@
   import Button from '../../components/button'
   import Icon from '../../components/icon'
   import Tabbar from '../../components/tabbar'
-  import {showError, showToast} from '../../utils/util'
+  import {showError, showToast, confirm} from '../../utils/util'
 
   const STATUS_MAP = {
     'unSubmit': '未提交',
@@ -185,7 +185,9 @@
       },
       delTap (e) {
         let item = e.currentTarget.dataset.wepyParamsA
-        this.deleteReceipt(item.id)
+        confirm('确定要删除吗?').then(() => {
+          this.deleteReceipt(item.id)
+        })
       },
       rowTap (e) {
         let item = e.currentTarget.dataset.wepyParamsA

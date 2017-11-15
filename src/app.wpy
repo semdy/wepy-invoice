@@ -8,6 +8,7 @@
     background-color: #e6edf4;
     font-size: 28rpx;
     font-family: -apple-system-font, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', sans-serif;
+    box-sizing: border-box;
   }
 
   .page {
