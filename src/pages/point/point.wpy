@@ -8,6 +8,10 @@
     .list-item {
       margin-bottom: 0;
       margin-top: -2rpx;
+
+      &:nth-child(3) {
+        margin-top: 10rpx;
+      }
     }
   }
 

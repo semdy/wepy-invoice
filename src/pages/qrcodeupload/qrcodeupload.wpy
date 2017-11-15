@@ -41,8 +41,8 @@
   }
 
   .circle-canvas{
-    width: 92px;
-    height: 92px;
+    width: 112px;
+    height: 112px;
   }
 
   .filter-buttons{
@@ -82,7 +82,7 @@
         </view>
       </view>
       <view class="filter-buttons">
-        <buttongroup :items="buttongroupitems" @tap.user="buttonitemTap"></buttongroup>
+        <buttongroup :items="buttongroupitems" size="normal" @tap.user="buttonitemTap"></buttongroup>
       </view>
     </view>
 
@@ -186,7 +186,7 @@
       }
     }
     onLoad () {
-      this.circle = new PercentageCircle('percentage-pie', {percent: 0, radius: 40, borderWidth: 12})
+      this.circle = new PercentageCircle('percentage-pie', {percent: 0, radius: 50, borderWidth: 12})
     }
   }
 </script>

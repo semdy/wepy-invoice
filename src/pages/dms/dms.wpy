@@ -25,7 +25,7 @@
   }
 
   .dms-switch-button {
-    width: 312rpx;
+    width: 366rpx;
   }
 
   .bill-field{
@@ -528,7 +528,7 @@
         rowData.statusText = STATUS_MAP[rowData.status]
         rowData.qrcode = item.qrcode
         rowData.productId = item.id
-        rowData.receiptId = data._id
+        rowData.receiptId = data.id
         this.dataList.unshift(rowData)
       })
 
@@ -539,7 +539,7 @@
       let index
 
       for (let i = 0; i < this.dataList.length; i++) {
-        if (this.dataList[i].id === qrId) {
+        if (this.dataList[i].productId === qrId) {
           index = i
           break
         }

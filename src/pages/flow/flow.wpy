@@ -102,7 +102,7 @@
 <template>
   <view class="query-form">
     <view class="query-field">
-      <queryinput placeholder="搜索二维码" border="true" icon="find.svg" @iconTap.user="queryTap"></queryinput>
+      <queryinput placeholder="搜索二维码" border="true" icon="find-g.svg" @iconTap.user="queryTap"></queryinput>
       <scanIcon name="scan.svg" className="scan-icon" @tap.user="scanTap"></scanIcon>
     </view>
     <queryButton class="query-button">查询</queryButton>

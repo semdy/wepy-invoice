@@ -10,7 +10,7 @@
     > .input{
       padding: 12rpx 24rpx;
       font-size: 28rpx;
-      color: @gcolor;
+     /* color: @gcolor;*/
       display: block;
       box-sizing: border-box;
       flex: 1;

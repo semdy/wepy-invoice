@@ -84,7 +84,7 @@
     </view>
   </view>
   <view class="detail-actions">
-    <delbutton>删除</delbutton>
+    <delbutton type="danger">删除</delbutton>
     <savebutton>保存</savebutton>
   </view>
 </template>

@@ -6,6 +6,7 @@
   }
 
   .query-form {
+    .flex();
     margin: 20rpx 10rpx 10rpx;
     padding: 16rpx;
     background-color: #fff;
@@ -13,11 +14,13 @@
 
     .query-item {
       .flex-v-center();
-      margin-bottom: 10rpx;
+      &:not(:last-child) {
+        margin-bottom: 10rpx;
+      }
     }
 
     .query-label {
-      width: 200rpx;
+      width: 120rpx;
       text-align: center;
     }
 
@@ -28,11 +31,27 @@
 
   }
 
+  .query-form-main {
+    flex: 1;
+    margin-right: 20rpx;
+  }
+
+  .query-form-aside {
+    .flex();
+    flex-direction: column;
+  }
+
   .qrcode-table {
     margin-left: 10rpx;
     margin-right: 10rpx;
     border-radius: 8rpx;
     overflow: hidden;
+  }
+
+  .table-row {
+    &:active {
+      background-color: #f2f2f2;
+    }
   }
 
   .table-cell.opt {
@@ -52,15 +71,17 @@
 </style>
 <template>
   <view class="query-form">
-    <view class="query-item">
-      <veiw class="query-label">时间</veiw>
-      <datetimepicker value="2017-11-07"></datetimepicker>
+    <view class="query-form-main">
+      <view class="query-item">
+        <veiw class="query-label">时间</veiw>
+        <datetimepicker value="2017-11-07"></datetimepicker>
+      </view>
+      <view class="query-item">
+        <veiw class="query-label">状态</veiw>
+        <statuspicker :items="statusArray" :selectIndex="statusIndex" @pickerchange.user="pickerChange"></statuspicker>
+      </view>
     </view>
-    <view class="query-item">
-      <veiw class="query-label">状态</veiw>
-      <statuspicker :items="statusArray" :selectIndex="statusIndex" @pickerchange.user="pickerChange"></statuspicker>
-    </view>
-    <view class="query-item">
+    <view class="query-form-aside">
       <querybutton style="flex: 1;">查询</querybutton>
     </view>
   </view>
