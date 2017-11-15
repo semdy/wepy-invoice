@@ -37,7 +37,7 @@
   .table-cell {
     &.opt {
       flex: none;
-      width: 60rpx;
+      width: 70rpx;
     }
 
     &.num {
@@ -89,7 +89,7 @@
           <view class="table-cell td num">{{item.num}}</view>
           <view class="table-cell td status">{{item.statusText}}</view>
           <view class="table-cell td opt">
-            <view @tap="delTap({{item}})" wx:if="{{item.status === 'unSubmit'}}">
+            <view @tap.stop="delTap({{item}})" wx:if="{{item.status === 'unSubmit'}}">
               <deleteIcon name="delete.svg"></deleteIcon>
             </view>
           </view>
@@ -179,16 +179,7 @@
       },
       delTap (e) {
         let item = e.currentTarget.dataset.wepyParamsA
-        wepy.showModal({
-          title: '提示',
-          content: '确定要删除吗?',
-          confirmText: '确定',
-          cancelText: '取消'
-        }).then(res => {
-          if (res.confirm) {
-            this.deleteReceipt(item.id)
-          }
-        })
+        this.deleteReceipt(item.id)
       },
       rowTap (e) {
         let item = e.currentTarget.dataset.wepyParamsA
