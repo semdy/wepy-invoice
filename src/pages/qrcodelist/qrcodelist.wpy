@@ -3,11 +3,12 @@
 
   page {
     background-color: #d3e1fe;
+    padding: 10rpx;
   }
 
   .query-form {
     .flex();
-    margin: 20rpx 10rpx 10rpx;
+    margin-bottom: 10rpx;
     padding: 16rpx;
     background-color: #fff;
     border-radius: 8rpx;
@@ -42,8 +43,6 @@
   }
 
   .qrcode-table {
-    margin-left: 10rpx;
-    margin-right: 10rpx;
     border-radius: 8rpx;
     overflow: hidden;
   }
