@@ -31,6 +31,10 @@
     color: #002178;
     text-align: center;
   }
+
+  .input {
+    color: @gcolor;
+  }
 </style>
 <template>
   <view class="container">

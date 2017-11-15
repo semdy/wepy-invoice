@@ -59,7 +59,7 @@
 <template>
   <view class="button-group {{(inline === true || inline === 'true') ? 'inline' : ''}} {{className}}" style="{{style}}">
     <repeat for="{{items}}" key="index" index="index">
-      <view class="button-group-item {{size}} {{activeIndex === index ? 'actived' : ''}}" @tap="tap({{index}})">{{item}}</view>
+      <view class="button-group-item {{size}} {{activeIndex === index ? 'actived' : ''}}" data-index="{{index}}" @tap="tap">{{item}}</view>
     </repeat>
   </view>
 </template>
@@ -100,8 +100,9 @@
     }
 
     methods = {
-      tap (index, $event) {
-        this.activeIndex = index;
+      tap ($event) {
+        let index = $event.currentTarget.dataset.index
+        this.activeIndex = index
         this.$emit('tap', index, $event)
       }
     }

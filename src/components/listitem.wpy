@@ -6,8 +6,8 @@
     padding: 20rpx 40rpx;
     background-color: #fff;
     margin-bottom: 10rpx;
-    border-top:2rpx solid #eee;
-    border-bottom:2rpx solid #eee;
+    border-top:2rpx solid #e5e5e5;
+    border-bottom:2rpx solid #e5e5e5;
 
     .list-item-bd{
       .flex-v-center();
