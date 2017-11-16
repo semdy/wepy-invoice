@@ -554,16 +554,12 @@
       }
     }
 
-    onShow () {
-      const receiptId = wx.getStorageSync('receiptId')
-      if (receiptId) {
-        wx.removeStorageSync('receiptId')
-        this.queryReceipt(receiptId).then(data => {
-          this.lastReceiptId = receiptId
-          this.lastReceiptNo = data.receiptNo
-          this.addDataByReceipt(data)
-        }, showError)
-      }
+    showReceipt (receiptId) {
+      this.queryReceipt(receiptId).then(data => {
+        this.lastReceiptId = receiptId
+        this.lastReceiptNo = data.receiptNo
+        this.addDataByReceipt(data)
+      }, showError)
     }
   }
 </script>

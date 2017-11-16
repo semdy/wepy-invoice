@@ -41,9 +41,14 @@
   }
 
   .table-cell {
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space:normal;
+    padding-left: 4rpx;
+    padding-right: 4rpx;
     &.opt {
       flex: none;
-      width: 70rpx;
+      width: 60rpx;
     }
 
     &.num {
@@ -92,7 +97,7 @@
           <view class="table-cell td order">{{index+1}}</view>
           <view class="table-cell td">{{item.receiptNo}}</view>
           <view class="table-cell td type">{{item.type}}</view>
-          <view class="table-cell td num">{{item.num}}</view>
+          <view class="table-cell td num">{{item.count}}</view>
           <view class="table-cell td status">{{item.statusText}}</view>
           <view class="table-cell td opt">
             <view @tap.stop="delTap({{item}})" wx:if="{{item.status === 'unSubmit'}}">
@@ -191,7 +196,7 @@
       },
       rowTap (e) {
         let item = e.currentTarget.dataset.wepyParamsA
-        wx.setStorageSync('receiptId', item.id)
+        this.getPrevPage().showReceipt(item.id)
         this.$back()
       }
     }
@@ -249,12 +254,18 @@
       })
     }
 
+    getPrevPage () {
+      const pages = this.getCurrentPages()
+      return pages[pages.length - 2]
+    }
+
     onEndReached () {
       this.appendQuery()
     }
 
     onLoad () {
       this.handleQuery()
+      this.getPrevPage().reset()
     }
   }
 </script>
