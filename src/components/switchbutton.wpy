@@ -1,14 +1,36 @@
 <style lang="less">
   @import "../less/mixin";
 
-  .switch-button-wrap{
+  .switch-button-wrap {
+    position: relative;
     display: inline-block;
+    background-color: #e5e5e7;
+    border-radius: 42rpx;
+  }
+
+  .switch-indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #01458e;
+    transition: left .4s ease-out;
+    will-change: left;
+
+    &.large {
+      border-radius: @large/2;
+    }
+    &.normal {
+      border-radius: @normal/2;
+    }
+    &.small {
+      border-radius: @small/2;
+    }
   }
 
   .switch-button-body{
+    position: relative;
     .flex();
-    background-color: #e5e5e7;
-    border-radius: 42rpx;
   }
 
   .switch-button {
@@ -19,6 +41,7 @@
     color: #88a8c1;
     font-size: 12px;
     white-space: nowrap;
+    transition: color 0s .2s;
 
     &.large {
       height: @large;
@@ -35,8 +58,9 @@
     }
 
     &.selected{
-      background-color: #01458e;
+      //background-color: #01458e;
       color: #fff;
+      transition: color 0s .4s;
     }
 
   }
@@ -44,6 +68,7 @@
 
 <template>
   <view class="switch-button-wrap {{className}}" style="{{style}}" @tap="tap" wx:if="{{buttons.length>0}}">
+    <view class="switch-indicator {{size}}" style="width:{{indWidth}};left:{{x}};"></view>
     <view class="switch-button-body">
       <repeat for="{{buttons}}">
         <view class="switch-button {{size}} {{switchIndex == index ? 'selected' : ''}}">{{item}}</view>
@@ -88,6 +113,15 @@
 
     data = {
       switchIndex: this.switchIndex
+    }
+
+    computed = {
+      indWidth () {
+        return (1 / this.buttons.length) * 100 + '%'
+      },
+      x () {
+        return (1 / this.buttons.length) * 100 * this.switchIndex + '%'
+      }
     }
 
     methods = {

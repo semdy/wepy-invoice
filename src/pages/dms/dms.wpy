@@ -136,7 +136,7 @@
   <view class="top-actions">
     <text class="bill-number">单据号：{{lastReceiptNo}}</text>
     <view class="switch">
-      <text class="switch-hint">连扫</text>
+      <text class="switch-hint">{{scanContinue ? '连扫' : '单扫'}}</text>
       <switch color="#01458e" class="switcher" checked="{{scanContinue}}" @change="switchChange"/>
     </view>
   </view>
@@ -249,7 +249,7 @@
     listIndex = 0
 
     data = {
-      tableHeight: wx.getSystemInfoSync().windowHeight - 380,
+      tableHeight: wx.getSystemInfoSync().windowHeight - 400,
       submitDisabled: true,
       scanContinue: true,
       isModalShow: false,
