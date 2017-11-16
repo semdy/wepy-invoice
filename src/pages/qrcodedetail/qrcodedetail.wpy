@@ -7,7 +7,7 @@
 
   .imgView-container {
     .flex-center();
-    height: 280rpx;
+    height: 350rpx;
     margin: 20rpx 10rpx;
     border-radius: 16rpx;
     overflow: hidden;
@@ -30,7 +30,7 @@
   .detail-item {
     .flex-v-center();
     justify-content: space-between;
-    padding: 30rpx;
+    padding: 16rpx 30rpx;
     border-bottom: 2rpx solid #eee;
   }
 
@@ -46,6 +46,21 @@
     .button {
       width: 20%;
     }
+  }
+
+  .detail-value {
+    .form-item {
+      margin-bottom: 0;
+    }
+    input {
+      text-align: right;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+
+  .repai {
+    font-size: 36rpx;
   }
 
 </style>
@@ -64,23 +79,31 @@
         <text>状态：</text>
         <text class="r">未通过</text>
       </view>
-      <text class="detail-value r">重拍</text>
+      <text class="detail-value r repai">重拍</text>
     </view>
     <view class="detail-item">
       <text class="detail-label">状态说明</text>
-      <text class="detail-value">单据审核后未通过</text>
+      <view class="detail-value">
+        <statusinput value="单据审核后未通过" disabled="true"></statusinput>
+      </view>
     </view>
     <view class="detail-item">
       <text class="detail-label">二维码</text>
-      <text class="detail-value">123485454267825635</text>
+      <view class="detail-value">
+        <qrinput value="123485454267825635"></qrinput>
+      </view>
     </view>
     <view class="detail-item">
       <text class="detail-label">型号</text>
-      <text class="detail-value">H748034806644</text>
+      <view class="detail-value">
+        <typeinput value="H748034806644"></typeinput>
+      </view>
     </view>
     <view class="detail-item">
       <text class="detail-label">批号</text>
-      <text class="detail-value">199884345</text>
+      <view class="detail-value">
+        <numinput value="199884345"></numinput>
+      </view>
     </view>
   </view>
   <view class="detail-actions">
@@ -93,6 +116,7 @@
   import wepy from 'wepy'
   import fetch from '../../service/fetch'
   import Button from '../../components/button'
+  import Formitem from '../../components/formitem'
 
   import {showError, showToast} from '../../utils/util'
 
@@ -102,7 +126,11 @@
     }
     components = {
       delbutton: Button,
-      savebutton: Button
+      savebutton: Button,
+      statusinput: Formitem,
+      qrinput: Formitem,
+      typeinput: Formitem,
+      numinput: Formitem
     }
     data = {
       imgHeight: wx.getSystemInfoSync().windowWidth,

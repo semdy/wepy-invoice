@@ -63,7 +63,7 @@
 
     &.status {
       flex: none;
-      width: 120rpx;
+      width: 100rpx;
     }
 
     .icon {
@@ -85,9 +85,9 @@
     <view class="table-row table-header">
       <view class="table-cell th order">序号</view>
       <view class="table-cell th">单据编号</view>
-      <view class="table-cell th type">单据类型</view>
+      <view class="table-cell th type">类型</view>
       <view class="table-cell th num">明细数</view>
-      <view class="table-cell th status">单据状态</view>
+      <view class="table-cell th status">状态</view>
       <view class="table-cell th opt"></view>
     </view>
 
@@ -130,7 +130,7 @@
 
   export default class Index extends wepy.page {
     config = {
-      navigationBarTitleText: '单据列表'
+      navigationBarTitleText: '二维码上传DMS'
     }
 
     components = {

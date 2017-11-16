@@ -1,7 +1,7 @@
 <style lang="less">
   .icon{
     display: inline-block;
-    padding: 16rpx;
+    padding: 10rpx;
 
     .icon-img{
       &.x-large {

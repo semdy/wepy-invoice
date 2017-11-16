@@ -2,7 +2,7 @@
   @import "../../less/mixin";
 
   page {
-    background-color: #d3e1fe;
+    //background-color: #d3e1fe;
     padding: 10rpx;
   }
 
@@ -73,7 +73,7 @@
     <view class="query-form-main">
       <view class="query-item">
         <veiw class="query-label">时间</veiw>
-        <datetimepicker value="2017-11-07"></datetimepicker>
+        <datetimepicker value="2017-11" fields="month"></datetimepicker>
       </view>
       <view class="query-item">
         <veiw class="query-label">状态</veiw>
@@ -118,30 +118,6 @@
     </view>
     <view class="table-row" @tap="tablerowTap">
       <view class="table-cell td order">4</view>
-      <view class="table-cell td">2017103101095358367</view>
-      <view class="table-cell td status">未上传</view>
-      <view class="table-cell td opt">
-        <deleteIcon name="delete.svg"></deleteIcon>
-      </view>
-    </view>
-    <view class="table-row" @tap="tablerowTap">
-      <view class="table-cell td order">5</view>
-      <view class="table-cell td">2017103101095358367</view>
-      <view class="table-cell td status">未上传</view>
-      <view class="table-cell td opt">
-        <deleteIcon name="delete.svg"></deleteIcon>
-      </view>
-    </view>
-    <view class="table-row" @tap="tablerowTap">
-      <view class="table-cell td order">6</view>
-      <view class="table-cell td">2017103101095358367</view>
-      <view class="table-cell td status">未上传</view>
-      <view class="table-cell td opt">
-        <deleteIcon name="delete.svg"></deleteIcon>
-      </view>
-    </view>
-    <view class="table-row" @tap="tablerowTap">
-      <view class="table-cell td order">7</view>
       <view class="table-cell td">2017103101095358367</view>
       <view class="table-cell td status">未上传</view>
       <view class="table-cell td opt">

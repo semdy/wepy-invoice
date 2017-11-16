@@ -3,7 +3,7 @@
 
   .index-main {
     position: relative;
-    padding: 24rpx 10rpx;
+    padding: 10rpx;
     flex: 1;
     overflow: hidden;
   }
@@ -66,7 +66,7 @@
   }
 
   .camera-btn {
-    margin-top: 120rpx;
+    margin-top: 200rpx;
     margin-left: 60rpx;
     margin-right: 60rpx;
   }
@@ -95,7 +95,7 @@
       </repeat>
     </view>
 
-    <camerabutton icon="camera.svg" size="large" className="camera-btn">拍照</camerabutton>
+    <camerabutton icon="camera.svg" size="large" className="camera-btn">拍 照</camerabutton>
 
   </view>
   <tabbar :tabBar="tabBar" disabled="true" @tabbarChange.user="tabbarChange"></tabbar>

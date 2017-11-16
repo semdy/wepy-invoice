@@ -66,6 +66,9 @@
 
   .dms-table {
     .table-cell {
+      &.order {
+        width: 200rpx;
+      }
       &.last {
         flex: none;
         width: 80rpx;
@@ -151,7 +154,7 @@
   </view>
 
   <view class="scan-fields">
-    <scanbutton icon="qr-code.svg" @tap.user="onScanTap">扫码</scanbutton>
+    <scanbutton icon="qr-code.svg" size="large" @tap.user="onScanTap">扫 码</scanbutton>
   </view>
 
   <view class="table dms-table">
@@ -168,7 +171,7 @@
           <view class="table-cell td">{{item.qrcode}}</view>
           <view class="table-cell td">
             <text>{{item.statusText}}</text>
-            <cauthIcon name="cauth.svg" class="cauth-icon" size="small" wx:if="{{item.status === 'unSubmit'&&item.type==='manual'}}"></cauthIcon>
+            <!--<cauthIcon name="cauth.svg" class="cauth-icon" size="small" wx:if="{{item.status === 'unSubmit'&&item.type==='manual'}}"></cauthIcon>-->
           </view>
           <view class="table-cell td last">
             <view @tap="delTap({{item}})" wx:if="{{item.status === 'unSubmit'}}">
@@ -181,7 +184,7 @@
   </view>
 
   <view class="page-actions">
-    <submitbutton inline="true" :disabled.sync="submitDisabled" @tap.user="submitReceipt">提交</submitbutton>
+    <submitbutton inline="true" :disabled.sync="submitDisabled" @tap.user="submitReceipt">提 交</submitbutton>
   </view>
 
   <modal :show.sync="isModalShow">

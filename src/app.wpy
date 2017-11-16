@@ -84,8 +84,12 @@
     background-color: #fff;
   }
   .table-header{
-    background-color: #f2f2f2;
+    background-color: #e5e5e5;
     border-bottom: 0;
+
+    .table-cell {
+      font-size: 26rpx;
+    }
   }
   .table-cell{
     flex: 1;

@@ -5,7 +5,7 @@
     .flex-center();
     padding-left: 40rpx;
     padding-right: 40rpx;
-    border-radius: 8rpx;
+    border-radius: 20rpx;
     flex-direction: row;
     color: #fff;
     border: 2rpx solid transparent;
