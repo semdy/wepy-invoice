@@ -130,6 +130,7 @@
         'pages/dms/dms',
         'pages/dmslist/dmslist',
         'pages/flow/flow',
+        'pages/flowlist/flowlist',
         'pages/my/my',
         'pages/point/point',
         'pages/exchange/exchange',

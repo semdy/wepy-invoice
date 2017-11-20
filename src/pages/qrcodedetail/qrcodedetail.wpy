@@ -7,8 +7,8 @@
 
   .imgView-container {
     .flex-center();
-    height: 350rpx;
-    margin: 20rpx 10rpx;
+    height: 420rpx;
+    margin: 10rpx;
     border-radius: 16rpx;
     overflow: hidden;
 

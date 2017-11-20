@@ -16,7 +16,7 @@
   }
 
   .list-item:nth-child(3){
-    background-color: #e5e5e5; //#f8f8f8;
+    background-color: #f8f8f8; //#e5e5e5;
   }
 
   .list-item-text{

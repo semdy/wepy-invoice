@@ -5,32 +5,17 @@
     padding: 30rpx;
     margin: 10rpx;
     border-radius: 8rpx;
-    .flex();
+    .flex-v-center();
     background-color: #fff;
 
-    .query-form {
-      flex: 1;
+    picker {
       margin-right: 20rpx;
     }
   }
 
-  .query-form {
-    position: relative;
-    .flex-v-center();
-
-    .form-item {
-      margin-bottom: 0;
-      flex: 1;
-    }
-
-    .clear-icon {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 20;
-    }
-
+  .query-label {
+    width: 120rpx;
+    text-align: center;
   }
 
   .table-row {
@@ -47,22 +32,12 @@
     padding-right: 4rpx;
     &.opt {
       flex: none;
-      width: 60rpx;
+      width: 80rpx;
     }
 
-    &.num {
+    &.date {
       flex: none;
-      width: 90rpx;
-    }
-
-    &.type {
-      flex: none;
-      width: 120rpx;
-    }
-
-    &.status {
-      flex: none;
-      width: 100rpx;
+      width: 200rpx;
     }
 
     .icon {
@@ -73,38 +48,62 @@
 </style>
 <template>
   <view class="query-form-wrap">
-    <view class="query-form">
-      <queryinput placeholder="搜索二维码" border="true" icon="find-g.svg" :value.sync="receiptNo" @input.user="queryChange"></queryinput>
-      <clearIcon name="clear.svg" className="clear-icon" @tap.user="clearTap"></clearIcon>
-    </view>
+    <veiw class="query-label">时间</veiw>
+    <datetimepicker value="2017-11-08"></datetimepicker>
     <querybutton @tap.user="queryTap">查询</querybutton>
   </view>
 
   <view class="table">
     <view class="table-row table-header">
       <view class="table-cell th order">序号</view>
-      <view class="table-cell th">单据编号</view>
-      <view class="table-cell th type">类型</view>
-      <view class="table-cell th num">明细数</view>
-      <view class="table-cell th status">状态</view>
+      <view class="table-cell th">二维码</view>
+      <view class="table-cell th date">日期</view>
       <view class="table-cell th opt"></view>
     </view>
 
     <scroll-view scroll-y="true" class="table-body" lower-threshold="0" style="height:{{tableHeight}}px;" bindscrolltolower="onEndReached">
-      <block wx:for="{{dataList}}" wx:key="index">
+      <!--<block wx:for="{{dataList}}" wx:key="index">-->
         <view class="table-row" @tap="rowTap({{item}})">
-          <view class="table-cell td order">{{item.listIndex}}</view>
-          <view class="table-cell td">{{item.receiptNo}}</view>
-          <view class="table-cell td type">{{item.type}}</view>
-          <view class="table-cell td num">{{item.count}}</view>
-          <view class="table-cell td status">{{item.statusText}}</view>
+          <view class="table-cell td order">4</view>
+          <view class="table-cell td">12358509943457745</view>
+          <view class="table-cell td date">2017-10-12</view>
           <view class="table-cell td opt">
-            <view @tap.stop="delTap({{item}})" wx:if="{{item.status === 'unSubmit'}}">
+            <view @tap.stop="delTap({{item}})">
               <deleteIcon name="delete.svg"></deleteIcon>
             </view>
           </view>
         </view>
-      </block>
+      <view class="table-row" @tap="rowTap({{item}})">
+        <view class="table-cell td order">3</view>
+        <view class="table-cell td">12358509943457745</view>
+        <view class="table-cell td date">2017-10-12</view>
+        <view class="table-cell td opt">
+          <view @tap.stop="delTap({{item}})">
+            <deleteIcon name="delete.svg"></deleteIcon>
+          </view>
+        </view>
+      </view>
+      <view class="table-row" @tap="rowTap({{item}})">
+        <view class="table-cell td order">2</view>
+        <view class="table-cell td">12358509943457745</view>
+        <view class="table-cell td date">2017-10-12</view>
+        <view class="table-cell td opt">
+          <view @tap.stop="delTap({{item}})">
+            <deleteIcon name="delete.svg"></deleteIcon>
+          </view>
+        </view>
+      </view>
+      <view class="table-row" @tap="rowTap({{item}})">
+        <view class="table-cell td order">1</view>
+        <view class="table-cell td">12358509943457745</view>
+        <view class="table-cell td date">2017-10-12</view>
+        <view class="table-cell td opt">
+          <view @tap.stop="delTap({{item}})">
+            <deleteIcon name="delete.svg"></deleteIcon>
+          </view>
+        </view>
+      </view>
+     <!-- </block>-->
     </scroll-view>
 
   </view>
@@ -116,27 +115,21 @@
 <script>
   import wepy from 'wepy'
   import fetch from '../../service/fetch'
-  import Formitem from '../../components/formitem'
   import Button from '../../components/button'
   import Icon from '../../components/icon'
+  import Datetimepicker from '../../components/datetimepicker'
   import Tabbar from '../../components/tabbar'
   import {showError, showToast, confirm} from '../../utils/util'
 
-  const STATUS_MAP = {
-    'unSubmit': '未提交',
-    'submit' : '已提交'
-  }
-
   export default class Index extends wepy.page {
     config = {
-      navigationBarTitleText: '二维码上传DMS'
+      navigationBarTitleText: '二维码流向查询'
     }
 
     components = {
-      queryinput: Formitem,
-      clearIcon: Icon,
       deleteIcon: Icon,
       tabbar: Tabbar,
+      datetimepicker: Datetimepicker,
       querybutton: Button
     }
 
@@ -147,7 +140,6 @@
     data = {
       dataList: [],
       total: 0,
-      receiptNo: '',
       tableHeight: wx.getSystemInfoSync().windowHeight - 180,
       tabBar: {
         color: '#777',
@@ -156,9 +148,9 @@
         backgroundColor: '#fff',
         list: [
           {
-            text: '扫码',
-            icon: 'scan-new.svg',
-            selectedIcon: 'scan-new-selected.svg'
+            text: '查询',
+            icon: 'query.svg',
+            selectedIcon: 'query-selected.svg'
           },
           {
             text: '列表',
@@ -174,15 +166,6 @@
     }
 
     methods = {
-      queryTap (e) {
-        this.handleQuery()
-      },
-      clearTap (e) {
-        this.receiptNo = ''
-      },
-      queryChange (e) {
-        this.receiptNo = e.detail.value
-      },
       tabbarChange (index) {
         if (index === 0) {
           this.$back()
@@ -256,18 +239,12 @@
       })
     }
 
-    getPrevPage () {
-      const pages = this.getCurrentPages()
-      return pages[pages.length - 2]
-    }
-
     onEndReached () {
       this.appendQuery()
     }
 
     onLoad () {
       this.handleQuery()
-      this.getPrevPage().reset()
     }
   }
 </script>

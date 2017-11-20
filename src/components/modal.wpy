@@ -20,12 +20,34 @@
     }
   }
 
-  .modal-content {
+  .modal-dialog {
     width: 80%;
     max-width: 640rpx;
+
+    &.hasTitle {
+      .modal-content {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+      }
+    }
+  }
+
+  .modal-header {
+    .flex-v-center();
+    justify-content: space-between;
+    background-color: #457199;
+    color: #fff;
+    padding-left: 30rpx;
+    padding-right: 20rpx;
+    height: 70rpx;
+    border-top-left-radius: 16rpx;
+    border-top-right-radius: 16rpx;
+  }
+
+  .modal-content {
     background-color: #fff;
-    border-radius: 16rpx;
     padding: 40rpx;
+    border-radius: 16rpx;
     box-sizing: border-box;
   }
 
@@ -33,15 +55,22 @@
 
 <template>
   <view class="modal {{className}} {{show ? 'show' : 'hide'}}" style="{{style}}">
-    <view class="modal-content">
-      <slot name="title"></slot>
-      <slot></slot>
+    <view class="modal-dialog {{title !== '' ? 'hasTitle' : ''}}">
+      <view class="modal-header" wx:if="{{title !== ''}}">
+        <text>{{title}}</text>
+        <closeIcon name="close.svg" @tap.user="closeModal"></closeIcon>
+      </view>
+      <view class="modal-content">
+        <slot name="title"></slot>
+        <slot></slot>
+      </view>
     </view>
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
+  import Icon from './icon'
 
   export default class Button extends wepy.component {
     props = {
@@ -56,17 +85,35 @@
       show: {
         type: Boolean,
         default: false
+      },
+      title: {
+        type: String,
+        default: ''
       }
     }
 
     components = {
+      closeIcon: Icon
     }
 
     data = {
 
     }
 
+    open (e) {
+      this.show = true
+      this.$emit('modalOpen', e)
+    }
+
+    close (e) {
+      this.show = false
+      this.$emit('modalClose', e)
+    }
+
     methods = {
+      closeModal (e) {
+        this.close(e)
+      }
     }
   }
 </script>

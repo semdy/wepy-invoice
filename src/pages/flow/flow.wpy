@@ -111,7 +111,9 @@
   <view class="query-history" wx:if="{{false}}">
     <view class="history-heading">
       <view>历史记录</view>
-      <view>清除</view>
+      <view>
+        <clearIcon name="trash.svg"></clearIcon>
+      </view>
     </view>
     <view class="history-list">
       <view class="history-item">211345678791234</view>
@@ -137,21 +139,31 @@
       <view class="qr-info">18788879</view>
     </view>
     <view class="qrinfo-item">
+      <view class="qr-label">包装单位：</view>
+      <view class="qr-info">盒</view>
+    </view>
+    <view class="qrinfo-item">
       <view class="qr-label">有效日期：</view>
       <view class="qr-info">2020年10月31日</view>
     </view>
+    <view class="qrinfo-item">
+      <view class="qr-label">产品名称：</view>
+      <view class="qr-info">一次性息肉勒除器</view>
+    </view>
   </view>
 
-  <view class="flow-container">
+  <scroll-view scroll-y="true" class="flow-container" style="height:{{flowHeight}}px;">
     <repeat for="{{flows}}">
       <flowitem :icon="item.icon" @flowtap.user="flowTap">
         <text slot="time">{{item.time}}</text>
         <text>{{item.text}}</text>
       </flowitem>
     </repeat>
-  </view>
+  </scroll-view>
 
   <view class="tech-supply">本数据由<text class="h">波士顿科学</text>提供</view>
+
+  <tabbar :tabBar="tabBar" disabled="true" tabIndex="0" @tabbarChange.user="tabbarChange"></tabbar>
 
 </template>
 
@@ -162,6 +174,7 @@
   import Icon from '../../components/icon'
   import Button from '../../components/button'
   import Flowitem from '../../components/flowitem'
+  import Tabbar from '../../components/tabbar'
   import {showError, showToast} from '../../utils/util'
 
   export default class Index extends wepy.page {
@@ -172,11 +185,14 @@
     components = {
       queryinput: Formitem,
       scanIcon: Icon,
+      clearIcon: Icon,
       queryButton: Button,
-      flowitem: Flowitem
+      flowitem: Flowitem,
+      tabbar: Tabbar
     }
 
     data = {
+      flowHeight: wx.getSystemInfoSync().windowHeight - 300,
       flows: [
         {
           icon: 'truck.svg',
@@ -194,11 +210,39 @@
           text: '上海方承仓库-上海佑诚有限公司主仓库'
         },
         {
-          icon: 'report.svg',
+          icon: 'transport.png',
+          time: '15:12 2017.10.11',
+          text: '上海方承仓库-上海佑诚有限公司主仓库'
+        },
+        {
+          icon: 'transport.png',
+          time: '15:12 2017.10.11',
+          text: '上海方承仓库-上海佑诚有限公司主仓库'
+        },
+        {
+          icon: 'hospital.svg',
           time: '15:12 2017.10.11',
           text: '上报销量'
         }
-      ]
+      ],
+      tabBar: {
+        color: '#777',
+        selectedColor: '#01458e',
+        borderStyle: '#ddd',
+        backgroundColor: '#fff',
+        list: [
+          {
+            text: '查询',
+            icon: 'query.svg',
+            selectedIcon: 'query-selected.svg'
+          },
+          {
+            text: '列表',
+            icon: 'list.svg',
+            selectedIcon: 'list-selected.png'
+          }
+        ]
+      }
     }
 
     computed = {
@@ -214,7 +258,12 @@
       },
       flowTap (index) {
         console.log(index)
-      }
+      },
+      tabbarChange (index) {
+        if (index === 1) {
+          this.$navigate('/pages/flowlist/flowlist')
+        }
+      },
     }
 
     onLoad () {

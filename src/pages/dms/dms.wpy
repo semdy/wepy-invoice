@@ -92,8 +92,7 @@
   }
 
   .modal-formitem {
-    .flex-v-center();
-    margin-bottom: 16rpx;
+    .flex-h-center();
 
     .modal-label {
       width: 120rpx;
@@ -104,6 +103,19 @@
       flex: 1;
       margin-bottom: 0;
     }
+  }
+
+  .modal-confirm {
+    view {
+      text-align: center;
+      margin-bottom: 16rpx;
+      font-size: 32rpx;
+    }
+  }
+
+  .modal-footer {
+    .flex-h-center();
+    padding-top: 30rpx;
   }
 
   .update-button {
@@ -123,7 +135,7 @@
     &.cancel {
       color: #666;
       background-color: #e0e0e0;
-      margin-right: 20rpx;
+      margin-right: 40rpx;
       &:active{
         background-color: darken(#e5e5e5, 10%);
       }
@@ -154,7 +166,7 @@
   </view>
 
   <view class="scan-fields">
-    <scanbutton icon="qr-code.svg" size="large" @tap.user="onScanTap">扫 码</scanbutton>
+    <scanbutton icon="qr-code.svg" @tap.user="onScanTap">扫 码</scanbutton>
   </view>
 
   <view class="table dms-table">
@@ -187,7 +199,7 @@
     <submitbutton inline="true" :disabled.sync="submitDisabled" @tap.user="submitReceipt">提 交</submitbutton>
   </view>
 
-  <modal :show.sync="isModalShow">
+  <!--<modal :show.sync="isModalShow">
     <view class="modal-formitem">
       <text class="modal-label">二维码：</text>
       <qrinput border="true" :value.sync="lastQrcode" disabled="true"></qrinput>
@@ -203,6 +215,18 @@
     <view class="modal-formitem">
       <view class="update-button cancel" @tap="closeModal">取消</view>
       <view class="update-button" @tap="updateReceiptQrcode" style="flex: 1;">更新</view>
+    </view>
+  </modal>-->
+
+  <modal :show.sync="isModalShow" title="提示" @modalClose.user="closeModal">
+    <view class="modal-confirm">
+      <view>信息完整的<text class="h">{{dataList.length-failedCount}}</text>条</view>
+      <view>缺少信息的<text class="h">{{failedCount}}</text>条</view>
+      <view>确认提交吗?</view>
+    </view>
+    <view class="modal-footer">
+      <view class="update-button cancel" @tap="closeModal">取消</view>
+      <view class="update-button" @tap="doUploadReceipt">确定</view>
     </view>
   </modal>
 
@@ -249,10 +273,11 @@
     listIndex = 0
 
     data = {
-      tableHeight: wx.getSystemInfoSync().windowHeight - 400,
+      tableHeight: wx.getSystemInfoSync().windowHeight - 380,
       submitDisabled: true,
       scanContinue: true,
       isModalShow: false,
+      failedCount: 0,
       uploadType: '移库',
       remark: '',
       lastReceiptId: '',
@@ -270,9 +295,9 @@
         backgroundColor: '#fff',
         list: [
           {
-            text: '新建',
-            icon: 'create.svg',
-            selectedIcon: 'create-selected.png'
+            text: '扫码',
+            icon: 'scan-new.svg',
+            selectedIcon: 'scan-new-selected.svg'
           },
           {
             text: '列表',
@@ -288,12 +313,6 @@
     }
 
     watch = {
-      uploadType () {
-        this.updateReceipt()
-      },
-      remark () {
-        this.updateReceipt()
-      },
       lastReceiptId (newVal, oldVal) {
         if (!oldVal) {
           this.submitDisabled = false
@@ -310,9 +329,14 @@
       switchButton1Tap (index) {
         this.switchIndex = index
         this.uploadType = this.switchButtons[index]
+        this.updateReceipt()
       },
       remarkChange (e) {
-        this.remark = e.detail.value
+        let val = e.detail.value
+        if (this.remark !== val) {
+          this.remark = e.detail.value
+          this.updateReceipt()
+        }
       },
       upnChange (e) {
         this.upn = e.detail.value
@@ -336,6 +360,15 @@
         this.deleteQrcode(item.receiptId, item.productId)
       },
       submitReceipt () {
+        const failed = this.dataList.filter(item => !item.upn && !item.lot)
+        this.failedCount = failed.length
+        if(this.failedCount > 0) {
+          this.showModal()
+        } else {
+          this.uploadReceipt()
+        }
+      },
+      doUploadReceipt () {
         this.uploadReceipt()
       },
       updateReceiptQrcode () {
@@ -361,6 +394,7 @@
     reset () {
       this.listIndex = 0
       this.switchIndex = 0
+      this.failedCount = 0
       this.uploadType = this.switchButtons[this.switchIndex]
       this.remark = ''
       this.scanContinue = true
@@ -382,14 +416,17 @@
             this.lastReceiptId = data.receipt.id
             this.lastQrcode = res.result
             this.lastReceiptNo = data.receipt.receiptNo
-            if (!data.product || (!data.product.upn && !data.product.lot)) {
+            /*if (!data.product || (!data.product.upn && !data.product.lot)) {
               this.showModal()
-            } else {
-              this.addData(data)
-              if (this.scanContinue) {
-                this.launchScaner()
-              }
+            } else {*/
+            if (!data.product) {
+              data.product = {}
             }
+            this.addData(data)
+            if (this.scanContinue) {
+              this.launchScaner()
+            }
+            //}
           }).catch(msg => {
             showError(msg)
             if (this.scanContinue) {
@@ -514,6 +551,8 @@
       rowData.statusText = STATUS_MAP[rowData.status]
       rowData.qrcode = data.product.qrcode
       rowData.type = data.product.type
+      rowData.upn = data.product.upn
+      rowData.lot = data.product.lot
       rowData.productId = data.product.id
       rowData.receiptId = data.receipt.id
       /**
@@ -533,6 +572,8 @@
         rowData.statusText = STATUS_MAP[rowData.status]
         rowData.qrcode = item.qrcode
         rowData.type = item.type
+        rowData.upn = item.upn
+        rowData.lot = item.lot
         rowData.productId = item.id
         rowData.receiptId = data.id
         this.dataList.unshift(rowData)
@@ -561,6 +602,9 @@
       this.queryReceipt(receiptId).then(data => {
         this.lastReceiptId = receiptId
         this.lastReceiptNo = data.receiptNo
+        this.switchIndex = this.switchButtons.indexOf(data.type)
+        this.uploadType = data.type
+        this.remark = data.remark === '备注为空' ? '' : data.remark
         this.addDataByReceipt(data)
       }, showError)
     }

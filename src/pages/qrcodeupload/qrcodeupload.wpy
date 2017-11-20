@@ -41,8 +41,8 @@
   }
 
   .circle-canvas{
-    width: 112px;
-    height: 112px;
+    width: 132px;
+    height: 132px;
   }
 
   .filter-buttons{
@@ -131,19 +131,19 @@
         {
           icon: 'lookover.svg',
           iconSize: 'small',
-          text: '等审核',
+          text: '待审核',
           subtext: '0',
           hasArrow: true
         },
         {
-          icon: 'refuse.svg',
+          icon: 'refuse.png',
           iconSize: 'small',
           text: '审核未通过',
           subtext: '0',
           hasArrow: true
         },
         {
-          icon: 'unkown.svg',
+          icon: 'unkown.png',
           iconSize: 'small',
           text: '无法识别',
           subtext: '0',
@@ -186,7 +186,7 @@
       }
     }
     onLoad () {
-      this.circle = new PercentageCircle('percentage-pie', {percent: 0, radius: 50, borderWidth: 12})
+      this.circle = new PercentageCircle('percentage-pie', {percent: 0, radius: 60, borderWidth: 12})
     }
   }
 </script>
