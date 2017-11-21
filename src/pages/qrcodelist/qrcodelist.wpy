@@ -73,15 +73,15 @@
     <view class="query-form-main">
       <view class="query-item">
         <veiw class="query-label">时间</veiw>
-        <datetimepicker value="2017-11" fields="month"></datetimepicker>
+        <datetimepicker :value.sync="date" fields="month" @datetimechange.user="datetimechange"></datetimepicker>
       </view>
       <view class="query-item">
         <veiw class="query-label">状态</veiw>
-        <statuspicker :items="statusArray" :selectIndex="statusIndex" @pickerchange.user="pickerChange"></statuspicker>
+        <statuspicker :items="statusArray" :selectIndex.sync="statusIndex" @pickerchange.user="pickerChange"></statuspicker>
       </view>
     </view>
     <view class="query-form-aside">
-      <querybutton style="flex: 1;">查询</querybutton>
+      <querybutton style="flex: 1;" @tap.user="queryTap">查询</querybutton>
     </view>
   </view>
 
@@ -92,38 +92,20 @@
       <view class="table-cell th status">状态</view>
       <view class="table-cell th opt"></view>
     </view>
-    <view class="table-row" @tap="tablerowTap">
-      <view class="table-cell td order">1</view>
-      <view class="table-cell td">2017103101095358367</view>
-      <view class="table-cell td status">未上传</view>
-      <view class="table-cell td opt">
-        <deleteIcon name="delete.svg"></deleteIcon>
-      </view>
-    </view>
-    <view class="table-row" @tap="tablerowTap">
-      <view class="table-cell td order">2</view>
-      <view class="table-cell td">2017103101095358367</view>
-      <view class="table-cell td status">未上传</view>
-      <view class="table-cell td opt">
-        <deleteIcon name="delete.svg"></deleteIcon>
-      </view>
-    </view>
-    <view class="table-row" @tap="tablerowTap">
-      <view class="table-cell td order">3</view>
-      <view class="table-cell td">2017103101095358367</view>
-      <view class="table-cell td status">未上传</view>
-      <view class="table-cell td opt">
-        <deleteIcon name="delete.svg"></deleteIcon>
-      </view>
-    </view>
-    <view class="table-row" @tap="tablerowTap">
-      <view class="table-cell td order">4</view>
-      <view class="table-cell td">2017103101095358367</view>
-      <view class="table-cell td status">未上传</view>
-      <view class="table-cell td opt">
-        <deleteIcon name="delete.svg"></deleteIcon>
-      </view>
-    </view>
+    <scroll-view scroll-y="true" class="table-body" lower-threshold="0" style="height:{{tableHeight}}px;" bindscrolltolower="onEndReached">
+      <block wx:for="{{dataList}}" wx:key="index">
+        <view class="table-row" @tap="tablerowTap({{item}})">
+          <view class="table-cell td order">{{item.listIndex}}</view>
+          <view class="table-cell td">{{item.code}}</view>
+          <view class="table-cell td status">{{item.statusText}}</view>
+          <view class="table-cell td opt">
+            <view @tap.stop="delTap({{item}})">
+              <deleteIcon name="delete.svg"></deleteIcon>
+            </view>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
 
   </view>
 
@@ -139,7 +121,7 @@
   import Picker from '../../components/picker'
   import Datetimepicker from '../../components/datetimepicker'
   import Tabbar from '../../components/tabbar'
-  import {showError, showToast} from '../../utils/util'
+  import {showError, showToast, formatDate, confirm} from '../../utils/util'
 
   const STATUS_ARRAY = [
     {
@@ -147,28 +129,24 @@
       name: '全部'
     },
     {
-      value: 'waiting',
-      name: '查询中'
+      value: 'checking',
+      name: '待审核'
     },
     {
-      value: 'sevenFailed',
-      name: '查询无结果'
+      value: 'checkFail',
+      name: '审核未通过'
     },
     {
-      value: 'noSales',
-      name: '销货明细需更新'
+      value: 'checkPass',
+      name: '审核通过'
     },
     {
-      value: 'invoiceChange',
-      name: '信息需更新'
+      value: 'scaning',
+      name: '识别中'
     },
     {
-      value: 'failed',
-      name: '无法识别'
-    },
-    {
-      value: 'success',
-      name: '已完成'
+      value: 'scanFail',
+      name: '识别失败'
     }
   ]
 
@@ -185,7 +163,15 @@
       tabbar: Tabbar
     }
 
+    page = 1
+    listIndex = 1
+    loaded = false
+
     data = {
+      dataList: [],
+      date: formatDate(new Date, 'yyyy-MM'),
+      status: '',
+      tableHeight: wx.getSystemInfoSync().windowHeight - 207,
       statusArray: STATUS_ARRAY,
       statusIndex: 0,
       tabBar: {
@@ -212,25 +198,107 @@
 
     }
 
+    watch = {
+      status (value) {
+        let index = 0
+        this.statusArray.forEach((item, i) => {
+          if(item.value === value) {
+            index = i
+          }
+        })
+        this.statusIndex = index
+      }
+    }
+
     methods = {
       queryTap (e) {
-        console.log('query tap')
+        this.handleQuery()
+      },
+      datetimechange (e) {
+        this.date = e.detail.value
       },
       pickerChange (e) {
-        console.log(e.detail.value)
+        this.status = this.statusArray[e.detail.value].value
       },
       tabbarChange (index) {
         if (index === 0) {
           this.$back()
         }
       },
-      tablerowTap () {
-        this.$navigate('/pages/qrcodedetail/qrcodedetail')
+      tablerowTap (e) {
+        let params = e.currentTarget.dataset.wepyParamsA
+        this.$navigate('/pages/qrcodedetail/qrcodedetail', params)
+      },
+      delTap (e) {
+        let item = e.currentTarget.dataset.wepyParamsA
+        confirm('确定要删除吗?').then(() => {
+          this.deleteImage(item.id)
+        })
       }
     }
 
-    onLoad () {
+    handleQuery () {
+      this.page = 1
+      this.listIndex = 1
+      this.dataList = []
+      this.queryList(this.date, this.status, this.page)
+    }
 
+    appendQuery () {
+      if(!this.loaded) return
+      this.queryList(this.date, this.status, ++this.page)
+    }
+
+    queryList(date = '', status = '', page) {
+      let params = {
+        date: date.replace(/\-/g, ''),
+        status,
+        page
+      }
+      this.loaded = false
+      return new Promise((resolve, reject) => {
+        fetch.get('find/qrimage', params).then(res => {
+          if (res.success) {
+            (res.data.docs || []).forEach(item => {
+              item.statusText = this.statusArray.find(e => e.value === item.status).name
+              item.listIndex = this.listIndex++
+              this.dataList.unshift(item)
+            })
+            resolve(res.data)
+            this.$apply()
+          } else {
+            reject(res.message)
+            showError(res.message)
+          }
+        }, errMsg => {
+          reject(errMsg)
+          showError(errMsg)
+        })
+      }).finally(res => {
+        this.loaded = true
+      })
+    }
+
+    deleteImage (qrimageId) {
+      fetch.get(`remove/qrimage/${qrimageId}`).then(res => {
+        if (res.success) {
+          showToast(res.message)
+          this.handleQuery()
+        } else {
+          showError(res.message)
+        }
+      }, showError)
+    }
+
+    onEndReached () {
+      this.appendQuery()
+    }
+
+    onLoad (params) {
+      if(params.status) {
+        this.status = params.status
+      }
+      this.handleQuery()
     }
   }
 </script>

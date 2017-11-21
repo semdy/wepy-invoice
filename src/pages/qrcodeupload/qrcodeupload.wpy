@@ -66,7 +66,7 @@
   }
 
   .camera-btn {
-    margin-top: 200rpx;
+    margin-top: 100rpx;
     margin-left: 60rpx;
     margin-right: 60rpx;
   }
@@ -95,7 +95,7 @@
       </repeat>
     </view>
 
-    <camerabutton icon="camera.svg" size="large" className="camera-btn">拍 照</camerabutton>
+    <camerabutton icon="camera.svg" size="large" className="camera-btn" @tap.user="startCamera">拍 照</camerabutton>
 
   </view>
   <tabbar :tabBar="tabBar" disabled="true" @tabbarChange.user="tabbarChange"></tabbar>
@@ -110,6 +110,7 @@
   import Tabbar from '../../components/tabbar'
   import PercentageCircle from '../../components/percentagecircle/'
   import {showError, showToast} from '../../utils/util'
+  import {uploadFile} from '../../utils/wechat'
 
   export default class Index extends wepy.page {
     config = {
@@ -123,9 +124,11 @@
       tabbar: Tabbar
     }
 
+    day = 1
+
     data = {
-      percent: 0,
-      formula: '0/0',
+      totalNum: 0,
+      successNum: 0,
       buttongroupitems: ['当天上传', '本月上传', '全部上传'],
       listgroup: [
         {
@@ -133,6 +136,7 @@
           iconSize: 'small',
           text: '待审核',
           subtext: '0',
+          flag: 'checking',
           hasArrow: true
         },
         {
@@ -140,13 +144,31 @@
           iconSize: 'small',
           text: '审核未通过',
           subtext: '0',
+          flag: 'checkFail',
+          hasArrow: true
+        },
+        {
+          icon: 'refuse.png',
+          iconSize: 'small',
+          text: '审核通过',
+          subtext: '0',
+          flag: 'checkPass',
+          hasArrow: true
+        },
+        {
+          icon: 'refuse.png',
+          iconSize: 'small',
+          text: '识别中',
+          subtext: '0',
+          flag: 'scaning',
           hasArrow: true
         },
         {
           icon: 'unkown.png',
           iconSize: 'small',
-          text: '无法识别',
+          text: '识别失败',
           subtext: '0',
+          flag: 'scanFail',
           hasArrow: true
         }
       ],
@@ -171,21 +193,112 @@
     }
 
     computed = {
+      formula () {
+        return this.successNum + '/' + this.totalNum
+      }
     }
+
+    watch = {
+      formula () {
+        this.circle.percent = this.successNum / this.totalNum
+      }
+    }
+
     methods = {
       buttonitemTap (index) {
-        console.log(index)
+        if(index === 0) {
+          this.day = 1
+          this.queryCount(1)
+        }
+        else if(index === 1) {
+          this.day = 30
+          this.queryCount(30)
+        }
+        else if(index === 2) {
+          this.day = 0
+          this.queryCount(0)
+        }
       },
       listitemTap (index, e) {
-        this.$navigate('/pages/qrcodelist/qrcodelist')
+        this.$navigate('/pages/qrcodelist/qrcodelist', {status: this.listgroup[index].flag})
       },
       tabbarChange (index) {
         if (index === 1) {
           this.$navigate('/pages/qrcodelist/qrcodelist')
         }
+      },
+      startCamera () {
+        this.launchCamera()
       }
     }
+    fillCount (data) {
+      let datas = data.qrImgCount
+
+      this.listgroup.forEach(group => {
+        const item = datas.find(e => e.status === group.flag)
+        if (item) {
+          group.subtext = item.total
+        } else {
+          group.subtext = 0
+        }
+      })
+
+      this.totalNum = 0
+      datas.forEach(e => this.totalNum += Number(e.total))
+      this.successNum = (datas.find(item => item.status === 'checkPass') || {}).total || 0
+      this.$apply()
+    }
+    queryCount(day = 0) {
+      let params = {day}
+      return new Promise((resolve, reject) => {
+        fetch.get('count/qrimage', params).then(res => {
+          if (res.success) {
+            resolve(res.data)
+            this.fillCount(res.data)
+          } else {
+            reject(res.message)
+            showError(res.message)
+          }
+        }, errMsg => {
+          reject(errMsg)
+          showError(errMsg)
+        })
+      })
+    }
+
+    refresh () {
+      this.queryCount(this.day)
+    }
+
+    launchCamera(){
+      wx.chooseImage({
+        count: 1, // 默认9
+        sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
+        sourceType: ['camera'], // 可以指定来源是相册还是相机，默认二者都有
+        success: (res) => {
+          // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+          let imgFilePath = res.tempFilePaths[0]
+          this.uploadQrImage(imgFilePath)
+        },
+        fail: () => {
+          //showError("拍照调用失败");
+        }
+      })
+    }
+
+    uploadQrImage(filePath) {
+      return uploadFile('upload/qrimage', filePath).then(data => {
+        if(data.success) {
+          showToast(data.message)
+          this.refresh()
+        } else {
+          showError(data.message)
+        }
+      }, showError)
+    }
+
     onLoad () {
+      this.queryCount(this.day)
       this.circle = new PercentageCircle('percentage-pie', {percent: 0, radius: 60, borderWidth: 12})
     }
   }

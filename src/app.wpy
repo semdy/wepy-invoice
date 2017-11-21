@@ -125,6 +125,7 @@
   export default class extends wepy.app {
     config = {
       pages: [
+
         'pages/login/login',
         'pages/home/home',
         'pages/dms/dms',
@@ -136,7 +137,7 @@
         'pages/exchange/exchange',
         'pages/qrcodeupload/qrcodeupload',
         'pages/qrcodelist/qrcodelist',
-        'pages/qrcodedetail/qrcodedetail'
+        'pages/qrcodedetail/qrcodedetail',
       ],
       window: {
         // 类型：HexColor；默认值：#000000

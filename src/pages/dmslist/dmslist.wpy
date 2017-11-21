@@ -251,9 +251,7 @@
         } else {
           showError(res.message)
         }
-      }, errMsg => {
-        showError(errMsg)
-      })
+      }, showError)
     }
 
     getPrevPage () {

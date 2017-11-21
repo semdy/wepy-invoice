@@ -60,13 +60,15 @@
   }
 
   .repai {
+    display: inline-block;
     font-size: 36rpx;
+    padding: 10rpx;
   }
 
 </style>
 <template>
   <view class="imgView-container">
-    <image class="inv-image {{isPortrait ? 'portrait': ''}}" src="{{picturePath}}"
+    <image class="inv-image {{isPortrait ? 'portrait': ''}}" src="{{filePath}}"
            mode="aspectFit"
            style="height:{{imgHeight}}px"
            bindtap="thumbTap"
@@ -77,48 +79,56 @@
     <view class="detail-item">
       <view class="detail-label">
         <text>状态：</text>
-        <text class="r">未通过</text>
+        <text class="r">{{statusText}}</text>
       </view>
-      <text class="detail-value r repai">重拍</text>
+      <text class="detail-value r repai" @tap="startCamera">重拍</text>
     </view>
     <view class="detail-item">
       <text class="detail-label">状态说明</text>
       <view class="detail-value">
-        <statusinput value="单据审核后未通过" disabled="true"></statusinput>
+        <statusinput :value.sync="remark" disabled="true"></statusinput>
       </view>
     </view>
     <view class="detail-item">
       <text class="detail-label">二维码</text>
       <view class="detail-value">
-        <qrinput value="123485454267825635"></qrinput>
+        <qrinput :value.sync="qrcode" @change.user="qrcodeChange"></qrinput>
       </view>
     </view>
     <view class="detail-item">
       <text class="detail-label">型号</text>
       <view class="detail-value">
-        <typeinput value="H748034806644"></typeinput>
+        <typeinput :value.sync="upn" @change.user="upnChange"></typeinput>
       </view>
     </view>
     <view class="detail-item">
       <text class="detail-label">批号</text>
       <view class="detail-value">
-        <numinput value="199884345"></numinput>
+        <numinput :value.sync="lot" @change.user="lotChange"></numinput>
       </view>
     </view>
   </view>
   <view class="detail-actions">
-    <delbutton type="danger">删除</delbutton>
-    <savebutton>保存</savebutton>
+    <delbutton type="danger" @tap.user="delTap">删除</delbutton>
+    <savebutton @tap.user="updateTap">保存</savebutton>
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
-  import fetch from '../../service/fetch'
+  import fetch, {serverUrl} from '../../service/fetch'
   import Button from '../../components/button'
   import Formitem from '../../components/formitem'
+  import {uploadFile} from '../../utils/wechat'
+  import {showError, showToast, confirm} from '../../utils/util'
 
-  import {showError, showToast} from '../../utils/util'
+  const STATUS_MAP = {
+    checking: '待审核',
+    checkFail: '审核未通过',
+    checkPass: '审核通过',
+    scaning: '识别中',
+    scanFail: '识别失败'
+  }
 
   export default class Index extends wepy.page {
     config = {
@@ -132,22 +142,135 @@
       typeinput: Formitem,
       numinput: Formitem
     }
+    imageFile = null
     data = {
+      filePath: '',
+      qrcode: '',
+      status: '',
+      qrimageId: '',
+      remark: '',
+      statusText: '',
+      date: '',
+      scanId: '',
+      lot: '',
+      upn: '',
       imgHeight: wx.getSystemInfoSync().windowWidth,
-      picturePath: '../../images/carousel_1.png',
       isPortrait: false
     }
     computed = {
     }
     methods = {
-      thumbTap(){
+      thumbTap() {
         wx.previewImage({
-          urls:[this.data.picturePath]
+          urls:[this.filePath]
         })
+      },
+      delTap (e) {
+        confirm('确定要删除吗?').then(() => {
+          this.deleteImage(this.qrimageId)
+        })
+      },
+      updateTap () {
+        this.updateImage()
+      },
+      qrcodeChange (e) {
+        this.qrcode = e.detail.value
+      },
+      upnChange (e) {
+        this.upn = e.detail.value
+      },
+      lotChange (e) {
+        this.lot = e.detail.value
+      },
+      startCamera () {
+        this.launchCamera()
       }
     }
-    onLoad () {
-
+    launchCamera(){
+      wx.chooseImage({
+        count: 1, // 默认9
+        sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
+        sourceType: ['camera'], // 可以指定来源是相册还是相机，默认二者都有
+        success: (res) => {
+          // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+          let imgFilePath = res.tempFilePaths[0]
+          this.imageFile = imgFilePath
+        },
+        fail: () => {
+          //showError("拍照调用失败");
+        }
+      })
+    }
+    queryImage(qrimageId) {
+      let params = {
+        qrimageId
+      }
+      fetch.get('detail/qrimage', params).then(res => {
+        if (res.success) {
+          this.setParams(res.data)
+        } else {
+          showError(res.message)
+        }
+      }, showError)
+    }
+    updateImage() {
+      let params = {
+        qrcode: this.qrcode,
+        upn: this.upn,
+        lot: this.lot,
+        qrimageId: this.qrimageId
+      }
+      if(this.imageFile) {
+        return uploadFile('update/qrimage', this.imageFile, params).then(data => {
+          if (data.success) {
+            this.imageFile = null
+            this.queryImage(this.qrimageId)
+            showToast(data.message)
+          } else {
+            showError(data.message)
+          }
+        }, showError)
+      } else {
+        return fetch.post('update/qrimage', {file: '', ...params}).then(data => {
+          if (data.success) {
+            showToast(data.message)
+          } else {
+            showError(data.message)
+          }
+        }, showError)
+      }
+    }
+    deleteImage (qrimageId) {
+      fetch.get(`remove/qrimage/${qrimageId}`).then(res => {
+        if (res.success) {
+          showToast(res.message, 1000)
+          setTimeout(() => {
+            this.getPrevPage().handleQuery()
+            this.$back()
+          }, 1000)
+        } else {
+          showError(res.message)
+        }
+      }, showError)
+    }
+    getPrevPage () {
+      const pages = this.getCurrentPages()
+      return pages[pages.length - 2]
+    }
+    setParams (params = {}) {
+      this.qrcode = params.qrcode
+      this.date = params.date
+      this.scanId = params.scanId
+      this.filePath = serverUrl + params.filePath
+      this.qrimageId = params.id
+      this.remark = params.remark
+      this.status = params.status
+      this.statusText = params.statusText
+      this.lot = params.lot
+      this.upn = params.upn
+    }
+    onLoad (params) {
+      this.setParams(params)
     }
   }
 </script>

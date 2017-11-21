@@ -1,4 +1,4 @@
-import {version, from, ref} from '../config'
+import {version, ref} from '../config'
 import {session} from '../service/auth'
 import fetch, {serverUrl} from '../service/fetch'
 
@@ -55,17 +55,16 @@ function getOpenIdByCode(code){
   })
 }
 
-function uploadFile(url, filePath, formParams, header){
+function uploadFile(url, filePath, formParams, header) {
     let params = Object.assign({
-      from,
       ref
-    }, formParams||{})
+    }, formParams || {})
 
     let tokenParam = {}
     let sessionInfo = session.get()
-    if(sessionInfo && sessionInfo.token){
+    if(sessionInfo && sessionInfo.token) {
       tokenParam = {
-        token: sessionInfo.token
+        'access-token': sessionInfo.token
       }
     }
 
