@@ -16,6 +16,10 @@
     &.small {
       border-radius: @small/2;
     }
+
+    &.disabled {
+      pointer-events: none;
+    }
   }
 
   .switch-indicator {
@@ -80,7 +84,7 @@
 </style>
 
 <template>
-  <view class="switch-button-wrap {{size}} {{className}}" style="{{style}}" @tap="tap" wx:if="{{buttons.length>0}}">
+  <view class="switch-button-wrap {{size}} {{className}} {{disabled ? 'disabled' : ''}}" style="{{style}}" @tap="tap" wx:if="{{buttons.length>0}}">
     <view class="switch-indicator" style="transform:translateX({{x}});">
       <view class="switch-dot {{size}}" style="width:{{indWidth}};"></view>
     </view>
@@ -115,6 +119,10 @@
       size: {
         type: String,
         default: 'normal'
+      },
+      disabled: {
+        type: Boolean,
+        default: false
       },
       buttons: {
         type: Array,

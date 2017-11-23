@@ -1,21 +1,59 @@
+const SESSION_KEY = 'session'
+const SESSION_GROUP_KEY = 'session_group'
+
+let _group = wx.getStorageSync(SESSION_GROUP_KEY) || {}
+
 export const session = {
   set(info) {
     try {
-      wx.setStorageSync('session', info)
+      wx.setStorageSync(SESSION_KEY, info)
     } catch (e) {
       console.error("storage save fail with key 'session'")
     }
   },
   get() {
     try {
-      return wx.getStorageSync('session')
+      return wx.getStorageSync(SESSION_KEY)
     } catch (e) {
       return null;
     }
   },
   clear() {
     try {
-      wx.removeStorageSync('session')
+      wx.removeStorageSync(SESSION_KEY)
+    } catch (e) {
+      console.error("storage remove fail with key 'session'")
+    }
+  }
+}
+
+export const sessionGroup = {
+  add(id, data) {
+    _group[id] = data
+    try {
+      wx.setStorageSync(SESSION_GROUP_KEY, _group)
+    } catch (e) {
+      console.error("storage save fail with key 'session'")
+    }
+  },
+  get(id) {
+    return _group[id]
+  },
+  getAll() {
+    return _group
+  },
+  remove (id) {
+    delete _group[id]
+    try {
+      wx.setStorageSync(SESSION_GROUP_KEY, _group)
+    } catch (e) {
+      console.error("storage save fail with key 'session'")
+    }
+  },
+  clear() {
+    _group = {}
+    try {
+      wx.removeStorageSync(SESSION_GROUP_KEY)
     } catch (e) {
       console.error("storage remove fail with key 'session'")
     }

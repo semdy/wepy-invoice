@@ -35,7 +35,7 @@
 
   .table-row {
     &:active {
-      background-color: rgba(0,0,0,.12);
+      background-color: #f2f2f2;
     }
   }
 
@@ -99,7 +99,7 @@
           <view class="table-cell td num">{{item.count}}</view>
           <view class="table-cell td status">{{item.statusText}}</view>
           <view class="table-cell td opt">
-            <view @tap.stop="delTap({{item}})" wx:if="{{item.status === 'unSubmit'}}">
+            <view @tap.stop="delTap({{item}})" wx:if="{{item.status !== 'submit'}}">
               <deleteIcon name="delete.svg"></deleteIcon>
             </view>
           </view>
@@ -124,7 +124,8 @@
 
   const STATUS_MAP = {
     'unSubmit': '未提交',
-    'submit' : '已提交'
+    'submit': '已提交',
+    'partSubmit': '部分提交'
   }
 
   export default class Index extends wepy.page {

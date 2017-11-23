@@ -3,7 +3,7 @@
 
   .index-main {
     position: relative;
-    padding: 10rpx;
+    padding: 0 10rpx;
     flex: 1;
     overflow: hidden;
   }
@@ -11,8 +11,8 @@
   .top-main{
     display: flex;
     background-color: #fff;
-    border-radius: 8rpx;
-    margin-bottom: 20rpx;
+    /*border-radius: 8rpx;*/
+    margin-bottom: 10rpx;
     padding: 30rpx;
   }
 
@@ -38,6 +38,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 36rpx;
   }
 
   .circle-canvas{
@@ -57,8 +58,14 @@
   }
 
   .list-item {
-    border: 0;
-    border-radius: 6rpx;
+    /*border: 0;
+    border-radius: 6rpx;*/
+    margin-bottom: 0;
+    border-top: 0;
+
+    &:last-child {
+      border-bottom: 0;
+    }
   }
 
   .list-item-bd {
@@ -66,7 +73,7 @@
   }
 
   .camera-btn {
-    margin-top: 100rpx;
+    margin-top: 120rpx;
     margin-left: 60rpx;
     margin-right: 60rpx;
   }
@@ -132,6 +139,22 @@
       buttongroupitems: ['当天上传', '本月上传', '全部上传'],
       listgroup: [
         {
+          icon: 'scaning.png',
+          iconSize: 'small',
+          text: '识别中',
+          subtext: '0',
+          flag: 'scaning',
+          hasArrow: true
+        },
+        {
+          icon: 'unkown.png',
+          iconSize: 'small',
+          text: '无法识别',
+          subtext: '0',
+          flag: 'scanFail',
+          hasArrow: true
+        },
+        {
           icon: 'lookover.svg',
           iconSize: 'small',
           text: '待审核',
@@ -145,30 +168,6 @@
           text: '审核未通过',
           subtext: '0',
           flag: 'checkFail',
-          hasArrow: true
-        },
-        {
-          icon: 'refuse.png',
-          iconSize: 'small',
-          text: '审核通过',
-          subtext: '0',
-          flag: 'checkPass',
-          hasArrow: true
-        },
-        {
-          icon: 'refuse.png',
-          iconSize: 'small',
-          text: '识别中',
-          subtext: '0',
-          flag: 'scaning',
-          hasArrow: true
-        },
-        {
-          icon: 'unkown.png',
-          iconSize: 'small',
-          text: '识别失败',
-          subtext: '0',
-          flag: 'scanFail',
           hasArrow: true
         }
       ],

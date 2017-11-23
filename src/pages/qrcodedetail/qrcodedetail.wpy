@@ -81,7 +81,7 @@
         <text>状态：</text>
         <text class="r">{{statusText}}</text>
       </view>
-      <text class="detail-value r repai" @tap="startCamera">重拍</text>
+      <text class="detail-value r repai" @tap="startCamera" style="visibility:{{canReCaptrue ? 'visible' : 'hidden'}}">重拍</text>
     </view>
     <view class="detail-item">
       <text class="detail-label">状态说明</text>
@@ -98,19 +98,19 @@
     <view class="detail-item">
       <text class="detail-label">型号</text>
       <view class="detail-value">
-        <typeinput :value.sync="upn" @change.user="upnChange"></typeinput>
+        <typeinput :value.sync="lot" @change.user="lotChange"></typeinput>
       </view>
     </view>
     <view class="detail-item">
       <text class="detail-label">批号</text>
       <view class="detail-value">
-        <numinput :value.sync="lot" @change.user="lotChange"></numinput>
+        <numinput :value.sync="upn" @change.user="upnChange"></numinput>
       </view>
     </view>
   </view>
   <view class="detail-actions">
-    <delbutton type="danger" @tap.user="delTap">删除</delbutton>
-    <savebutton @tap.user="updateTap">保存</savebutton>
+    <delbutton type="danger" :disabled.sync="pageDisabled" @tap.user="delTap">删除</delbutton>
+    <savebutton @tap.user="updateTap" :disabled.sync="saveDisabled">保存</savebutton>
   </view>
 </template>
 
@@ -158,6 +158,15 @@
       isPortrait: false
     }
     computed = {
+      saveDisabled () {
+        return this.status !== 'scanFail'
+      },
+      pageDisabled () {
+        return this.status === 'checkPass'
+      },
+      canReCaptrue () {
+        return this.status === 'scanFail' || this.status === 'checkFail'
+      }
     }
     methods = {
       thumbTap() {
@@ -195,6 +204,8 @@
           // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
           let imgFilePath = res.tempFilePaths[0]
           this.imageFile = imgFilePath
+          this.filePath = imgFilePath
+          this.$apply()
         },
         fail: () => {
           //showError("拍照调用失败");
@@ -202,10 +213,7 @@
       })
     }
     queryImage(qrimageId) {
-      let params = {
-        qrimageId
-      }
-      fetch.get('detail/qrimage', params).then(res => {
+      fetch.get(`find/qrimage/${qrimageId}`).then(res => {
         if (res.success) {
           this.setParams(res.data)
         } else {
@@ -233,6 +241,7 @@
       } else {
         return fetch.post('update/qrimage', {file: '', ...params}).then(data => {
           if (data.success) {
+            this.queryImage(this.qrimageId)
             showToast(data.message)
           } else {
             showError(data.message)
@@ -265,12 +274,14 @@
       this.qrimageId = params.id
       this.remark = params.remark
       this.status = params.status
-      this.statusText = params.statusText
+      this.statusText = STATUS_MAP[params.status]
       this.lot = params.lot
       this.upn = params.upn
+      this.$apply()
     }
     onLoad (params) {
-      this.setParams(params)
+      this.qrimageId = params.qrimageId
+      this.queryImage(this.qrimageId)
     }
   }
 </script>

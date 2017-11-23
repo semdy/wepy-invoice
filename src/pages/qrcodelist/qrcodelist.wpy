@@ -96,7 +96,7 @@
       <block wx:for="{{dataList}}" wx:key="index">
         <view class="table-row" @tap="tablerowTap({{item}})">
           <view class="table-cell td order">{{item.listIndex}}</view>
-          <view class="table-cell td">{{item.code}}</view>
+          <view class="table-cell td">{{item.qrcode}}</view>
           <view class="table-cell td status">{{item.statusText}}</view>
           <view class="table-cell td opt">
             <view @tap.stop="delTap({{item}})">
@@ -146,7 +146,7 @@
     },
     {
       value: 'scanFail',
-      name: '识别失败'
+      name: '无法识别'
     }
   ]
 
@@ -171,7 +171,7 @@
       dataList: [],
       date: formatDate(new Date, 'yyyy-MM'),
       status: '',
-      tableHeight: wx.getSystemInfoSync().windowHeight - 207,
+      tableHeight: wx.getSystemInfoSync().windowHeight - 210,
       statusArray: STATUS_ARRAY,
       statusIndex: 0,
       tabBar: {
@@ -227,7 +227,7 @@
       },
       tablerowTap (e) {
         let params = e.currentTarget.dataset.wepyParamsA
-        this.$navigate('/pages/qrcodedetail/qrcodedetail', params)
+        this.$navigate('/pages/qrcodedetail/qrcodedetail', {qrimageId: params.id})
       },
       delTap (e) {
         let item = e.currentTarget.dataset.wepyParamsA

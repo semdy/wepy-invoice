@@ -59,7 +59,7 @@
   import Button from '../../components/button'
   import {showError, showToast} from '../../utils/util'
   import {login} from '../../service/user'
-  import {session} from '../../service/auth'
+  import {session, sessionGroup} from '../../service/auth'
 
   export default class Index extends wepy.page {
     config = {
@@ -109,13 +109,20 @@
 
         let errorHandler = errMsg => {
           this.isLogining = false
-          showError(errMsg)
+          //showError(errMsg)
+          wx.showModal({
+            title: '提示',
+            content: '公司码或手机号错误，请重试或联系管理人员',
+            showCancel: false
+          })
         }
 
         //this.$parent.getUserInfo().then(userInfo => {
           login(this.username, this.mobile).then((res) => {
             this.isLogining = false
-            session.set(Object.assign({}, this.$parent.globalData.userInfo, res.data))
+            let sessionData = Object.assign({}, this.$parent.globalData.userInfo, res.data)
+            session.set(sessionData)
+            sessionGroup.add(res.data.user.id, sessionData)
             this.$switch('/pages/home/home')
           }, errorHandler)
         //}, errorHandler)

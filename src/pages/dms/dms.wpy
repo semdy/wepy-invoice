@@ -67,7 +67,11 @@
   .dms-table {
     .table-cell {
       &.order {
-        width: 200rpx;
+        width: 100rpx;
+      }
+      &.status {
+        flex: none;
+        width: 120rpx;
       }
       &.last {
         flex: none;
@@ -156,24 +160,24 @@
     <view class="bill-form-body">
       <view class="bill-field">
         <text class="bill-label">单据类型：</text>
-        <switchbutton :buttons="switchButtons" :switchIndex.sync="switchIndex" className="dms-switch-button" @tap.user="switchButton1Tap"></switchbutton>
+        <switchbutton :buttons="switchButtons" :switchIndex.sync="switchIndex" :disabled.sync="pageDisabled" className="dms-switch-button" @tap.user="switchButton1Tap"></switchbutton>
       </view>
       <view class="bill-field">
         <text class="bill-label">备 注：</text>
-        <remarkinput placeholder="备注可以为空" border="true" :value.sync="remark" @change.user="remarkChange"></remarkinput>
+        <remarkinput placeholder="备注可以为空" border="true" :value.sync="remark" :disabled.sync="pageDisabled" @change.user="remarkChange"></remarkinput>
       </view>
     </view>
   </view>
 
   <view class="scan-fields">
-    <scanbutton icon="qr-code.svg" @tap.user="onScanTap">扫 码</scanbutton>
+    <scanbutton icon="qr-code.svg" :disabled.sync="pageDisabled" @tap.user="onScanTap">扫 码</scanbutton>
   </view>
 
   <view class="table dms-table">
     <view class="table-row table-header">
       <view class="table-cell th order">序号</view>
       <view class="table-cell th">二维码</view>
-      <view class="table-cell th">状态</view>
+      <view class="table-cell th status">状态</view>
       <view class="table-cell th last"></view>
     </view>
     <scroll-view scroll-y="true" class="table-body" style="height:{{tableHeight}}px;">
@@ -181,12 +185,12 @@
         <view class="table-row">
           <view class="table-cell td order">{{item.listIndex}}</view>
           <view class="table-cell td">{{item.qrcode}}</view>
-          <view class="table-cell td">
+          <view class="table-cell td status">
             <text>{{item.statusText}}</text>
-            <!--<cauthIcon name="cauth.svg" class="cauth-icon" size="small" wx:if="{{item.status === 'unSubmit'&&item.type==='manual'}}"></cauthIcon>-->
+            <!--<cauthIcon name="cauth.svg" class="cauth-icon" size="small" wx:if="{{item.status !== 'submit'&&item.type==='manual'}}"></cauthIcon>-->
           </view>
           <view class="table-cell td last">
-            <view @tap="delTap({{item}})" wx:if="{{item.status === 'unSubmit'}}">
+            <view @tap="delTap({{item}})" wx:if="{{item.status !== 'submit'}}">
               <deleteIcon name="delete.svg"></deleteIcon>
             </view>
           </view>
@@ -246,8 +250,9 @@
   import {showError, showToast} from '../../utils/util'
 
   const STATUS_MAP = {
-    'unSubmit': '未提交',
-    'submit' : '已提交'
+    'waitSubmit': '待提交',
+    'submit' : '已提交',
+    'noProduct' : '缺信息'
   }
 
   export default class Index extends wepy.page {
@@ -274,6 +279,7 @@
 
     data = {
       tableHeight: wx.getSystemInfoSync().windowHeight - 380,
+      pageDisabled: false,
       submitDisabled: true,
       scanContinue: true,
       isModalShow: false,
@@ -309,19 +315,18 @@
     }
 
     computed = {
-
     }
 
     watch = {
       lastReceiptId (newVal, oldVal) {
         if (!oldVal) {
-          this.submitDisabled = false
+          this.submitDisabled = this.pageDisabled ? true : false
           this.$apply()
         }
-        if(!newVal) {
+        /*if(!newVal) {
           this.submitDisabled = true
           this.$apply()
-        }
+        }*/
       }
     }
 
@@ -398,6 +403,8 @@
       this.uploadType = this.switchButtons[this.switchIndex]
       this.remark = ''
       this.scanContinue = true
+      this.submitDisabled = true
+      this.pageDisabled = false
       this.dataList = []
       this.isModalShow = false
       this.lastReceiptId = ''
@@ -548,7 +555,7 @@
       let rowData = {}
       rowData.listIndex = ++this.listIndex
       rowData.status = data.receipt.status
-      rowData.statusText = STATUS_MAP[rowData.status]
+      rowData.statusText = STATUS_MAP[data.product.status]
       rowData.qrcode = data.product.qrcode
       rowData.type = data.product.type
       rowData.upn = data.product.upn
@@ -568,8 +575,8 @@
       data.receiptQr.forEach(item => {
         let rowData = {}
         rowData.listIndex = ++this.listIndex
-        rowData.status = data.status
-        rowData.statusText = STATUS_MAP[rowData.status]
+        rowData.status = item.status
+        rowData.statusText = STATUS_MAP[item.status]
         rowData.qrcode = item.qrcode
         rowData.type = item.type
         rowData.upn = item.upn
@@ -605,6 +612,7 @@
         this.switchIndex = this.switchButtons.indexOf(data.type)
         this.uploadType = data.type
         this.remark = data.remark === '备注为空' ? '' : data.remark
+        this.pageDisabled = data.status === 'submit'
         this.addDataByReceipt(data)
       }, showError)
     }

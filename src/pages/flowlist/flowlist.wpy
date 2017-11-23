@@ -14,7 +14,7 @@
   }
 
   .query-label {
-    width: 120rpx;
+    width: 80rpx;
     text-align: center;
   }
 
