@@ -199,17 +199,15 @@
       })
     }
 
-    deleteFlow (receiptId) {
-      fetch.get(`remove/receipt/${receiptId}`).then(res => {
+    deleteFlow (flowId) {
+      fetch.get(`remove/flow/${flowId}`).then(res => {
         if (res.success) {
           showToast(res.message)
           this.handleQuery()
         } else {
           showError(res.message)
         }
-      }, errMsg => {
-        showError(errMsg)
-      })
+      }, showError)
     }
 
     onEndReached () {

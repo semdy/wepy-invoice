@@ -121,7 +121,6 @@
           login(this.username, this.mobile).then((res) => {
             this.isLogining = false
             let sessionData = Object.assign({}, userInfo, res.data)
-            console.log(sessionData)
             session.set(sessionData)
             sessionGroup.add(res.data.user.id, sessionData)
             this.$switch('/pages/home/home')

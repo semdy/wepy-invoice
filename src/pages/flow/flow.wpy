@@ -280,6 +280,7 @@
       wepy.scanCode()
         .then(res => {
           this.qrcode = res.result
+          this.queryFlows(res.result)
           this.$apply()
         })
         .catch(() => {
