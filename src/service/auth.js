@@ -39,8 +39,18 @@ export const sessionGroup = {
   get(id) {
     return _group[id]
   },
+  has (id) {
+    return this.get(id) !== undefined
+  },
   getAll() {
     return _group
+  },
+  toArray() {
+    let sessions = []
+    for (let i in _group) {
+      sessions.push(_group[i])
+    }
+    return sessions
   },
   remove (id) {
     delete _group[id]

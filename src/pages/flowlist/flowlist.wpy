@@ -49,7 +49,7 @@
 <template>
   <view class="query-form-wrap">
     <veiw class="query-label">时间</veiw>
-    <datetimepicker value="2017-11-08"></datetimepicker>
+    <datetimepicker :value.sync="date" @datetimechange.user="datetimeChange"></datetimepicker>
     <querybutton @tap.user="queryTap">查询</querybutton>
   </view>
 
@@ -62,48 +62,18 @@
     </view>
 
     <scroll-view scroll-y="true" class="table-body" lower-threshold="0" style="height:{{tableHeight}}px;" bindscrolltolower="onEndReached">
-      <!--<block wx:for="{{dataList}}" wx:key="index">-->
+      <block wx:for="{{dataList}}" wx:key="index">
         <view class="table-row" @tap="rowTap({{item}})">
-          <view class="table-cell td order">4</view>
-          <view class="table-cell td">12358509943457745</view>
-          <view class="table-cell td date">2017-10-12</view>
+          <view class="table-cell td order">{{item.listIndex}}</view>
+          <view class="table-cell td">{{item.historyqrcode}}</view>
+          <view class="table-cell td date">{{item.dateString}}</view>
           <view class="table-cell td opt">
             <view @tap.stop="delTap({{item}})">
               <deleteIcon name="delete.svg"></deleteIcon>
             </view>
           </view>
         </view>
-      <view class="table-row" @tap="rowTap({{item}})">
-        <view class="table-cell td order">3</view>
-        <view class="table-cell td">12358509943457745</view>
-        <view class="table-cell td date">2017-10-12</view>
-        <view class="table-cell td opt">
-          <view @tap.stop="delTap({{item}})">
-            <deleteIcon name="delete.svg"></deleteIcon>
-          </view>
-        </view>
-      </view>
-      <view class="table-row" @tap="rowTap({{item}})">
-        <view class="table-cell td order">2</view>
-        <view class="table-cell td">12358509943457745</view>
-        <view class="table-cell td date">2017-10-12</view>
-        <view class="table-cell td opt">
-          <view @tap.stop="delTap({{item}})">
-            <deleteIcon name="delete.svg"></deleteIcon>
-          </view>
-        </view>
-      </view>
-      <view class="table-row" @tap="rowTap({{item}})">
-        <view class="table-cell td order">1</view>
-        <view class="table-cell td">12358509943457745</view>
-        <view class="table-cell td date">2017-10-12</view>
-        <view class="table-cell td opt">
-          <view @tap.stop="delTap({{item}})">
-            <deleteIcon name="delete.svg"></deleteIcon>
-          </view>
-        </view>
-      </view>
-     <!-- </block>-->
+      </block>
     </scroll-view>
 
   </view>
@@ -119,7 +89,7 @@
   import Icon from '../../components/icon'
   import Datetimepicker from '../../components/datetimepicker'
   import Tabbar from '../../components/tabbar'
-  import {showError, showToast, confirm} from '../../utils/util'
+  import {showError, showToast, confirm, formatDate} from '../../utils/util'
 
   export default class Index extends wepy.page {
     config = {
@@ -138,9 +108,10 @@
     loaded = false
 
     data = {
+      date: formatDate(new Date, 'yyyy-MM-dd'),
       dataList: [],
       total: 0,
-      tableHeight: wx.getSystemInfoSync().windowHeight - 180,
+      tableHeight: wx.getSystemInfoSync().windowHeight - 188,
       tabBar: {
         color: '#777',
         selectedColor: '#01458e',
@@ -166,6 +137,9 @@
     }
 
     methods = {
+      queryTap () {
+        this.handleQuery()
+      },
       tabbarChange (index) {
         if (index === 0) {
           this.$back()
@@ -174,13 +148,11 @@
       delTap (e) {
         let item = e.currentTarget.dataset.wepyParamsA
         confirm('确定要删除吗?').then(() => {
-          this.deleteReceipt(item.id)
+          this.deleteFlow(item.id)
         })
       },
-      rowTap (e) {
-        let item = e.currentTarget.dataset.wepyParamsA
-        this.getPrevPage().showReceipt(item.id)
-        this.$back()
+      datetimeChange (e) {
+        this.date = e.detail.value
       }
     }
 
@@ -188,27 +160,28 @@
       this.page = 1
       this.listIndex = 1
       this.dataList = []
-      this.queryReceipt(this.receiptNo, this.page)
+      this.queryFlowHistory(this.date, this.page)
     }
 
     appendQuery () {
-      if(!this.loaded) return
-      this.queryReceipt(this.receiptNo, ++this.page)
+      if (!this.loaded) return
+      this.queryFlowHistory(this.date, ++this.page)
     }
 
-    queryReceipt(receiptNo, page) {
+    queryFlowHistory(date, page) {
       let params = {
-        receiptNo: receiptNo,
-        page: page
+        date: date,
+        page: page,
+        limit: 10
       }
       this.loaded = false
       return new Promise((resolve, reject) => {
-        fetch.get('find/receipt', params).then(res => {
+        fetch.get('find/History', params).then(res => {
           if (res.success) {
             this.total = res.data.total
             res.data.docs.forEach(item => {
-              item.statusText = STATUS_MAP[item.status]
               item.listIndex = this.listIndex++
+              item.dateString = formatDate(new Date(item.date), 'yyyy-MM-dd')
               this.dataList.unshift(item)
             })
             resolve(res.data)
@@ -226,7 +199,7 @@
       })
     }
 
-    deleteReceipt (receiptId) {
+    deleteFlow (receiptId) {
       fetch.get(`remove/receipt/${receiptId}`).then(res => {
         if (res.success) {
           showToast(res.message)

@@ -127,7 +127,7 @@
     checkFail: '审核未通过',
     checkPass: '审核通过',
     scaning: '识别中',
-    scanFail: '识别失败'
+    scanFail: '无法识别'
   }
 
   export default class Index extends wepy.page {

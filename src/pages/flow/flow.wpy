@@ -86,7 +86,7 @@
 
     .qr-info {
       flex: 1;
-      text-indent: 40rpx;
+      padding-left: 40rpx;
     }
   }
 
@@ -102,67 +102,67 @@
 <template>
   <view class="query-form">
     <view class="query-field">
-      <queryinput placeholder="搜索二维码" border="true" icon="find-g.svg" :value.sync="qrcode" @input.user="queryChange"></queryinput>
+      <queryinput placeholder="搜索二维码" border="true" icon="find-g.svg" :value.sync="qrcode" @focus.user="queryFocus" @input.user="queryChange"></queryinput>
       <scanIcon name="scan.svg" className="opt-icon" wx:if="{{!showClose}}" @tap.user="scanTap"></scanIcon>
       <closeIcon name="close-gray.svg" className="opt-icon" wx:if="{{showClose}}" @tap.user="closeTap"></closeIcon>
     </view>
     <queryButton class="query-button" @tap.user="queryTap">查询</queryButton>
   </view>
 
-  <view class="query-history" wx:if="{{false}}">
+  <view class="query-history" style="display: {{queryRecordshow ? 'block' : 'none'}}">
     <view class="history-heading">
       <view>历史记录</view>
-      <view>
+      <view @tap="clrHistory" style="display: {{queryRecords.length>0 ? '' : 'none'}}">
         <clearIcon name="trash.svg"></clearIcon>
       </view>
     </view>
     <view class="history-list">
-      <view class="history-item">211345678791234</view>
-      <view class="history-item">211345678791234</view>
-      <view class="history-item">211345678791234</view>
-      <view class="history-item">211345678791234</view>
-      <view class="history-item">211345678791234</view>
-      <view class="history-item">211345678791234</view>
+      <repeat for="{{queryRecords}}">
+        <view class="history-item" data-key="{{item}}" @tap="recordTap">{{item}}</view>
+      </repeat>
     </view>
   </view>
 
-  <view class="qrinfo-panel">
-    <view class="qrinfo-item">
-      <view class="qr-label">二维码：</view>
-      <view class="qr-info">12363722991923</view>
+  <view class="search-results" style="display: {{queryRecordshow ? 'none' : 'block'}}">
+    <view class="qrinfo-panel" wx:if="{{product.qrcode}}">
+      <view class="qrinfo-item">
+        <view class="qr-label">二维码：</view>
+        <view class="qr-info">{{product.qrcode}}</view>
+      </view>
+      <view class="qrinfo-item">
+        <view class="qr-label">型号：</view>
+        <view class="qr-info">{{product.lot}}</view>
+      </view>
+      <view class="qrinfo-item">
+        <view class="qr-label">批号：</view>
+        <view class="qr-info">{{product.upn}}</view>
+      </view>
+      <view class="qrinfo-item">
+        <view class="qr-label">包装数量：</view>
+        <view class="qr-info">1盒</view>
+      </view>
+      <view class="qrinfo-item">
+        <view class="qr-label">有效日期：</view>
+        <view class="qr-info">{{expireddateString}}</view>
+      </view>
+      <view class="qrinfo-item">
+        <view class="qr-label">产品名称：</view>
+        <view class="qr-info">{{product.productname}}</view>
+      </view>
     </view>
-    <view class="qrinfo-item">
-      <view class="qr-label">型号：</view>
-      <view class="qr-info">H74901283294928</view>
-    </view>
-    <view class="qrinfo-item">
-      <view class="qr-label">批号：</view>
-      <view class="qr-info">18788879</view>
-    </view>
-    <view class="qrinfo-item">
-      <view class="qr-label">包装数量：</view>
-      <view class="qr-info">1盒</view>
-    </view>
-    <view class="qrinfo-item">
-      <view class="qr-label">有效日期：</view>
-      <view class="qr-info">2020年10月31日</view>
-    </view>
-    <view class="qrinfo-item">
-      <view class="qr-label">产品名称：</view>
-      <view class="qr-info">一次性息肉勒除器</view>
-    </view>
+
+    <scroll-view scroll-y="true" class="flow-container" style="height:{{flowHeight}}px;">
+      <repeat for="{{flows}}">
+        <flowitem :icon="item.icon">
+          <text slot="time">{{item.time}}</text>
+          <text>{{item.text}}</text>
+        </flowitem>
+      </repeat>
+    </scroll-view>
+
+    <view class="tech-supply">本数据由<text class="h">波士顿科学</text>提供</view>
+
   </view>
-
-  <scroll-view scroll-y="true" class="flow-container" style="height:{{flowHeight}}px;">
-    <repeat for="{{flows}}">
-      <flowitem :icon="item.icon" @flowtap.user="flowTap">
-        <text slot="time">{{item.time}}</text>
-        <text>{{item.text}}</text>
-      </flowitem>
-    </repeat>
-  </scroll-view>
-
-  <view class="tech-supply">本数据由<text class="h">波士顿科学</text>提供</view>
 
   <tabbar :tabBar="tabBar" disabled="true" tabIndex="0" @tabbarChange.user="tabbarChange"></tabbar>
 
@@ -176,7 +176,8 @@
   import Button from '../../components/button'
   import Flowitem from '../../components/flowitem'
   import Tabbar from '../../components/tabbar'
-  import {showError, showToast} from '../../utils/util'
+  import {showError, showToast, formatDate} from '../../utils/util'
+  import {history} from '../../service/history'
 
   export default class Index extends wepy.page {
     config = {
@@ -195,40 +196,12 @@
 
     data = {
       flowHeight: wx.getSystemInfoSync().windowHeight - 300,
+      queryRecordshow: true,
       qrcode: '',
       showClose: false,
-      flows: [
-        {
-          icon: 'truck.svg',
-          time: '15:12 2017.10.11',
-          text: '上海方承仓库-上海佑诚有限公司主仓库'
-        },
-        {
-          icon: 'transport.png',
-          time: '15:12 2017.10.11',
-          text: '上海方承仓库-上海佑诚有限公司主仓库'
-        },
-        {
-          icon: 'transport.png',
-          time: '15:12 2017.10.11',
-          text: '上海方承仓库-上海佑诚有限公司主仓库'
-        },
-        {
-          icon: 'transport.png',
-          time: '15:12 2017.10.11',
-          text: '上海方承仓库-上海佑诚有限公司主仓库'
-        },
-        {
-          icon: 'transport.png',
-          time: '15:12 2017.10.11',
-          text: '上海方承仓库-上海佑诚有限公司主仓库'
-        },
-        {
-          icon: 'hospital.svg',
-          time: '15:12 2017.10.11',
-          text: '上报销量'
-        }
-      ],
+      product: {},
+      flows: [],
+      queryRecords: [],
       tabBar: {
         color: '#777',
         selectedColor: '#01458e',
@@ -250,12 +223,16 @@
     }
 
     computed = {
-
+      expireddateString () {
+        let date = this.product.expireddate
+        if (date) return formatDate(new Date(date), 'yyyy年MM月dd日')
+        else return ''
+      }
     }
 
     watch = {
       qrcode (newVal) {
-        if(!newVal) {
+        if (!newVal) {
           this.showClose = false
         } else {
           this.showClose = true
@@ -264,8 +241,9 @@
     }
 
     methods = {
-      queryTap (e) {
-        console.log('query tap')
+      queryTap () {
+        if (!this.qrcode) return showError('请输入二维码')
+        this.queryFlows(this.qrcode)
       },
       scanTap () {
         this.launchScaner()
@@ -273,11 +251,19 @@
       closeTap () {
         this.clearQuery()
       },
+      queryFocus () {
+        this.showRecords()
+      },
       queryChange (e) {
         this.qrcode = e.detail.value
       },
-      flowTap (index) {
-        console.log(index)
+      recordTap (e) {
+        let key = e.currentTarget.dataset.key
+        this.qrcode = key
+        this.queryFlows(this.qrcode)
+      },
+      clrHistory () {
+        this.clearRecords()
       },
       tabbarChange (index) {
         if (index === 1) {
@@ -301,8 +287,63 @@
         })
     }
 
-    onLoad () {
+    formatTransflow (dataList) {
+      let retList = []
+      if (!Array.isArray(dataList)) return retList
 
+      dataList.forEach(e => {
+        retList.push({
+          icon: 'truck.svg',
+          time: formatDate(new Date(e.transdate), 'mm:ss yyyy.MM.dd'),
+          text: e.fromname
+        })
+      })
+      return retList
+    }
+
+    queryFlows(qrcode = '') {
+      let params = {
+        qrcode
+      }
+
+      this.hideRecords()
+      history.add(qrcode)
+
+      return new Promise((resolve, reject) => {
+        fetch.get('find/transflow', params).then(res => {
+          if (res.success) {
+            this.product = res.data.product || {}
+            this.flows = this.formatTransflow(res.data.transflow)
+            resolve(res.data)
+            this.$apply()
+          } else {
+            reject(res.message)
+            showError(res.message)
+          }
+        }, errMsg => {
+          reject(errMsg)
+          showError(errMsg)
+        })
+      })
+    }
+
+    showRecords () {
+      this.queryRecords = history.getAll()
+      this.queryRecordshow = true
+    }
+
+    hideRecords () {
+      this.queryRecordshow = false
+      this.$apply()
+    }
+
+    clearRecords () {
+      history.clear()
+      this.queryRecords = []
+    }
+
+    onLoad () {
+      this.showRecords()
     }
   }
 </script>

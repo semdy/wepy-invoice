@@ -2,14 +2,18 @@ import {version, ref} from '../config'
 import {session} from '../service/auth'
 import fetch, {serverUrl} from '../service/fetch'
 
-function login () {
+function login (needOpenId) {
   return new Promise((resolve, reject) => {
     wx.login({
       success (res) {
         if (res.code) {
-          getOpenIdByCode(res.code).then(function (info) {
-            resolve(Object.assign({}, res, info))
-          }, reject)
+          if(needOpenId) {
+            getOpenIdByCode(res.code).then(function (info) {
+              resolve(Object.assign({}, res, info))
+            }, reject)
+          } else {
+            resolve(res)
+          }
         } else {
           reject(res.errMsg)
         }
@@ -24,14 +28,14 @@ function login () {
 function getUserInfo (mergeData) {
   return new Promise((resolve, reject) => {
     wx.getUserInfo({
-      success: function(res){
+      success: function(res) {
         if(typeof mergeData === 'object'){
-          Object.assign(res.userInfo, mergeData);
+          Object.assign(res.userInfo, mergeData)
         }
-        resolve(res);
+        resolve(res)
       },
       fail: function(){
-        reject('用户拒绝授权');
+        reject('用户拒绝授权')
       }
     })
   })
@@ -41,15 +45,15 @@ function getOpenIdByCode(code){
   return new Promise((resolve, reject) => {
     fetch.get('auth/wx-auth', {code}).then(res => {
       if (res.success) {
-        let info = {};
-        info.openid = res.data.openid;
-        info.expires_in = Date.now() + res.data.expires_in;
+        let info = {}
+        info.openid = res.data.openid
+        info.expires_in = Date.now() + res.data.expires_in
         if(res.data.unionid) {
-          info.unionid = res.data.unionid;
+          info.unionid = res.data.unionid
         }
-        resolve(info);
+        resolve(info)
       } else {
-        reject(res.message);
+        reject(res.message)
       }
     })
   })
@@ -88,7 +92,7 @@ function uploadFile(url, filePath, formParams, header) {
         formData: params,
         success: function(res) {
           if(res.statusCode === 200) {
-            let data = JSON.parse(res.data);
+            let data = JSON.parse(res.data)
             resolve(data)
           } else {
             reject(res.errMsg)
