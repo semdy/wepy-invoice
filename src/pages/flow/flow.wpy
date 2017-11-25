@@ -139,7 +139,7 @@
       </view>
       <view class="qrinfo-item">
         <view class="qr-label">包装数量：</view>
-        <view class="qr-info">1盒</view>
+        <view class="qr-info">{{product.packageNumber||0}}盒</view>
       </view>
       <view class="qrinfo-item">
         <view class="qr-label">有效日期：</view>
