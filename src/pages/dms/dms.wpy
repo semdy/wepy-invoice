@@ -152,7 +152,7 @@
   <view class="top-actions">
     <text class="bill-number">单据号：{{lastReceiptNo}}</text>
     <view class="switch">
-      <text class="switch-hint">{{scanContinue ? '连扫' : '单扫'}}</text>
+      <text class="switch-hint">连扫</text>
       <switch color="#01458e" class="switcher" checked="{{scanContinue}}" @change="switchChange"/>
     </view>
   </view>
@@ -190,7 +190,7 @@
             <!--<cauthIcon name="cauth.svg" class="cauth-icon" size="small" wx:if="{{item.status !== 'submit'&&item.type==='manual'}}"></cauthIcon>-->
           </view>
           <view class="table-cell td last">
-            <view @tap="delTap({{item}})" wx:if="{{item.status !== 'submit'}}">
+            <view class="icon-delete" @tap="delTap({{item}})" wx:if="{{item.status !== 'submit'}}">
               <deleteIcon name="delete.svg"></deleteIcon>
             </view>
           </view>
@@ -278,7 +278,7 @@
     listIndex = 0
 
     data = {
-      tableHeight: wx.getSystemInfoSync().windowHeight - 380,
+      tableHeight: wx.getSystemInfoSync().windowHeight - 370,
       pageDisabled: false,
       submitDisabled: true,
       scanContinue: true,

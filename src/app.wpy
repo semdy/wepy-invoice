@@ -111,6 +111,11 @@
     .icon {
       padding: 0;
     }
+
+    .icon-delete {
+      padding:24rpx 10rpx;
+      margin: -24rpx -10rpx;
+    }
   }
 </style>
 
@@ -164,7 +169,7 @@
       tabBar: {
         color: '#777',
         selectedColor: '#01458e',
-        borderStyle: 'white',
+        borderStyle: '#ddd',
         backgroundColor: '#fff',
         list: [
           {
@@ -212,23 +217,23 @@
      */
     getUserInfo () {
       return new Promise((resolve, reject) => {
-        if (this.globalData.userInfo) return resolve(this.globalData.userInfo);
+        if (this.globalData.userInfo) return resolve(this.globalData.userInfo)
 
         wx.showLoading({
           mask: true,
           title: '请稍候...'
-        });
+        })
 
         wechat.login()
           .then((res) => wechat.getUserInfo(res))
           .then(res => (this.globalData.userInfo = res.userInfo))
           .then(info => resolve(info))
           .catch(error => {
-            error = JSON.stringify(error);
-            reject(error);
-            console.error('failed to get user info, error: ' + error);
+            error = JSON.stringify(error)
+            reject(error)
+            console.error('failed to get user info, error: ' + error)
             setTimeout(function () {
-              showError('用户信息获取失败: ' + error);
+              showError('用户信息获取失败: ' + error)
             })
           })
           .finally(wx.hideLoading)

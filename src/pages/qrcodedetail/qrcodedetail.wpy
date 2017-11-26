@@ -63,6 +63,11 @@
     display: inline-block;
     font-size: 36rpx;
     padding: 10rpx;
+
+    &.disabled {
+      color: #999;
+      pointer-events: none;
+    }
   }
 
 </style>
@@ -81,7 +86,7 @@
         <text>状态：</text>
         <text class="r">{{statusText}}</text>
       </view>
-      <text class="detail-value r repai" @tap="startCamera" style="visibility:{{canReCaptrue ? 'visible' : 'hidden'}}">重拍</text>
+      <text class="detail-value r repai {{canReCaptrue ? '' : 'disabled'}}" @tap="startCamera">重拍</text>
     </view>
     <view class="detail-item">
       <text class="detail-label">状态说明</text>

@@ -152,7 +152,7 @@
     </view>
 
     <scroll-view scroll-y="true" class="flow-container" style="height:{{flowHeight}}px;">
-      <repeat for="{{flows}}">
+      <repeat for="{{flows}}" key="index">
         <flowitem :icon="item.icon">
           <text slot="time">{{item.time}}</text>
           <text>{{item.text}}</text>
@@ -259,8 +259,7 @@
       },
       recordTap (e) {
         let key = e.currentTarget.dataset.key
-        this.qrcode = key
-        this.queryFlows(this.qrcode)
+        this.queryFlows(key)
       },
       clrHistory () {
         this.clearRecords()
@@ -279,7 +278,6 @@
     launchScaner () {
       wepy.scanCode()
         .then(res => {
-          this.qrcode = res.result
           this.queryFlows(res.result)
           this.$apply()
         })
@@ -307,6 +305,7 @@
         qrcode
       }
 
+      this.qrcode = qrcode
       this.hideRecords()
       history.add(qrcode)
 

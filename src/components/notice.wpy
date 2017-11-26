@@ -5,11 +5,23 @@
     .flex-v-center();
     padding: 16rpx;
     background-color: #fff;
+
+    &:active {
+      background-color: #f2f2f2;
+    }
   }
   .notice-messages{
-    > text{
-      margin-right: 16rpx;
-    }
+    flex: 1;
+    height: 72rpx;
+    overflow: hidden;
+  }
+  .notice-item {
+    .flex-v-center();
+    height: 72rpx;
+  }
+  .notice-scroller {
+    transition-property: all;
+    transition-timing-function: ease-in-out;
   }
 </style>
 
@@ -17,9 +29,11 @@
   <view class="notice {{className}}" style="{{style}}">
     <icon name="notice.svg"></icon>
     <view class="notice-messages">
-      <repeat for="{{notices}}" key="index">
-        <text>{{item}}</text>
-      </repeat>
+      <view class="notice-scroller" style="transform: translateY({{y}}%); transition-duration: {{speed}}ms;">
+        <repeat for="{{notices}}" key="index">
+          <view class="notice-item" data-msg="{{item}}" @tap="noticeTap">{{item}}</view>
+        </repeat>
+      </view>
     </view>
   </view>
 </template>
@@ -41,19 +55,76 @@
       notices: {
         type: Array,
         default: []
+      },
+      delay: {
+        type: Number,
+        default: 5000
+      },
+      speed: {
+        type: Number,
+        default: 600
       }
     }
+
+    intervalId = null
+    timeoutId = null
+    _speed = 0
+    _offset = 0
+    _notices = []
 
     components = {
       icon: Icon
     }
 
     data = {
-
+      y: 0
     }
 
     methods = {
+      noticeTap (e) {
+        let msg = e.currentTarget.dataset.msg
+        let index = this._notices.indexOf(msg)
+        this.$emit('tap', index, e)
+      }
+    }
 
+    doScroll () {
+      this.y = -this._offset
+      this.speed = this._speed
+      this.$apply()
+      this.timeoutId = setTimeout(() => {
+        this.reset()
+      }, this._speed)
+    }
+
+    startScroll () {
+      this.intervalId = setInterval(this.doScroll.bind(this), this.delay)
+    }
+
+    stopScroll () {
+      if (this.intervalId) {
+        clearInterval(this.intervalId)
+        this.intervalId = null
+      }
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId)
+        this.timeoutId = null
+      }
+      this.reset()
+    }
+
+    reset () {
+      this.y = 0
+      this.speed = 0
+      this.notices.push(this.notices.shift())
+      this.$apply()
+    }
+
+    onLoad () {
+      this._speed = this.speed
+      this._offset = (1 / this.notices.length) * 100
+      this._notices = this.notices.slice()
+      this.startScroll()
     }
   }
 </script>

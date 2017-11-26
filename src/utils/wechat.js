@@ -7,8 +7,8 @@ function login (needOpenId) {
     wx.login({
       success (res) {
         if (res.code) {
-          if(needOpenId) {
-            getOpenIdByCode(res.code).then(function (info) {
+          if (needOpenId) {
+            getOpenIdByCode(res.code).then(info => {
               resolve(Object.assign({}, res, info))
             }, reject)
           } else {
@@ -18,7 +18,7 @@ function login (needOpenId) {
           reject(res.errMsg)
         }
       },
-      fail: function(){
+      fail () {
         reject('微信登录接口调用失败')
       }
     })
@@ -28,13 +28,13 @@ function login (needOpenId) {
 function getUserInfo (mergeData) {
   return new Promise((resolve, reject) => {
     wx.getUserInfo({
-      success: function(res) {
+      success (res) {
         if(typeof mergeData === 'object'){
           Object.assign(res.userInfo, mergeData)
         }
         resolve(res)
       },
-      fail: function(){
+      fail () {
         reject('用户拒绝授权')
       }
     })
@@ -90,7 +90,7 @@ function uploadFile(url, filePath, formParams, header) {
           'content-type': 'application/json'
         }),
         formData: params,
-        success: function(res) {
+        success (res) {
           if(res.statusCode === 200) {
             let data = JSON.parse(res.data)
             resolve(data)
@@ -98,10 +98,10 @@ function uploadFile(url, filePath, formParams, header) {
             reject(res.errMsg)
           }
         },
-        fail: function() {
+        fail () {
           reject('上传接口调用失败')
         },
-        complete: function() {
+        complete () {
           wx.hideLoading()
         }
       })

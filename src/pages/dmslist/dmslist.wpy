@@ -93,13 +93,13 @@
     <scroll-view scroll-y="true" class="table-body" lower-threshold="0" style="height:{{tableHeight}}px;" bindscrolltolower="onEndReached">
       <block wx:for="{{dataList}}" wx:key="index">
         <view class="table-row" @tap="rowTap({{item}})">
-          <view class="table-cell td order">{{item.listIndex}}</view>
+          <view class="table-cell td order">{{index + 1}}</view>
           <view class="table-cell td">{{item.receiptNo}}</view>
           <view class="table-cell td type">{{item.type}}</view>
           <view class="table-cell td num">{{item.count}}</view>
           <view class="table-cell td status">{{item.statusText}}</view>
           <view class="table-cell td opt">
-            <view @tap.stop="delTap({{item}})" wx:if="{{item.status !== 'submit'}}">
+            <view class="icon-delete" @tap.stop="delTap({{item}})" wx:if="{{item.status !== 'submit'}}">
               <deleteIcon name="delete.svg"></deleteIcon>
             </view>
           </view>
@@ -142,7 +142,6 @@
     }
 
     page = 1
-    listIndex = 1
     loaded = false
 
     data = {
@@ -204,20 +203,20 @@
 
     handleQuery () {
       this.page = 1
-      this.listIndex = 1
       this.dataList = []
       this.queryReceipt(this.receiptNo, this.page)
     }
 
     appendQuery () {
-      if(!this.loaded) return
+      if (!this.loaded) return
       this.queryReceipt(this.receiptNo, ++this.page)
     }
 
     queryReceipt(receiptNo, page) {
       let params = {
         receiptNo: receiptNo,
-        page: page
+        page: page,
+        limit: 20
       }
       this.loaded = false
       return new Promise((resolve, reject) => {
@@ -226,8 +225,7 @@
             this.total = res.data.total
             res.data.docs.forEach(item => {
               item.statusText = STATUS_MAP[item.status]
-              item.listIndex = this.listIndex++
-              this.dataList.unshift(item)
+              this.dataList.push(item)
             })
             resolve(res.data)
             this.$apply()

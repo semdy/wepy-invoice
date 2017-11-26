@@ -34,7 +34,7 @@
       </swiper-item>
     </swiper>
   </view>
-  <notice :notices="notices"></notice>
+  <notice :notices="notices" @tap.user="noticeTap"></notice>
   <view class="list-group">
     <repeat for="{{listgroup}}" key="index">
       <listitem :icon="item.icon" :iconRight="true" @tap.user="listitemTap">
@@ -63,7 +63,7 @@
     }
 
     data = {
-      notices: ['站内通知'],
+      notices: ['站内通知1', '站内通知2', '站内通知3', '站内通知4'],
       listgroup: [
         {
           icon: 'exchange.svg',
@@ -86,6 +86,9 @@
     }
 
     methods = {
+      noticeTap (index, e) {
+        console.log(index)
+      },
       listitemTap (index, e) {
         if(index === 0) {
           this.$navigate('/pages/dms/dms')

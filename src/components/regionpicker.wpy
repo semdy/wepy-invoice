@@ -59,7 +59,6 @@
     methods = {
       change ($event) {
         this.value = $event.detail.value
-        console.log(this.value)
         this.$emit('datetimechange', $event)
       }
     }

@@ -217,18 +217,18 @@
     }
 
     computed = {
-
     }
 
     watch = {
       copername (val) {
-        return this.setListItemValue('company', val)
+        this.setListItemValue('company', val)
       },
       phone (val) {
-        return this.setListItemValue('phone', val)
+        this.setListItemValue('phone', val)
       },
       email (val) {
-        return this.setListItemValue('email', val)
+        this.tmpEmail = val
+        this.setListItemValue('email', val)
       }
     }
 

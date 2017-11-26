@@ -20,7 +20,7 @@
 
   .table-row {
     &:active {
-      background-color: rgba(0,0,0,.12);
+      background-color: #f2f2f2;
     }
   }
 
@@ -64,11 +64,11 @@
     <scroll-view scroll-y="true" class="table-body" lower-threshold="0" style="height:{{tableHeight}}px;" bindscrolltolower="onEndReached">
       <block wx:for="{{dataList}}" wx:key="index">
         <view class="table-row" @tap="rowTap({{item}})">
-          <view class="table-cell td order">{{item.listIndex}}</view>
+          <view class="table-cell td order">{{index + 1}}</view>
           <view class="table-cell td">{{item.historyqrcode}}</view>
           <view class="table-cell td date">{{item.dateString}}</view>
           <view class="table-cell td opt">
-            <view @tap.stop="delTap({{item}})">
+            <view class="icon-delete" @tap.stop="delTap({{item}})">
               <deleteIcon name="delete.svg"></deleteIcon>
             </view>
           </view>
@@ -104,14 +104,13 @@
     }
 
     page = 1
-    listIndex = 1
     loaded = false
 
     data = {
       date: formatDate(new Date, 'yyyy-MM-dd'),
       dataList: [],
       total: 0,
-      tableHeight: wx.getSystemInfoSync().windowHeight - 188,
+      tableHeight: wx.getSystemInfoSync().windowHeight - 180,
       tabBar: {
         color: '#777',
         selectedColor: '#01458e',
@@ -145,6 +144,11 @@
           this.$back()
         }
       },
+      rowTap (e) {
+        let item = e.currentTarget.dataset.wepyParamsA
+        this.getPrevPage().queryFlows(item.historyqrcode)
+        this.$back()
+      },
       delTap (e) {
         let item = e.currentTarget.dataset.wepyParamsA
         confirm('确定要删除吗?').then(() => {
@@ -158,7 +162,6 @@
 
     handleQuery () {
       this.page = 1
-      this.listIndex = 1
       this.dataList = []
       this.queryFlowHistory(this.date, this.page)
     }
@@ -172,7 +175,7 @@
       let params = {
         date: date,
         page: page,
-        limit: 10
+        limit: 20
       }
       this.loaded = false
       return new Promise((resolve, reject) => {
@@ -180,9 +183,8 @@
           if (res.success) {
             this.total = res.data.total
             res.data.docs.forEach(item => {
-              item.listIndex = this.listIndex++
               item.dateString = formatDate(new Date(item.date), 'yyyy-MM-dd')
-              this.dataList.unshift(item)
+              this.dataList.push(item)
             })
             resolve(res.data)
             this.$apply()
@@ -208,6 +210,11 @@
           showError(res.message)
         }
       }, showError)
+    }
+
+    getPrevPage () {
+      const pages = this.getCurrentPages()
+      return pages[pages.length - 2]
     }
 
     onEndReached () {

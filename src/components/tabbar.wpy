@@ -15,11 +15,11 @@
       flex: 1;
       .flex-center();
       flex-direction: column;
-      padding: 10rpx;
-      font-size: 24rpx;
+      padding: 10rpx 0 4rpx;
+      font-size: 20rpx;
 
       .icon {
-        padding: 6rpx;
+        padding: 4rpx;
 
         .icon-img {
           width: 50rpx;
