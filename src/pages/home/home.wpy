@@ -24,13 +24,13 @@
   <view class="home-swiper-container">
     <swiper class="swiper home-swiper" autoplay="true" interval="5000" duration="300" indicatorDots="true" circular="true">
       <swiper-item class="swiper-item">
-        <image src="../../images/carousel_1.png"></image>
+        <image src="../../images/carousel_1.png" mode="widthFix"></image>
       </swiper-item>
       <swiper-item class="swiper-item">
-        <image src="../../images/carousel_2.png"></image>
+        <image src="../../images/carousel_2.png" mode="widthFix"></image>
       </swiper-item>
       <swiper-item class="swiper-item">
-        <image src="../../images/carousel_3.png"></image>
+        <image src="../../images/carousel_3.png" mode="widthFix"></image>
       </swiper-item>
     </swiper>
   </view>
