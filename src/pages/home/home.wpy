@@ -102,13 +102,6 @@
       }
     }
 
-    toast (msg) {
-      return this.$invoke('toast', 'show', {
-        title: msg,
-        img: 'https://raw.githubusercontent.com/kiinlam/wetoast/master/images/star.png'
-      })
-    }
-
     onLoad () {
 
     }
