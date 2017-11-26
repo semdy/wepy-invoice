@@ -103,7 +103,11 @@
     }
 
     onLoad () {
+      this.$invoke('notice', 'startScroll')
+    }
 
+    onUnload () {
+      this.$invoke('notice', 'stopScroll')
     }
   }
 </script>
