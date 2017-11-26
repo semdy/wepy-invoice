@@ -98,6 +98,7 @@
     }
 
     startScroll () {
+      if (this.intervalId) return
       this.intervalId = setInterval(this.doScroll.bind(this), this.delay)
     }
 
