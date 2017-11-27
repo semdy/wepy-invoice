@@ -1,5 +1,5 @@
-const SESSION_KEY = 'session'
-const SESSION_GROUP_KEY = 'session_group'
+const SESSION_KEY = 'SESSION'
+const SESSION_GROUP_KEY = 'SESSION_GROUP'
 
 let _group = wx.getStorageSync(SESSION_GROUP_KEY) || {}
 

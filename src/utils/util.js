@@ -40,7 +40,7 @@ function showError (msg, duration) {
 }
 
 function showToast (msg, duration) {
-  duration = duration || 1500;
+  duration = duration || 1500
   return new Promise((resolve, reject) => {
     setTimeout(function() {
       wx.showToast({

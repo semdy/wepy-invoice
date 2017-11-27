@@ -262,9 +262,15 @@
         this.hideModal()
       },
       subviewTap (e) {
-        let id = e.currentTarget.dataset.id
-        this.changeSession(id)
-        this.hideSubview()
+        this.updateToken().then(res => {
+          if (res.tokenValid === true) {
+            let id = e.currentTarget.dataset.id
+            this.changeSession(id, res.data.token)
+            this.hideSubview()
+          } else {
+            this.logout()
+          }
+        })
       },
       emailChange (e) {
         this.tmpEmail = e.detail.value
@@ -319,14 +325,18 @@
       })
     }
 
+    updateToken() {
+      return fetch.get('update/token')
+    }
+
     logout () {
       session.clear()
-      //sessionGroup.clear()
       wx.reLaunch({url: '/pages/login/login'})
     }
 
-    changeSession (id) {
+    changeSession (id, token) {
       let curSession = sessionGroup.get(id)
+      curSession.token = token
       if (curSession) {
         session.clear()
         session.set(curSession)

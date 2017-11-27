@@ -272,33 +272,56 @@
 
     launchCamera(){
       wx.chooseImage({
-        count: 1, // 默认9
+        count: 9, // 默认9
         sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
-        sourceType: ['camera'], // 可以指定来源是相册还是相机，默认二者都有
+        sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
         success: (res) => {
           // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
-          let imgFilePath = res.tempFilePaths[0]
-          this.uploadQrImage(imgFilePath)
+          this.uploadQrImages(res.tempFilePaths).then(this.launchCamera.bind(this))
         },
         fail: () => {
-          //showError("拍照调用失败");
+          console.info('取消拍照')
         }
       })
     }
 
-    uploadQrImage(filePath) {
-      return uploadFile('upload/qrimage', filePath).then(data => {
-        if(data.success) {
-          showToast(data.message)
-          this.refresh()
-        } else {
-          showError(data.message)
-        }
-      }, showError)
+    uploadQrImages(filePaths) {
+      let len = filePaths.length
+      let uploadCount = 0
+      let errorCount = 0
+
+      return new Promise((resolve, reject) => {
+        filePaths.forEach(path => {
+          uploadFile('upload/qrimage', path)
+            .catch(e => {
+              errorCount++
+            })
+            .finally(e => {
+              if (++uploadCount === len) {
+                this.refresh()
+                if (errorCount > 0) {
+                  wx.showModal({
+                    title: '提示',
+                    content: `上传完成, ${errorCount}张上传失败`,
+                    showCancel: false,
+                    success: resolve
+                  })
+                } else {
+                  setTimeout(e => {
+                    showToast('上传成功').then(resolve)
+                  }, 300)
+                }
+              }
+            })
+        })
+      })
+    }
+
+    onShow () {
+      this.queryCount(this.day)
     }
 
     onLoad () {
-      this.queryCount(this.day)
       this.circle = new PercentageCircle('percentage-pie', {percent: 0, radius: 60, borderWidth: 12})
     }
 
