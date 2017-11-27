@@ -233,7 +233,7 @@
         lot: this.lot,
         qrimageId: this.qrimageId
       }
-      if(this.imageFile) {
+      if (this.imageFile) {
         return uploadFile('update/qrimage', this.imageFile, params).then(data => {
           if (data.success) {
             this.imageFile = null
@@ -272,7 +272,7 @@
       return pages[pages.length - 2]
     }
     setParams (params = {}) {
-      this.qrcode = params.qrcode
+      this.qrcode = params.qrcode || ''
       this.date = params.date
       this.scanId = params.scanId
       this.filePath = serverUrl + params.filePath
@@ -280,8 +280,8 @@
       this.remark = params.remark
       this.status = params.status
       this.statusText = STATUS_MAP[params.status]
-      this.lot = params.lot
-      this.upn = params.upn
+      this.lot = params.lot || ''
+      this.upn = params.upn || ''
       this.$apply()
     }
     onLoad (params) {

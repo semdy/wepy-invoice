@@ -121,7 +121,8 @@
 
   export default class Index extends wepy.page {
     config = {
-      navigationBarTitleText: '二维码照片上报销量'
+      navigationBarTitleText: '二维码照片上报销量',
+      enablePullDownRefresh: true
     }
 
     components = {
@@ -299,6 +300,10 @@
     onLoad () {
       this.queryCount(this.day)
       this.circle = new PercentageCircle('percentage-pie', {percent: 0, radius: 60, borderWidth: 12})
+    }
+
+    onPullDownRefresh () {
+      this.queryCount(this.day)
     }
   }
 </script>
