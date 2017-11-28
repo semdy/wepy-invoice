@@ -97,7 +97,7 @@
     <view class="detail-item">
       <text class="detail-label">二维码</text>
       <view class="detail-value">
-        <qrinput :value.sync="qrcode" @change.user="qrcodeChange"></qrinput>
+        <qrinput :value.sync="qrcode" disabled="true" @change.user="qrcodeChange"></qrinput>
       </view>
     </view>
     <view class="detail-item">
