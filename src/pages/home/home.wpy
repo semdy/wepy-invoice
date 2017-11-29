@@ -23,15 +23,11 @@
 <template>
   <view class="home-swiper-container">
     <swiper class="swiper home-swiper" autoplay="true" interval="5000" duration="300" indicatorDots="true" circular="true">
-      <swiper-item class="swiper-item">
-        <image src="../../images/carousel_1.png" mode="widthFix"></image>
-      </swiper-item>
-      <swiper-item class="swiper-item">
-        <image src="../../images/carousel_2.png" mode="widthFix"></image>
-      </swiper-item>
-      <swiper-item class="swiper-item">
-        <image src="../../images/carousel_3.png" mode="widthFix"></image>
-      </swiper-item>
+      <block wx:for="{{swiperList}}" wx:key="index">
+        <swiper-item class="swiper-item" data-index="{{index}}" @tap="gotoweb">
+          <image src="{{item.source}}" mode="widthFix"></image>
+        </swiper-item>
+      </block>
     </swiper>
   </view>
   <notice :notices="notices" @tap.user="noticeTap"></notice>
@@ -63,6 +59,16 @@
     }
 
     data = {
+      swiperList: [
+        {
+          source: '../../images/carousel_1.png',
+          url: 'https://bscqr.qtdatas.com/webview/main.html'
+        },
+        {
+          source: '../../images/carousel_2.png',
+          url: '/pages/point/point'
+        }
+      ],
       notices: ['站内通知1', '站内通知2', '站内通知3', '站内通知4'],
       listgroup: [
         {
@@ -86,17 +92,26 @@
     }
 
     methods = {
+      gotoweb (e) {
+        let index = e.currentTarget.dataset.index
+        let item = this.swiperList[index]
+        if (item && item.url !== undefined) {
+          if (/^https?:\/\//.test(item.url)) {
+            this.$navigate('/pages/webview/main', {url: item.url})
+          } else {
+            this.$navigate(item.url)
+          }
+        }
+      },
       noticeTap (index, e) {
-        console.log(index)
+        this.$navigate('/pages/webview/notice')
       },
       listitemTap (index, e) {
-        if(index === 0) {
+        if (index === 0) {
           this.$navigate('/pages/dms/dms')
-        }
-        else if(index === 1) {
+        } else if (index === 1) {
           this.$navigate('/pages/flow/flow')
-        }
-        else if(index === 2) {
+        } else if (index === 2) {
           this.$navigate('/pages/qrcodeupload/qrcodeupload')
         }
       }

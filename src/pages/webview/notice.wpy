@@ -1,0 +1,35 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+</style>
+<template>
+  <web-view src="https://bscqr.qtdatas.com/webview/notice.html"></web-view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '系统通知'
+    }
+
+    components = {
+    }
+
+    data = {
+    }
+
+    computed = {
+    }
+
+    watch = {
+    }
+
+    methods = {
+    }
+
+    onLoad () {
+    }
+  }
+</script>

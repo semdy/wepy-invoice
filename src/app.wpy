@@ -141,7 +141,9 @@
         'pages/exchange/exchange',
         'pages/qrcodeupload/qrcodeupload',
         'pages/qrcodelist/qrcodelist',
-        'pages/qrcodedetail/qrcodedetail'
+        'pages/qrcodedetail/qrcodedetail',
+        'pages/webview/main',
+        'pages/webview/notice'
       ],
       window: {
         // 类型：HexColor；默认值：#000000

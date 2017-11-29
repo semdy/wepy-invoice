@@ -1,0 +1,41 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page {
+    background-color: #fff;
+  }
+
+</style>
+<template>
+  <web-view wx:if="{{url}}" src="{{url}}"></web-view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '物联网'
+    }
+
+    components = {
+    }
+
+    data = {
+      url: ''
+    }
+
+    computed = {
+    }
+
+    watch = {
+    }
+
+    methods = {
+    }
+
+    onLoad (params) {
+      this.url = params.url
+    }
+  }
+</script>
