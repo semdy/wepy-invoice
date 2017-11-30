@@ -139,7 +139,7 @@
       </view>
       <view class="qrinfo-item">
         <view class="qr-label">包装数量：</view>
-        <view class="qr-info">{{product.packageNumber||0}}盒</view>
+        <view class="qr-info">{{product.packageNumber||0}}/盒</view>
       </view>
       <view class="qrinfo-item">
         <view class="qr-label">有效日期：</view>
@@ -316,6 +316,13 @@
             this.flows = this.formatTransflow(res.data.transflow)
             resolve(res.data)
             this.$apply()
+            if (this.flows.length === 0) {
+              wx.showModal({
+                title: '提示',
+                content: '未查询到此二维码信息',
+                showCancel: false
+              })
+            }
           } else {
             reject(res.message)
             showError(res.message)
