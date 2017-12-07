@@ -8,8 +8,8 @@
     .flex-v-center();
     background-color: #fff;
 
-    picker {
-      margin-right: 20rpx;
+    .button {
+      margin-left: 20rpx;
     }
   }
 
@@ -51,6 +51,7 @@
     <veiw class="query-label">时间</veiw>
     <datetimepicker :value.sync="date" @datetimechange.user="datetimeChange"></datetimepicker>
     <querybutton @tap.user="queryTap">查询</querybutton>
+    <querybutton @tap.user="exportTap" wx:if="{{showExport}}">导出</querybutton>
   </view>
 
   <view class="table">
@@ -90,6 +91,7 @@
   import Datetimepicker from '../../components/datetimepicker'
   import Tabbar from '../../components/tabbar'
   import {showError, showToast, confirm, formatDate} from '../../utils/util'
+  import {session} from '../../service/auth'
 
   export default class Index extends wepy.page {
     config = {
@@ -110,6 +112,7 @@
       date: formatDate(new Date, 'yyyy-MM-dd'),
       dataList: [],
       total: 0,
+      showExport: session.get().user.role === 3,
       tableHeight: wx.getSystemInfoSync().windowHeight - 180,
       tabBar: {
         color: '#777',
@@ -138,6 +141,9 @@
     methods = {
       queryTap () {
         this.handleQuery()
+      },
+      exportTap () {
+        console.log('export')
       },
       tabbarChange (index) {
         if (index === 0) {

@@ -222,7 +222,7 @@
     </view>
   </modal>-->
 
-  <modal :show.sync="isModalShow" title="提示" @modalClose.user="closeModal">
+  <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
     <view class="modal-confirm">
       <view>信息完整的<text class="h">{{dataList.length-failedCount}}</text>条</view>
       <view>缺少信息的<text class="h">{{failedCount}}</text>条</view>

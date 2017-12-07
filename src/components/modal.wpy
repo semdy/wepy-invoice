@@ -54,7 +54,7 @@
 </style>
 
 <template>
-  <view class="modal {{className}} {{show ? 'show' : 'hide'}}" style="{{style}}">
+  <view class="modal {{className}}" style="{{style}}">
     <view class="modal-dialog {{title !== '' ? 'hasTitle' : ''}}">
       <view class="modal-header" wx:if="{{title !== ''}}">
         <text>{{title}}</text>
@@ -97,7 +97,6 @@
     }
 
     data = {
-
     }
 
     open (e) {

@@ -138,9 +138,11 @@
     <logoutbutton @tap.user="logoutTap">退出登录</logoutbutton>
   </view>
 
-  <modal :show.sync="isModalShow" title="修改邮箱" @modalClose.user="closeModal">
+  <modal wx:if="{{isModalShow}}" title="修改邮箱" @modalClose.user="closeModal">
     <view>
-      <emailinput :value.sync="email" border="true" @input.user="emailChange"></emailinput>
+      <view class="form-item bordered">
+        <input type="text" value="{{email}}" class="input normal" @input="emailChange"/>
+      </view>
     </view>
     <view class="modal-footer">
       <view class="update-button cancel" @tap="closeModal">取消</view>
