@@ -124,22 +124,22 @@
   </view>
 
   <view class="search-results" style="display: {{queryRecordshow ? 'none' : 'block'}}">
-    <view class="qrinfo-panel" wx:if="{{product.qrcode}}">
+    <view class="qrinfo-panel" wx:if="{{product.QRCode}}">
       <view class="qrinfo-item">
         <view class="qr-label">二维码：</view>
-        <view class="qr-info">{{product.qrcode}}</view>
+        <view class="qr-info">{{product.QRCode}}</view>
       </view>
       <view class="qrinfo-item">
         <view class="qr-label">型号：</view>
-        <view class="qr-info">{{product.lot}}</view>
+        <view class="qr-info">{{product.LOT}}</view>
       </view>
       <view class="qrinfo-item">
         <view class="qr-label">批号：</view>
-        <view class="qr-info">{{product.upn}}</view>
+        <view class="qr-info">{{product.UPN}}</view>
       </view>
       <view class="qrinfo-item">
         <view class="qr-label">包装数量：</view>
-        <view class="qr-info">{{product.packageNumber||0}}/盒</view>
+        <view class="qr-info">{{product.UnitQty}}/{{product.Unit}}</view>
       </view>
       <view class="qrinfo-item">
         <view class="qr-label">有效日期：</view>
@@ -147,7 +147,7 @@
       </view>
       <view class="qrinfo-item">
         <view class="qr-label">产品名称：</view>
-        <view class="qr-info">{{product.productname}}</view>
+        <view class="qr-info">{{product.ProductName}}</view>
       </view>
     </view>
 
@@ -224,7 +224,7 @@
 
     computed = {
       expireddateString () {
-        let date = this.product.expireddate
+        let date = this.product.ExpiredDate
         if (date) return formatDate(new Date(date), 'yyyy年MM月dd日')
         else return ''
       }
@@ -290,11 +290,11 @@
       let retList = []
       if (!Array.isArray(dataList)) return retList
 
-      dataList.forEach(e => {
+      dataList.forEach((e, i) => {
         retList.push({
-          icon: 'truck.svg',
-          time: formatDate(new Date(e.transdate), 'mm:ss yyyy.MM.dd'),
-          text: e.fromname
+          icon: i === 0 ? 'truck.svg' : (i === dataList.length - 1 ? 'hospital.svg' : 'transport.png'),
+          time: formatDate(new Date(e.TransDate), 'HH:mm yyyy.MM.dd'),
+          text: e.FromName
         })
       })
       return retList
@@ -312,8 +312,8 @@
       return new Promise((resolve, reject) => {
         fetch.get('find/transflow', params).then(res => {
           if (res.success) {
-            this.product = res.data.product || {}
-            this.flows = this.formatTransflow(res.data.transflow)
+            this.product = res.data[0] || {}
+            this.flows = this.formatTransflow(res.data)
             resolve(res.data)
             this.$apply()
             if (this.flows.length === 0) {

@@ -143,7 +143,7 @@
         this.handleQuery()
       },
       exportTap () {
-        console.log('export')
+        this.exportFlow(this.date)
       },
       tabbarChange (index) {
         if (index === 0) {
@@ -212,6 +212,20 @@
         if (res.success) {
           showToast(res.message)
           this.handleQuery()
+        } else {
+          showError(res.message)
+        }
+      }, showError)
+    }
+
+    exportFlow (date) {
+      fetch.get('export/history', {date: date}).then(res => {
+        if (res.success) {
+          wx.showModal({
+            title: '提示',
+            content: '数据导出成功',
+            showCancel: false
+          })
         } else {
           showError(res.message)
         }
