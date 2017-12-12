@@ -112,7 +112,7 @@
       date: formatDate(new Date, 'yyyy-MM-dd'),
       dataList: [],
       total: 0,
-      showExport: session.get().user.role === 3,
+      showExport: session.get() ? session.get().user.role === 3 : false,
       tableHeight: wx.getSystemInfoSync().windowHeight - 180,
       tabBar: {
         color: '#777',
