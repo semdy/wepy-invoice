@@ -292,7 +292,7 @@
 
       dataList.forEach((e, i) => {
         retList.push({
-          icon: i === 0 ? 'truck.svg' : (i === dataList.length - 1 ? 'hospital.svg' : 'transport.png'),
+          icon: i === 0 ? 'truck.svg' : (e.TransflowType === 'hospitalSales' ? 'hospital.svg' : 'transport.png'),
           time: formatDate(new Date(e.TransDate), 'HH:mm yyyy.MM.dd'),
           text: e.FromName
         })

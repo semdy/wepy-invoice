@@ -51,7 +51,7 @@
     <veiw class="query-label">时间</veiw>
     <datetimepicker :value.sync="date" @datetimechange.user="datetimeChange"></datetimepicker>
     <querybutton @tap.user="queryTap">查询</querybutton>
-    <querybutton @tap.user="exportTap" wx:if="{{showExport}}">导出</querybutton>
+    <exportbutton @tap.user="exportTap" wx:if="{{showExport}}">导出</exportbutton>
   </view>
 
   <view class="table">
@@ -102,7 +102,8 @@
       deleteIcon: Icon,
       tabbar: Tabbar,
       datetimepicker: Datetimepicker,
-      querybutton: Button
+      querybutton: Button,
+      exportbutton: Button
     }
 
     page = 1
