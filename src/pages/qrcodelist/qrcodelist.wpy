@@ -64,7 +64,7 @@
 
   .table-cell.status {
     flex:none;
-    width:120rpx;
+    width:150rpx;
   }
 
 </style>
