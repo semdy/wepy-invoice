@@ -160,8 +160,9 @@
       <repeat for="{{flows}}" key="index">
         <flowitem :icon="item.icon">
           <text slot="time">{{item.time}}</text>
-          <view>{{item.text}}</view>
-          <view class="subtext">{{item.subtext}}</view>
+          <view wx:if="{{item.text1}}">{{item.text1}}</view>
+          <view wx:if="{{item.text2}}">{{item.text2}}</view>
+          <view class="subtext" wx:if="{{item.subtext}}">{{item.subtext}}</view>
         </flowitem>
       </repeat>
     </scroll-view>
@@ -300,7 +301,8 @@
         retList.push({
           icon: i === 0 ? 'truck.svg' : (e.TransflowType === 'hospitalSales' ? 'hospital.svg' : 'transport.png'),
           time: formatDate(new Date(e.TransDate), 'HH:mm yyyy.MM.dd'),
-          text: e.ToName,
+          text1: e.TransflowType === 'hospitalSales' ? e.FromName : '',
+          text2: e.TransflowType === 'hospitalSales' ? e.ToName : e.FromName,
           subtext: e.TransType
         })
       })
