@@ -98,6 +98,11 @@
     text-align: center;
   }
 
+  .flow-item-bd .subtext {
+    font-size: 26rpx;
+    color: #666;
+  }
+
 </style>
 <template>
   <view class="query-form">
@@ -155,7 +160,8 @@
       <repeat for="{{flows}}" key="index">
         <flowitem :icon="item.icon">
           <text slot="time">{{item.time}}</text>
-          <text>{{item.text}}</text>
+          <view>{{item.text}}</view>
+          <view class="subtext">{{item.subtext}}</view>
         </flowitem>
       </repeat>
     </scroll-view>
@@ -294,7 +300,8 @@
         retList.push({
           icon: i === 0 ? 'truck.svg' : (e.TransflowType === 'hospitalSales' ? 'hospital.svg' : 'transport.png'),
           time: formatDate(new Date(e.TransDate), 'HH:mm yyyy.MM.dd'),
-          text: e.FromName
+          text: e.ToName,
+          subtext: e.TransType
         })
       })
       return retList
