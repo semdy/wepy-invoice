@@ -119,11 +119,7 @@
             let sessionData = Object.assign({}, userInfo, res.data)
             session.set(sessionData)
             sessionGroup.add(res.data.user.id, sessionData)
-            if (res.data.user.role === 3) {
-              this.$redirect('/pages/flow/flow')
-            } else {
-              this.$switch('/pages/home/home')
-            }
+            this.$switch('/pages/home/home')
           }, errorHandler)
         }, msg => {
           this.isLogining = false

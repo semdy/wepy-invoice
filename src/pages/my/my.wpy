@@ -343,6 +343,7 @@
         session.clear()
         session.set(curSession)
         this.setParams(curSession)
+        this.sessions = this.getSessions()
       }
     }
 
@@ -350,7 +351,7 @@
       let sessions = []
       let curSession = session.get()
       sessionGroup.toArray().forEach(item => {
-        if (item.token === curSession.token) return false
+        if (item.user.id === curSession.user.id) return false
         sessions.push({id: item.user.id, name: item.user.name})
       })
 

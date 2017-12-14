@@ -33,7 +33,7 @@
   <notice :notices="notices" @tap.user="noticeTap"></notice>
   <view class="list-group">
     <repeat for="{{listgroup}}" key="index">
-      <listitem :icon="item.icon" :iconRight="true" @tap.user="listitemTap">
+      <listitem :icon="item.icon" :iconRight="true" wx:if="{{item.visible}}" @tap.user="listitemTap">
         <view class="list-item-text">{{item.text}}</view>
         <view class="list-item-ctext">{{item.ctext}}</view>
       </listitem>
@@ -47,6 +47,7 @@
   import Notice from '../../components/notice'
   import Listitem from '../../components/listitem'
   import {showError, showToast} from '../../utils/util'
+  import {session} from '../../service/auth'
 
   export default class Index extends wepy.page {
     config = {
@@ -74,15 +75,18 @@
         {
           icon: 'exchange.svg',
           text: '移库/上报销量',
-          ctext: '二维码上传DMS'
+          ctext: '二维码上传DMS',
+          visible: true
         },
         {
           icon: 'find.svg',
-          text: '二维码流向查询'
+          text: '二维码流向查询',
+          visible: true
         },
         {
           icon: 'picture.svg',
-          text: '二维码照片上报'
+          text: '二维码照片上报',
+          visible: true
         }
       ]
     }
@@ -114,6 +118,22 @@
         } else if (index === 2) {
           this.$navigate('/pages/qrcodeupload/qrcodeupload')
         }
+      }
+    }
+
+    onShow () {
+      if (session.get().user.role === 3) {
+        this.listgroup.forEach((e, i) => {
+          if (i !== 1) {
+            e.visible = false
+          } else {
+            e.visible = true
+          }
+        })
+      } else {
+        this.listgroup.forEach(e => {
+          e.visible = true
+        })
       }
     }
 

@@ -29,6 +29,7 @@ export const session = {
 
 export const sessionGroup = {
   add(id, data) {
+    if (this.has(id)) return
     _group[id] = data
     try {
       wx.setStorageSync(SESSION_GROUP_KEY, _group)

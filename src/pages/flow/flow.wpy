@@ -184,6 +184,7 @@
   import Flowitem from '../../components/flowitem'
   import Tabbar from '../../components/tabbar'
   import {showError, showToast, formatDate} from '../../utils/util'
+  import {session} from '../../service/auth'
   import {history} from '../../service/history'
 
   export default class Index extends wepy.page {
@@ -359,6 +360,11 @@
     }
 
     onLoad () {
+      if (session.get().user.role === 3) {
+        wx.setNavigationBarTitle({
+          title: '二维码审计查询'
+        })
+      }
       this.showRecords()
     }
   }
