@@ -21,7 +21,7 @@
   }
 </style>
 <template>
-  <view class="home-swiper-container" wx:if="{{swiperList.length>0}}">
+  <view class="home-swiper-container">
     <swiper class="swiper home-swiper" autoplay="true" interval="5000" duration="300" indicatorDots="true" circular="true">
       <block wx:for="{{swiperList}}" wx:key="index">
         <swiper-item class="swiper-item" data-index="{{index}}" @tap="gotoweb">
