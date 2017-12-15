@@ -21,7 +21,7 @@
   }
 </style>
 <template>
-  <view class="home-swiper-container">
+  <view class="home-swiper-container" wx:if="{{swiperList.length>0}}">
     <swiper class="swiper home-swiper" autoplay="true" interval="5000" duration="300" indicatorDots="true" circular="true">
       <block wx:for="{{swiperList}}" wx:key="index">
         <swiper-item class="swiper-item" data-index="{{index}}" @tap="gotoweb">
@@ -60,16 +60,7 @@
     }
 
     data = {
-      swiperList: [
-        {
-          source: '../../images/carousel_1.png',
-          url: 'https://bscqr.qtdatas.com/webview/main.html'
-        },
-        {
-          source: '../../images/carousel_2.png',
-          url: '/pages/point/point'
-        }
-      ],
+      swiperList: [],
       notices: ['站内通知1', '站内通知2', '站内通知3', '站内通知4'],
       listgroup: [
         {
@@ -99,11 +90,11 @@
       gotoweb (e) {
         let index = e.currentTarget.dataset.index
         let item = this.swiperList[index]
-        if (item && item.url !== undefined) {
-          if (/^https?:\/\//.test(item.url)) {
-            this.$navigate('/pages/webview/main', {url: item.url})
+        if (item && item.targetUrl !== undefined) {
+          if (/^https?:\/\//.test(item.targetUrl)) {
+            this.$navigate('/pages/webview/main', {url: item.targetUrl})
           } else {
-            this.$navigate(item.url)
+            this.$navigate(item.targetUrl)
           }
         }
       },
@@ -119,6 +110,16 @@
           this.$navigate('/pages/qrcodeupload/qrcodeupload')
         }
       }
+    }
+
+    fetchSwiper () {
+      fetch.get('find/slide').then(res => {
+        if (res.success) {
+          this.swiperList = res.data
+        } else {
+          showError(res.message)
+        }
+      }, showError)
     }
 
     onShow () {
@@ -142,6 +143,7 @@
     }
 
     onLoad () {
+      this.fetchSwiper()
       this.$invoke('notice', 'startScroll')
     }
 
