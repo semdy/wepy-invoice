@@ -116,6 +116,7 @@
       fetch.get('find/slide').then(res => {
         if (res.success) {
           this.swiperList = res.data
+          this.$apply()
         } else {
           showError(res.message)
         }
