@@ -101,6 +101,12 @@
   .flow-item-bd .subtext {
     font-size: 26rpx;
     color: #666;
+    margin-top: 6rpx;
+  }
+
+  .flow-item-bd .flow-text {
+    padding-left: 2em;
+    text-indent: -2em;
   }
 
 </style>
@@ -160,8 +166,8 @@
       <repeat for="{{flows}}" key="index">
         <flowitem :icon="item.icon">
           <text slot="time">{{item.time}}</text>
-          <view wx:if="{{item.text1}}">{{item.text1}}</view>
-          <view wx:if="{{item.text2}}">{{item.text2}}</view>
+          <view class="flow-text" wx:if="{{item.text1}}">从：{{item.text1}}</view>
+          <view class="flow-text" wx:if="{{item.text2}}">到：{{item.text2}}</view>
           <view class="subtext" wx:if="{{item.subtext}}">{{item.subtext}}</view>
         </flowitem>
       </repeat>
@@ -302,8 +308,8 @@
         retList.push({
           icon: i === 0 ? 'truck.svg' : (e.TransflowType === 'hospitalSales' ? 'hospital.svg' : 'transport.png'),
           time: formatDate(new Date(e.TransDate), 'HH:mm yyyy.MM.dd'),
-          text1: e.TransflowType === 'hospitalSales' ? e.FromName : '',
-          text2: e.TransflowType === 'hospitalSales' ? e.ToName : e.FromName,
+          text1: e.FromName,
+          text2: e.ToName,
           subtext: e.TransType
         })
       })
@@ -362,7 +368,7 @@
     onLoad () {
       if (session.get().user.role === 3) {
         wx.setNavigationBarTitle({
-          title: '二维码审计查询'
+          title: '经销商审计'
         })
       }
       this.showRecords()

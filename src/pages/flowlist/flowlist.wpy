@@ -23,7 +23,7 @@
     padding-top: 18rpx;
 
     .button {
-      width: 60%;
+      width: 40%;
     }
   }
 
@@ -259,7 +259,7 @@
         this.showExport = true
         this.tableHeight = wx.getSystemInfoSync().windowHeight - 240
         wx.setNavigationBarTitle({
-          title: '二维码审计'
+          title: '经销商审计'
         })
       }
       this.handleQuery()

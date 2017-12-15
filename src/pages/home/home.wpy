@@ -128,11 +128,15 @@
             e.visible = false
           } else {
             e.visible = true
+            e.text = '经销商审计'
           }
         })
       } else {
-        this.listgroup.forEach(e => {
+        this.listgroup.forEach((e, i) => {
           e.visible = true
+          if (i === 1) {
+            e.text = '二维码流向查询'
+          }
         })
       }
     }

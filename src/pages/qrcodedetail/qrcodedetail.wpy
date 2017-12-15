@@ -114,7 +114,7 @@
     </view>
   </view>
   <view class="detail-actions">
-    <delbutton type="danger" :disabled.sync="pageDisabled" @tap.user="delTap">删除</delbutton>
+    <delbutton type="danger" :disabled.sync="delDisabled" @tap.user="delTap">删除</delbutton>
     <savebutton @tap.user="updateTap" :disabled.sync="saveDisabled">保存</savebutton>
   </view>
 </template>
@@ -164,9 +164,9 @@
     }
     computed = {
       saveDisabled () {
-        return this.status !== 'scanFail'
+        return this.status !== 'scanFail' && this.status !== 'checkFail'
       },
-      pageDisabled () {
+      delDisabled () {
         return this.status === 'checkPass'
       },
       canReCaptrue () {
