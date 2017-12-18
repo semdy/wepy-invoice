@@ -1,0 +1,86 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page {
+    display: block;
+    height: auto;
+  }
+
+  .list-item {
+    padding-top: 30rpx;
+    padding-bottom: 30rpx;
+    margin-bottom: 0;
+    margin-top: -1px;
+
+    .list-item-bd {
+      justify-content: space-between;
+
+      .date {
+        color: #777;
+      }
+    }
+  }
+</style>
+<template>
+  <view class="notice-listgroup">
+    <repeat for="{{list}}">
+      <listitem hasArrow="true" @tap.user="listitemTap">
+        <text class="notice">{{item.content}}</text>
+        <text class="date">{{item.date}}</text>
+      </listitem>
+    </repeat>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Listitem from '../../components/listitem'
+  import {showError, showToast} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '通知列表'
+    }
+
+    components = {
+      listitem: Listitem
+    }
+
+    data = {
+      list: [
+        {
+          content: '12月销量上报截止时间通知',
+          date: '2017-12-17'
+        },
+        {
+          content: '12月销量上报截止时间通知',
+          date: '2017-12-17'
+        },
+        {
+          content: '12月销量上报截止时间通知',
+          date: '2017-12-17'
+        },
+        {
+          content: '12月销量上报截止时间通知',
+          date: '2017-12-17'
+        }
+      ]
+    }
+
+    computed = {
+    }
+
+    watch = {
+    }
+
+    methods = {
+      listitemTap (index) {
+        this.$back()
+      }
+    }
+
+    onLoad () {
+    }
+  }
+</script>

@@ -1,0 +1,81 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page {
+    display: block;
+    min-height: 100%;
+  }
+
+  .notice-detail {
+    padding: 50rpx;
+    box-sizing: border-box;
+    min-height: 92%;
+
+    .title {
+      margin-bottom: 30rpx;
+    }
+    .content {
+      margin-bottom: 100rpx;
+    }
+    .affix {
+      text-align: right;
+      margin-bottom: 10rpx;
+    }
+    .date {
+      text-align: right;
+    }
+  }
+
+  .notice-history {
+    text-align: right;
+    color: #01458e;
+    padding-left: 50rpx;
+    padding-right: 50rpx;
+  }
+</style>
+<template>
+  <view class="notice-detail">
+    <view class="title">{{title}}</view>
+    <view class="content">{{content}}</view>
+    <view class="affix">波士顿科学</view>
+    <view class="date">{{date}}</view>
+  </view>
+  <view class="notice-history" @tap="gotoHistory">历史通知</view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import {showError, showToast} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '通知'
+    }
+
+    components = {
+
+    }
+
+    data = {
+      title: '致亲爱的经销商：',
+      content: '2017年就要结束了，我们本月的销量上报截止时间会提早到12月29日23时，请在该日期之前提交您的销量上报单，以名影响您的工作，谢谢。',
+      date: '2017年12月17日'
+    }
+
+    computed = {
+    }
+
+    watch = {
+    }
+
+    methods = {
+      gotoHistory () {
+        this.$navigate('/pages/noticelist/noticelist')
+      }
+    }
+
+    onLoad () {
+    }
+  }
+</script>

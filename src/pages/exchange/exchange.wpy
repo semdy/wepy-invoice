@@ -25,7 +25,22 @@
   }
 
   .exchange-listgroup {
+    .flex();
+    flex-direction: column;
     background-color: #fff;
+    flex: 1;
+    height: 100%;
+    padding-bottom: 10rpx;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .exchange-list {
+    flex: 1;
+    height: 100%;
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+    overflow: auto;
   }
 
   .exchange-legend {
@@ -54,15 +69,7 @@
     }
   }
 
-  .exchange-list {
-    margin: 20rpx;
-  }
-
   .page-actions {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
     padding: 20rpx 40rpx;
     background-color: #fff;
     border-top: 2rpx solid #ccc;
@@ -89,13 +96,27 @@
     <view class="exchange-legend">
       <text>积分兑换区</text>
     </view>
-    <view class="exchange-list">
-      <repeat for="{{cardgroup}}">
-        <carditem :cover="item.cover" :num="item.num">
-          <text>{{item.desc}}</text>
-        </carditem>
-      </repeat>
-    </view>
+    <scroll-view scroll-y="true" class="exchange-list">
+      <block wx:for="{{list}}" wx:key="index">
+        <view class="card-item">
+          <image class="card-cover" src="{{item.cover}}" mode="aspectFit"></image>
+          <view class="card-body">
+            <view class="card-desc">
+               {{item.desc}}
+            </view>
+            <view class="counter">
+              <view class="counter-action" data-index="{{index}}" @tap="minus">
+                <minusicon name="minus.svg" size="small"></minusicon>
+              </view>
+              <input type="number" class="count" data-index="{{index}}" value="{{item.num}}" @input="numChange" @blur="numBlur" />
+              <view class="counter-action" data-index="{{index}}" @tap="plus">
+                <plusicon name="plus.svg" size="small"></plusicon>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
   </view>
 
   <view class="page-actions">
@@ -114,6 +135,7 @@
   import Icon from '../../components/icon'
   import Button from '../../components/button'
   import Carditem from '../../components/carditem'
+  import Counter from '../../components/counter'
   import {showError, showToast} from '../../utils/util'
 
   export default class Index extends wepy.page {
@@ -123,27 +145,34 @@
 
     components = {
       gifticon: Icon,
+      plusicon: Icon,
+      minusicon: Icon,
       carditem: Carditem,
-      excbutton: Button
+      excbutton: Button,
+      counter: Counter
     }
 
     data = {
-      cardgroup: [
+      list: [
         {
-          cover: 'card1.jpg',
-          desc: '5元话费卡 100积分'
+          cover: '../../images/card1.jpg',
+          desc: '5元话费卡 100积分',
+          num: 0
         },
         {
-          cover: 'card2.jpg',
-          desc: '100元话费卡 1000积分'
+          cover: '../../images/card2.jpg',
+          desc: '100元话费卡 1000积分',
+          num: 0
         },
         {
-          cover: 'card3.jpg',
-          desc: '50元京东卡 500积分'
+          cover: '../../images/card3.jpg',
+          desc: '50元京东卡 500积分',
+          num: 0
         },
         {
-          cover: 'card4.jpg',
-          desc: '300元京东卡 1000积分'
+          cover: '../../images/card4.jpg',
+          desc: '300元京东卡 1000积分',
+          num: 0
         }
       ]
     }
@@ -151,9 +180,40 @@
     computed = {
     }
     methods = {
+      plus (e) {
+        let index = e.currentTarget.dataset.index
+        this.list[index].num++
+      },
+      minus (e) {
+        let index = e.currentTarget.dataset.index
+        this.list[index].num = Math.max(0, this.list[index].num - 1)
+      },
+      numChange (e) {
+        let index = e.currentTarget.dataset.index
+        let value = e.detail.value
+        if (isNaN(value)) {
+          value = 0
+        }
+        this.list[index].num = parseInt(value)
+        this.setData({
+          list: this.list
+        })
+      },
+      numBlur (e) {
+        let index = e.currentTarget.dataset.index
+        let value = parseInt(e.detail.value)
+        if (isNaN(value)) {
+          value = 0
+        }
+        this.list[index].num = value
+        this.setData({
+          list: this.list
+        })
+      }
     }
+
     onLoad () {
-      console.log(this)
+
     }
   }
 </script>

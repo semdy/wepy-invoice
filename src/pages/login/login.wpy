@@ -43,8 +43,8 @@
     </view>
   </view>
   <view class="login-form">
-    <formitemuser icon="user.svg" :value="username" @input.user="userChange"></formitemuser>
-    <formitemmobile icon="mobile.svg" :value="mobile" @input.user="mobileChange"></formitemmobile>
+    <formitemuser icon="user.svg" placeholder="公司码" :value="username" @input.user="userChange"></formitemuser>
+    <formitemmobile icon="mobile.svg" placeholder="手机号" :value="mobile" @input.user="mobileChange"></formitemmobile>
     <loginButton class="login-button" @tap.user="loginButtonTap">登录</loginButton>
   </view>
   <view class="login-footer">服务热线：021-33563567</view>

@@ -29,7 +29,7 @@
 </style>
 <template>
   <view class="card-item {{className}}" style="{{style}}">
-    <image class="card-cover" src="../../images/{{cover}}" mode="aspectFit"></image>
+    <image class="card-cover" src="{{cover}}" mode="aspectFit"></image>
     <view class="card-body">
       <view class="card-desc">
         <slot></slot>

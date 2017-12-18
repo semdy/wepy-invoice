@@ -143,7 +143,9 @@
         'pages/qrcodelist/qrcodelist',
         'pages/qrcodedetail/qrcodedetail',
         'pages/webview/main',
-        'pages/webview/notice'
+        'pages/webview/notice',
+        'pages/noticelist/noticelist',
+        'pages/noticedetail/noticedetail'
       ],
       window: {
         // 类型：HexColor；默认值：#000000

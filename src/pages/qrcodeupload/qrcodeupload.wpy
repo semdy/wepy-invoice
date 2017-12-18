@@ -200,7 +200,7 @@
 
     watch = {
       formula () {
-        this.circle.percent = this.successNum / this.totalNum
+        this.circle.percent = (this.successNum / this.totalNum) || 0
       }
     }
 

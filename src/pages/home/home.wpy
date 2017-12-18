@@ -99,7 +99,7 @@
         }
       },
       noticeTap (index, e) {
-        this.$navigate('/pages/webview/notice')
+        this.$navigate('/pages/noticedetail/noticedetail')
       },
       listitemTap (index, e) {
         if (index === 0) {
