@@ -1,9 +1,8 @@
 <style lang="less">
   @import "../../less/mixin";
 
-  page {
-    display: block;
-    height: auto;
+  .notice-scrollview {
+    height: 100%;
   }
 
   .list-item {
@@ -22,21 +21,23 @@
   }
 </style>
 <template>
-  <view class="notice-listgroup">
-    <repeat for="{{list}}">
-      <listitem hasArrow="true" @tap.user="listitemTap">
-        <text class="notice">{{item.content}}</text>
-        <text class="date">{{item.date}}</text>
-      </listitem>
-    </repeat>
-  </view>
+  <scroll-view scroll-y="true" class="notice-scrollview" lower-threshold="0" style="height:{{tableHeight}}px;" bindscrolltolower="onEndReached">
+    <view class="notice-listgroup">
+      <repeat for="{{dataList}}">
+        <listitem hasArrow="true" @tap.user="listitemTap">
+          <text class="notice">{{item.title}}</text>
+          <text class="date">{{item.dateString}}</text>
+        </listitem>
+      </repeat>
+    </view>
+  </scroll-view>
 </template>
 
 <script>
   import wepy from 'wepy'
   import fetch from '../../service/fetch'
   import Listitem from '../../components/listitem'
-  import {showError, showToast} from '../../utils/util'
+  import {showError, showToast, formatDate} from '../../utils/util'
 
   export default class Index extends wepy.page {
     config = {
@@ -47,25 +48,12 @@
       listitem: Listitem
     }
 
+    page = 1
+    loaded = false
+
     data = {
-      list: [
-        {
-          content: '12月销量上报截止时间通知',
-          date: '2017-12-17'
-        },
-        {
-          content: '12月销量上报截止时间通知',
-          date: '2017-12-17'
-        },
-        {
-          content: '12月销量上报截止时间通知',
-          date: '2017-12-17'
-        },
-        {
-          content: '12月销量上报截止时间通知',
-          date: '2017-12-17'
-        }
-      ]
+      total: 0,
+      dataList: []
     }
 
     computed = {
@@ -76,11 +64,62 @@
 
     methods = {
       listitemTap (index) {
+        wx.setStorageSync('curNotice', this.dataList[index])
         this.$back()
       }
     }
 
+    handleQuery () {
+      this.page = 1
+      this.dataList = []
+      this.queryNotices(this.page)
+    }
+
+    appendQuery () {
+      if (!this.loaded) return
+      this.queryNotices(++this.page)
+    }
+
+    queryNotices(page) {
+      let params = {
+        page: page,
+        limit: 20
+      }
+      this.loaded = false
+      return new Promise((resolve, reject) => {
+        fetch.get('find/notice', params).then(res => {
+          if (res.success) {
+            this.total = res.data.total
+            res.data.docs.forEach(item => {
+              item.dateString = formatDate(new Date(item.updatedAt), 'yyyy-MM-dd')
+              this.dataList.push(item)
+            })
+            resolve(res.data)
+            this.$apply()
+          } else {
+            reject(res.message)
+            showError(res.message)
+          }
+        }, errMsg => {
+          reject(errMsg)
+          showError(errMsg)
+        }).finally(res => {
+          this.loaded = true
+        })
+      })
+    }
+
+    getPrevPage () {
+      const pages = this.getCurrentPages()
+      return pages[pages.length - 2]
+    }
+
+    onEndReached () {
+      this.appendQuery()
+    }
+
     onLoad () {
+      this.handleQuery()
     }
   }
 </script>

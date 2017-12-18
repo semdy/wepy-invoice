@@ -38,8 +38,8 @@ let fetchApi = (url, params) => {
       })
     })
     .then(res => {
-      if(res.statusCode === 200) {
-        if(res.data.tokenValid) {
+      if (res.statusCode === 200) {
+        if (res.data.tokenValid) {
           resolve(res.data)
         } else {
           session.clear()

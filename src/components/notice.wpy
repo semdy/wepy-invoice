@@ -31,7 +31,7 @@
     <view class="notice-messages">
       <view class="notice-scroller" style="transform: translateY({{y}}%); transition-duration: {{speed}}ms;">
         <repeat for="{{notices}}" key="index">
-          <view class="notice-item" data-msg="{{item}}" @tap="noticeTap">{{item}}</view>
+          <view class="notice-item" data-msg="{{item.title}}" @tap="noticeTap">{{item.title}}</view>
         </repeat>
       </view>
     </view>
@@ -69,7 +69,6 @@
     intervalId = null
     timeoutId = null
     _speed = 0
-    _offset = 0
     _notices = []
 
     components = {
@@ -83,13 +82,20 @@
     methods = {
       noticeTap (e) {
         let msg = e.currentTarget.dataset.msg
-        let index = this._notices.indexOf(msg)
+        let index = -1
+        for (let i = 0; i < this._notices.length; i++) {
+          if (this._notices[i].title === msg) {
+            index = i
+            break
+          }
+        }
         this.$emit('tap', index, e)
       }
     }
 
     doScroll () {
-      this.y = -this._offset
+      if (this.notices.length < 2) return
+      this.y = -this._cacOffset()
       this.speed = this._speed
       this.$apply()
       this.timeoutId = setTimeout(() => {
@@ -130,9 +136,12 @@
       this.$apply()
     }
 
-    onLoad () {
+    _cacOffset() {
+      return this.notices.length > 1 ? (1 / this.notices.length) * 100 : 0
+    }
+
+    init () {
       this._speed = this.speed
-      this._offset = (1 / this.notices.length) * 100
       this._notices = this.notices.slice()
     }
   }

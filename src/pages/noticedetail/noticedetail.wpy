@@ -7,7 +7,7 @@
   }
 
   .notice-detail {
-    padding: 50rpx;
+    padding: 100rpx 50rpx;
     box-sizing: border-box;
     min-height: 92%;
 
@@ -46,7 +46,7 @@
 <script>
   import wepy from 'wepy'
   import fetch from '../../service/fetch'
-  import {showError, showToast} from '../../utils/util'
+  import {showError, showToast, formatDate} from '../../utils/util'
 
   export default class Index extends wepy.page {
     config = {
@@ -59,8 +59,8 @@
 
     data = {
       title: '致亲爱的经销商：',
-      content: '2017年就要结束了，我们本月的销量上报截止时间会提早到12月29日23时，请在该日期之前提交您的销量上报单，以名影响您的工作，谢谢。',
-      date: '2017年12月17日'
+      content: '',
+      date: ''
     }
 
     computed = {
@@ -76,6 +76,10 @@
     }
 
     onLoad () {
+      let notice = wx.getStorageSync('curNotice')
+      this.content = notice.content
+      this.date = formatDate(new Date(notice.updatedAt), 'yyyy年MM月dd日')
+      wx.removeStorageSync('curNotice')
     }
   }
 </script>

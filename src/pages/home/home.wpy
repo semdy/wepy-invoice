@@ -30,7 +30,7 @@
       </block>
     </swiper>
   </view>
-  <notice :notices="notices" @tap.user="noticeTap"></notice>
+  <notice :notices.sync="notices" @tap.user="noticeTap"></notice>
   <view class="list-group">
     <repeat for="{{listgroup}}" key="index">
       <listitem :icon="item.icon" :iconRight="true" wx:if="{{item.visible}}" @tap.user="listitemTap">
@@ -61,7 +61,7 @@
 
     data = {
       swiperList: [],
-      notices: ['站内通知1', '站内通知2', '站内通知3', '站内通知4'],
+      notices: [],
       listgroup: [
         {
           icon: 'exchange.svg',
@@ -98,7 +98,8 @@
           }
         }
       },
-      noticeTap (index, e) {
+      noticeTap (index) {
+        wx.setStorageSync('curNotice', this.notices[index])
         this.$navigate('/pages/noticedetail/noticedetail')
       },
       listitemTap (index, e) {
@@ -123,8 +124,33 @@
       }, showError)
     }
 
+    queryNotices() {
+      let params = {
+        page: 1,
+        limit: 10
+      }
+      return new Promise((resolve, reject) => {
+        fetch.get('find/notice', params).then(res => {
+          if (res.success) {
+            this.notices = res.data.docs
+            resolve(res.data)
+            this.$apply()
+            this.$invoke('notice', 'init')
+          } else {
+            reject(res.message)
+            showError(res.message)
+          }
+        }, errMsg => {
+          reject(errMsg)
+          showError(errMsg)
+        })
+      })
+    }
+
     onShow () {
-      if (session.get().user.role === 3) {
+      let sessionInfo = session.get()
+      if (!sessionInfo) return
+      if (sessionInfo.user.role === 3) {
         this.listgroup.forEach((e, i) => {
           if (i !== 1) {
             e.visible = false
@@ -145,6 +171,7 @@
 
     onLoad () {
       this.fetchSwiper()
+      this.queryNotices()
       this.$invoke('notice', 'startScroll')
     }
 

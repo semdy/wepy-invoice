@@ -130,8 +130,8 @@
   export default class extends wepy.app {
     config = {
       pages: [
-        'pages/login/login',
         'pages/home/home',
+        'pages/login/login',
         'pages/dms/dms',
         'pages/dmslist/dmslist',
         'pages/flow/flow',

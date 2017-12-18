@@ -70,8 +70,8 @@
     }
 
     data = {
-      username: '2310',
-      mobile: '12313451678'
+      username: '',
+      mobile: ''
     }
 
     isLogining = false

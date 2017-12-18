@@ -362,7 +362,7 @@
       this.avatar = data.avatarUrl
       this.copername = data.user.name
       this.phone = data.user.phone
-      this.email = data.user.email
+      this.email = data.user.email || ''
     }
 
     onLoad () {
