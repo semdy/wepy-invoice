@@ -161,6 +161,7 @@
   import Formitem from '../../components/formitem'
   import {showError, showToast} from '../../utils/util'
   import {session, sessionGroup} from '../../service/auth'
+  import {login} from '../../service/user'
 
   export default class Index extends wepy.page {
     config = {
@@ -264,14 +265,16 @@
         this.hideModal()
       },
       subviewTap (e) {
-        this.updateToken().then(res => {
-          if (res.tokenValid === true) {
-            let id = e.currentTarget.dataset.id
-            this.changeSession(id, res.data.token)
-            this.hideSubview()
-          } else {
-            this.logout()
-          }
+        let userId = e.currentTarget.dataset.id
+        this.login(userId).then(res => {
+          this.changeSession()
+          this.hideSubview()
+        }, msg => {
+          wx.showModal({
+            title: '提示',
+            content: msg,
+            showCancel: false
+          })
         })
       },
       emailChange (e) {
@@ -331,17 +334,35 @@
       return fetch.get('update/token')
     }
 
+    login (userId) {
+      return new Promise((resolve, reject) => {
+        let curSession = sessionGroup.get(userId)
+        if (curSession) {
+          let user = curSession.user
+          this.$parent.getUserInfo().then(userInfo => {
+            login(user.code, user.phone).then((res) => {
+              let sessionData = Object.assign({}, userInfo, res.data)
+              session.set(sessionData)
+              sessionGroup.add(res.data.user.id, sessionData)
+              resolve(sessionData)
+            }, () => {
+              reject('公司码或手机号错误，请重试或联系管理人员')
+            })
+          }, reject)
+        } else {
+          reject('未找到当前用户信息')
+        }
+      })
+    }
+
     logout () {
       session.clear()
       wx.reLaunch({url: '/pages/login/login'})
     }
 
-    changeSession (id, token) {
-      let curSession = sessionGroup.get(id)
-      curSession.token = token
+    changeSession () {
+      let curSession = session.get()
       if (curSession) {
-        session.clear()
-        session.set(curSession)
         this.setParams(curSession)
         this.sessions = this.getSessions()
       }

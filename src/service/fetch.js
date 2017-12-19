@@ -8,7 +8,7 @@ export const serverUrl = 'https://bscqr.qtdatas.com/'
 let requestCount = 0
 let errorMsg = ''
 
-let fetchApi = (url, params) => {
+let fetchApi = (url, params = {}, useToken = true) => {
   return new Promise((resolve, reject) => {
 
     requestCount++
@@ -23,7 +23,7 @@ let fetchApi = (url, params) => {
 
     let tokenParam = {}
     let sessionInfo = session.get()
-    if(sessionInfo && sessionInfo.token) {
+    if (useToken && sessionInfo && sessionInfo.token) {
       tokenParam = {
         'access-token': sessionInfo.token
       }
@@ -43,7 +43,7 @@ let fetchApi = (url, params) => {
           resolve(res.data)
         } else {
           session.clear()
-          reject('session timeout')
+          reject('登录信息过期')
           wx.redirectTo({
             url: '/pages/login/login'
           })
@@ -68,12 +68,12 @@ let fetchApi = (url, params) => {
   })
 }
 
-fetchApi.post = (url, params = {}) => {
-  return fetchApi(url, Object.assign({data: params}, {method: 'POST'}))
+fetchApi.post = (url, params, useToken) => {
+  return fetchApi(url, Object.assign({data: params}, {method: 'POST'}), useToken)
 }
 
-fetchApi.get = (url, params = {}) => {
-  return fetchApi(url, Object.assign({data: params}, {method: 'GET'}))
+fetchApi.get = (url, params, useToken) => {
+  return fetchApi(url, Object.assign({data: params}, {method: 'GET'}), useToken)
 }
 
 export default fetchApi

@@ -8,33 +8,32 @@ export const session = {
     try {
       wx.setStorageSync(SESSION_KEY, info)
     } catch (e) {
-      console.error("storage save fail with key 'session'")
+      console.error(`storage save fail with key '${SESSION_KEY}'`)
     }
   },
   get() {
     try {
       return wx.getStorageSync(SESSION_KEY)
     } catch (e) {
-      return null;
+      return null
     }
   },
   clear() {
     try {
       wx.removeStorageSync(SESSION_KEY)
     } catch (e) {
-      console.error("storage remove fail with key 'session'")
+      console.error(`storage remove fail with key '${SESSION_KEY}'`)
     }
   }
 }
 
 export const sessionGroup = {
   add(id, data) {
-    if (this.has(id)) return
     _group[id] = data
     try {
       wx.setStorageSync(SESSION_GROUP_KEY, _group)
     } catch (e) {
-      console.error("storage save fail with key 'session'")
+      console.error(`storage save fail with key '${SESSION_GROUP_KEY}'`)
     }
   },
   get(id) {
@@ -66,7 +65,7 @@ export const sessionGroup = {
     try {
       wx.removeStorageSync(SESSION_GROUP_KEY)
     } catch (e) {
-      console.error("storage remove fail with key 'session'")
+      console.error(`storage remove fail with key '${SESSION_GROUP_KEY}'`)
     }
   }
 }

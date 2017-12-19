@@ -78,7 +78,7 @@
     onLoad () {
       let notice = wx.getStorageSync('curNotice')
       this.content = notice.content
-      this.date = formatDate(new Date(notice.updatedAt), 'yyyy年MM月dd日')
+      this.date = formatDate(new Date(notice.date), 'yyyy年MM月dd日')
       wx.removeStorageSync('curNotice')
     }
   }

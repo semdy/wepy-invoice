@@ -91,7 +91,7 @@
           if (res.success) {
             this.total = res.data.total
             res.data.docs.forEach(item => {
-              item.dateString = formatDate(new Date(item.updatedAt), 'yyyy-MM-dd')
+              item.dateString = formatDate(new Date(item.date), 'yyyy-MM-dd')
               this.dataList.push(item)
             })
             resolve(res.data)
