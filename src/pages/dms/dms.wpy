@@ -67,15 +67,19 @@
   .dms-table {
     .table-cell {
       &.order {
-        width: 100rpx;
+        width: 60rpx;
+      }
+      &.upn {
+        flex: none;
+        width: 160rpx;
       }
       &.status {
         flex: none;
-        width: 120rpx;
+        width: 100rpx;
       }
       &.last {
         flex: none;
-        width: 80rpx;
+        width: 50rpx;
       }
 
       .cauth-icon {
@@ -177,6 +181,7 @@
     <view class="table-row table-header">
       <view class="table-cell th order">序号</view>
       <view class="table-cell th">二维码</view>
+      <view class="table-cell th upn">upn</view>
       <view class="table-cell th status">状态</view>
       <view class="table-cell th last"></view>
     </view>
@@ -185,6 +190,7 @@
         <view class="table-row">
           <view class="table-cell td order">{{item.listIndex}}</view>
           <view class="table-cell td">{{item.qrcode}}</view>
+          <view class="table-cell td upn">{{item.upn}}</view>
           <view class="table-cell td status">
             <text>{{item.statusText}}</text>
             <!--<cauthIcon name="cauth.svg" class="cauth-icon" size="small" wx:if="{{item.status !== 'submit'&&item.type==='manual'}}"></cauthIcon>-->
@@ -601,8 +607,17 @@
 
       if (index !== undefined) {
         this.dataList.splice(index, 1)
+        if (this.getUnsubmitLengh() === 0) {
+          this.submitDisabled = true
+        }
         this.$apply()
       }
+    }
+
+    getUnsubmitLengh () {
+      return this.dataList.filter(e => {
+        return e.status !== 'submit'
+      }).length
     }
 
     showReceipt (receiptId) {

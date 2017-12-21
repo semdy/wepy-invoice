@@ -50,7 +50,7 @@
       </listitem>
       <view class="list-subview" wx:if="{{item.subList&&item.subList.length>0}}">
         <repeat for="{{item.subList}}" item="sub">
-          <view class="record-item">{{sub}}</view>
+          <view class="record-item">{{sub.scoregoods.describe}}</view>
         </repeat>
       </view>
     </repeat>
@@ -78,19 +78,22 @@
       listgroup: [
         {
           icon: 'point.svg',
-          text: '剩余积分：550积分',
+          text: '剩余积分：0积分',
+          key: 'pointValue',
           subList: []
         },
         {
           icon: 'gift.svg',
           text: '积分兑换',
           hasArrow: true,
+          key: 'exchange',
           subList: []
         },
         {
           icon: 'point-record.svg',
           text: '兑换记录',
-          subList: ['2017年10月26日手机充值卡100元已到账']
+          key: 'excRecords',
+          subList: []
         }
       ]
     }
@@ -107,8 +110,39 @@
       }
     }
 
-    onLoad () {
+    setPointValue (value) {
+      this.listgroup[0].text = `剩余积分：${value}积分`
+      this.$apply()
+    }
 
+    setRecords (list) {
+      this.listgroup[2].subList = list
+      this.$apply()
+    }
+
+    queryUserPoint () {
+      fetch.get('find/score').then(res => {
+        if (res.success) {
+          this.setPointValue(res.data.userableScore)
+        } else {
+          showError(res.message)
+        }
+      }, showError)
+    }
+
+    queryExcRecords () {
+      fetch.get('find/exchange').then(res => {
+        if (res.success) {
+          this.setRecords(res.data)
+        } else {
+          showError(res.message)
+        }
+      }, showError)
+    }
+
+    onLoad () {
+      this.queryUserPoint()
+      this.queryExcRecords()
     }
   }
 </script>
