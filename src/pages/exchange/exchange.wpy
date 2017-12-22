@@ -38,6 +38,7 @@
   .exchange-list {
     flex: 1;
     height: 100%;
+    box-sizing: border-box;
     padding-left: 20rpx;
     padding-right: 20rpx;
     overflow: auto;
@@ -88,7 +89,7 @@
     <gifticon name="gift.svg" size="large"></gifticon>
     <view class="tmessage">
       <view class="tmsg-title">积分兑换详情</view>
-      <view class="tmsg-bd">1、活动日期：当前至2018年12月底</view>
+      <view class="tmsg-bd">1、活动日期：<text wx:if="{{expireDate}}">当前至{{expireDate}}</text></view>
     </view>
   </view>
 
@@ -97,12 +98,12 @@
       <text>积分兑换区</text>
     </view>
     <scroll-view scroll-y="true" class="exchange-list">
-      <block wx:for="{{list}}" wx:key="index">
+      <block wx:for="{{dataList}}" wx:key="index">
         <view class="card-item">
-          <image class="card-cover" src="{{item.cover}}" mode="aspectFit"></image>
+          <image class="card-cover" src="{{item.realUrl}}" mode="aspectFit"></image>
           <view class="card-body">
             <view class="card-desc">
-               {{item.desc}}
+               {{item.describe}} {{item.score}}积分
             </view>
             <view class="counter">
               <view class="counter-action" data-index="{{index}}" @tap="minus">
@@ -122,21 +123,21 @@
   <view class="page-actions">
     <view class="cur-point-msg">
       <text class="cur-piont-label">当前积分</text>
-      <text class="cur-piont-val">550</text>
+      <text class="cur-piont-val">{{userPoint}}</text>
     </view>
-    <excbutton>确认兑换</excbutton>
+    <excbutton @tap.user="exchangeTap">确认兑换</excbutton>
   </view>
 
 </template>
 
 <script>
   import wepy from 'wepy'
-  import fetch from '../../service/fetch'
+  import fetch, {serverUrl} from '../../service/fetch'
   import Icon from '../../components/icon'
   import Button from '../../components/button'
   import Carditem from '../../components/carditem'
   import Counter from '../../components/counter'
-  import {showError, showToast} from '../../utils/util'
+  import {showError, showToast, formatDate} from '../../utils/util'
 
   export default class Index extends wepy.page {
     config = {
@@ -153,40 +154,29 @@
     }
 
     data = {
-      list: [
-        {
-          cover: '../../images/card1.jpg',
-          desc: '5元话费卡 100积分',
-          num: 0
-        },
-        {
-          cover: '../../images/card2.jpg',
-          desc: '100元话费卡 1000积分',
-          num: 0
-        },
-        {
-          cover: '../../images/card3.jpg',
-          desc: '50元京东卡 500积分',
-          num: 0
-        },
-        {
-          cover: '../../images/card4.jpg',
-          desc: '300元京东卡 1000积分',
-          num: 0
-        }
-      ]
+      expireDate: '',
+      userPoint: 0,
+      dataList: []
     }
 
     computed = {
+      expireDate () {
+        if (this.dataList.length === 0) {
+          return ''
+        } else {
+          return formatDate(new Date(this.dataList[0].expiredate), 'yyyy年MM月dd日')
+        }
+      }
     }
+
     methods = {
       plus (e) {
         let index = e.currentTarget.dataset.index
-        this.list[index].num++
+        this.dataList[index].num++
       },
       minus (e) {
         let index = e.currentTarget.dataset.index
-        this.list[index].num = Math.max(0, this.list[index].num - 1)
+        this.dataList[index].num = Math.max(0, this.dataList[index].num - 1)
       },
       numChange (e) {
         let index = e.currentTarget.dataset.index
@@ -194,9 +184,9 @@
         if (isNaN(value)) {
           value = 0
         }
-        this.list[index].num = parseInt(value)
+        this.dataList[index].num = parseInt(value)
         this.setData({
-          list: this.list
+          dataList: this.dataList
         })
       },
       numBlur (e) {
@@ -205,15 +195,93 @@
         if (isNaN(value)) {
           value = 0
         }
-        this.list[index].num = value
+        this.dataList[index].num = value
         this.setData({
-          list: this.list
+          dataList: this.dataList
         })
+      },
+      exchangeTap () {
+        this.doExchange()
       }
     }
 
-    onLoad () {
+    queryUserPoint () {
+      fetch.get('find/score').then(res => {
+        if (res.success) {
+          this.userPoint = res.data.userableScore
+          this.$apply()
+        } else {
+          showError(res.message)
+        }
+      }, showError)
+    }
 
+    queryExchanges () {
+      fetch.get('find/scoregoods', {page: this.page++}).then(res => {
+        if (res.success) {
+          res.data.forEach(e => {
+            e.realUrl = serverUrl + e.url
+            e.num = 0
+          })
+          this.dataList = res.data
+          this.$apply()
+        } else {
+          showError(res.message)
+        }
+      }, showError)
+    }
+
+    calcToExchangeScore (ids) {
+      let toExchangeScore = 0
+      ids.forEach(e => {
+        let curItem = this.dataList.find(item => item.id === e.id)
+        if (curItem) {
+          toExchangeScore += parseFloat(curItem.score) * e.num
+        }
+      })
+
+      return toExchangeScore
+    }
+
+    flatIds (ids) {
+      let newIds = []
+      ids.forEach(e => {
+        if (e.num === 0) {
+          newIds.push(e.id)
+        } else {
+          for (let i = 0; i < e.num; i++) {
+            newIds.push(e.id)
+          }
+        }
+      })
+
+      return newIds
+    }
+
+    doExchange () {
+      let ids = this.dataList.filter(e => e.num > 0).map(e => {return {num: e.num, id: e.id}})
+      if (ids.length === 0) return showError('请选择要兑换的项')
+      if (this.calcToExchangeScore(ids) > this.userPoint) return showError('您当前积分不足，请调整')
+      let params = {
+        goods: this.flatIds(ids)
+      }
+      fetch.post('exchange', params).then(res => {
+        if (res.success) {
+          showToast(res.message)
+          this.refersh()
+        } else {
+          showError(res.message)
+        }
+      }, showError)
+    }
+
+    refersh () {
+      this.queryUserPoint()
+      this.queryExchanges()
+    }
+
+    onLoad () {
+      this.refersh()
     }
   }
 </script>

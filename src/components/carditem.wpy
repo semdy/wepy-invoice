@@ -3,7 +3,7 @@
 
   .card-item{
     .flex();
-    padding: 20rpx 40rpx;
+    padding: 20rpx;
     background-color: #fff;
     margin-bottom: 10rpx;
     border:2rpx solid #dedede;
@@ -23,7 +23,7 @@
     }
 
     .card-desc {
-      font-size: 32rpx;
+      font-size: 30rpx;
     }
   }
 </style>

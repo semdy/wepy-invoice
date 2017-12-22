@@ -130,6 +130,7 @@
   export default class extends wepy.app {
     config = {
       pages: [
+        'pages/exchange/exchange',
         'pages/home/home',
         'pages/login/login',
         'pages/dms/dms',
@@ -138,7 +139,7 @@
         'pages/flowlist/flowlist',
         'pages/my/my',
         'pages/point/point',
-        'pages/exchange/exchange',
+
         'pages/qrcodeupload/qrcodeupload',
         'pages/qrcodelist/qrcodelist',
         'pages/qrcodedetail/qrcodedetail',
