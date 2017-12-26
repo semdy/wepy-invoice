@@ -4,22 +4,27 @@
 @small: 48rpx;
 
 .flex () {
+  display: -webkit-flex;
   display: flex;
 }
 
 .flex-center () {
   .flex();
+  -webkit-align-items: center;
   align-items: center;
+  -webkit-justify-content: center;
   justify-content: center;
 }
 
 .flex-h-center () {
   .flex();
+  -webkit-justify-content: center;
   justify-content: center;
 }
 
 .flex-v-center () {
   .flex();
+  -webkit-align-items: center;
   align-items: center;
 }
 

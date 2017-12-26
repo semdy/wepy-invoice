@@ -34,6 +34,8 @@
     color: #01458e;
     border-radius: 8rpx;
     margin-top: 10rpx;
+    word-wrap: break-word;
+    word-break: break-all;
 
     &:active {
       background-color: #ececec;

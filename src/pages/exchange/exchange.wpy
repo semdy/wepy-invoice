@@ -263,7 +263,7 @@
     doExchange () {
       let ids = this.dataList.filter(e => e.num > 0).map(e => {return {num: e.num, id: e.id}})
       if (ids.length === 0) return showError('请选择要兑换的项')
-      if (this.calcToExchangeScore(ids) > this.userPoint) return showError('您当前积分不足，请调整')
+      //if (this.calcToExchangeScore(ids) > this.userPoint) return showError('您当前积分不足，请调整')
       let params = {
         goods: this.flatIds(ids)
       }

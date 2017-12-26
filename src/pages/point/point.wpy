@@ -152,7 +152,8 @@
       this.queryExcRecords()
     }
 
-    onLoad () {
+    onShow () {
+      this.dataList = []
       this.page = 1
       this.queryUserPoint()
       this.queryExcRecords()
