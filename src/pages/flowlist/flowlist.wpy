@@ -27,6 +27,19 @@
     }
   }
 
+  .download-url {
+    padding: 16rpx 30rpx;
+    border: 2rpx solid #c5c5c5;
+    background-color: #f0f0f0;
+    color: #01458e;
+    border-radius: 8rpx;
+    margin-top: 10rpx;
+
+    &:active {
+      background-color: #ececec;
+    }
+  }
+
   .table-row {
     &:active {
       background-color: #f2f2f2;
@@ -91,6 +104,11 @@
 
   </view>
 
+  <modal wx:if="{{isModalShow}}" title="提示信息" @modalClose.user="closeModal">
+    <view>点击复制下面的链接去浏览器下载</view>
+    <view class="download-url" @tap="onDownloadTap">{{downloadUrl}}</view>
+  </modal>
+
   <tabbar :tabBar="tabBar" disabled="true" tabIndex="1" @tabbarChange.user="tabbarChange"></tabbar>
 
 </template>
@@ -101,6 +119,7 @@
   import Button from '../../components/button'
   import Icon from '../../components/icon'
   import Datetimepicker from '../../components/datetimepicker'
+  import Modal from '../../components/modal'
   import Tabbar from '../../components/tabbar'
   import {showError, showToast, confirm, formatDate} from '../../utils/util'
   import {session} from '../../service/auth'
@@ -115,7 +134,8 @@
       tabbar: Tabbar,
       datetimepicker: Datetimepicker,
       querybutton: Button,
-      exportbutton: Button
+      exportbutton: Button,
+      modal: Modal
     }
 
     page = 1
@@ -125,7 +145,9 @@
       date: formatDate(new Date, 'yyyy-MM-dd'),
       dataList: [],
       total: 0,
+      isModalShow: false,
       showExport: false,
+      downloadUrl: '',
       tableHeight: wx.getSystemInfoSync().windowHeight - 180,
       tabBar: {
         color: '#777',
@@ -176,7 +198,36 @@
       },
       datetimeChange (e) {
         this.date = e.detail.value
+      },
+      closeModal () {
+        this.hideModal()
+      },
+      onDownloadTap () {
+        wx.setClipboardData({
+          data: this.downloadUrl,
+          success: () => {
+            wx.getClipboardData({
+              success: (res) => {
+                if (res.data === this.downloadUrl) {
+                  showToast('复制成功')
+                } else {
+                  showError('复制失败，请手动长按复制')
+                }
+              }
+            })
+          }
+        })
       }
+    }
+
+    showModal () {
+      this.isModalShow = true
+      this.$apply()
+    }
+
+    hideModal () {
+      this.isModalShow = false
+      this.$apply()
     }
 
     handleQuery () {
@@ -234,11 +285,12 @@
     exportFlow (date) {
       fetch.get('export/history', {date: date}).then(res => {
         if (res.success) {
-          wx.showModal({
-            title: '提示',
-            content: '数据导出成功',
-            showCancel: false
-          })
+          if (res.data.filepath) {
+            this.downloadUrl = res.data.filepath
+            this.showModal()
+          } else {
+            showError('导出的数据为空')
+          }
         } else {
           showError(res.message)
         }

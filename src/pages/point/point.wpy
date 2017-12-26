@@ -129,7 +129,9 @@
     queryUserPoint () {
       fetch.get('find/score').then(res => {
         if (res.success) {
-          this.setPointValue(res.data.userableScore)
+          if (res.data) {
+            this.setPointValue(res.data.userableScore)
+          }
         } else {
           showError(res.message)
         }
@@ -151,6 +153,7 @@
     }
 
     onLoad () {
+      this.page = 1
       this.queryUserPoint()
       this.queryExcRecords()
     }

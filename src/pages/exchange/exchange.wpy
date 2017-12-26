@@ -208,8 +208,10 @@
     queryUserPoint () {
       fetch.get('find/score').then(res => {
         if (res.success) {
-          this.userPoint = res.data.userableScore
-          this.$apply()
+          if (res.data) {
+            this.userPoint = res.data.userableScore
+            this.$apply()
+          }
         } else {
           showError(res.message)
         }
