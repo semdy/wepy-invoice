@@ -329,10 +329,6 @@
           this.submitDisabled = this.pageDisabled ? true : false
           this.$apply()
         }
-        /*if(!newVal) {
-          this.submitDisabled = true
-          this.$apply()
-        }*/
       }
     }
 
@@ -628,6 +624,7 @@
         this.uploadType = data.type
         this.remark = data.remark === '备注为空' ? '' : data.remark
         this.pageDisabled = data.status === 'submit'
+        this.submitDisabled = this.pageDisabled
         this.addDataByReceipt(data)
       }, showError)
     }

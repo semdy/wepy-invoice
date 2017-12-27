@@ -142,11 +142,11 @@
       </view>
       <view class="qrinfo-item">
         <view class="qr-label">型号：</view>
-        <view class="qr-info">{{product.LOT}}</view>
+        <view class="qr-info">{{product.UPN}}</view>
       </view>
       <view class="qrinfo-item">
         <view class="qr-label">批号：</view>
-        <view class="qr-info">{{product.UPN}}</view>
+        <view class="qr-info">{{product.LOT}}</view>
       </view>
       <view class="qrinfo-item">
         <view class="qr-label">包装数量：</view>

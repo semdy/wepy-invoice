@@ -35,6 +35,12 @@
   .input {
     color: @gcolor;
   }
+
+  .my-version {
+    text-align: center;
+    font-size: 24rpx;
+    margin-bottom: 20rpx;
+  }
 </style>
 <template>
   <view class="container">
@@ -47,7 +53,10 @@
     <formitemmobile icon="mobile.svg" placeholder="手机号" :value="mobile" @input.user="mobileChange"></formitemmobile>
     <loginButton class="login-button" @tap.user="loginButtonTap">登录</loginButton>
   </view>
-  <view class="login-footer">服务热线：021-33563567</view>
+  <view class="login-footer">
+    <view class="my-version">版本号: V1.0</view>
+    <view>服务热线：021-33563567</view>
+  </view>
 </template>
 
 <script>
