@@ -69,10 +69,10 @@
       &.order {
         width: 60rpx;
       }
-      &.upn {
+/*      &.upn {
         flex: none;
         width: 160rpx;
-      }
+      }*/
       &.status {
         flex: none;
         width: 100rpx;
@@ -324,12 +324,16 @@
     }
 
     watch = {
-      lastReceiptId (newVal, oldVal) {
+      /*lastReceiptId (newVal, oldVal) {
         if (!oldVal) {
           this.submitDisabled = this.pageDisabled ? true : false
           this.$apply()
         }
-      }
+        if (newVal) {
+          this.submitDisabled = false
+          this.$apply()
+        }
+      }*/
     }
 
     methods = {
@@ -425,6 +429,7 @@
             this.lastReceiptId = data.receipt.id
             this.lastQrcode = res.result
             this.lastReceiptNo = data.receipt.receiptNo
+            this.submitDisabled = false
             /*if (!data.product || (!data.product.upn && !data.product.lot)) {
               this.showModal()
             } else {*/
