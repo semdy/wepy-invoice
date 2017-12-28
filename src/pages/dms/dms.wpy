@@ -66,6 +66,11 @@
 
   .dms-table {
     .table-cell {
+
+      font-size: 26rpx;
+      padding-left: 6rpx;
+      padding-right: 6rpx;
+
       &.order {
         width: 60rpx;
       }
@@ -562,7 +567,7 @@
       let rowData = {}
       rowData.listIndex = ++this.listIndex
       rowData.status = data.receipt.status
-      rowData.statusText = STATUS_MAP[data.product.status]
+      rowData.statusText = STATUS_MAP[data.product.status] || '未知'
       rowData.qrcode = data.product.qrcode
       rowData.type = data.product.type
       rowData.upn = data.product.upn
@@ -583,7 +588,7 @@
         let rowData = {}
         rowData.listIndex = ++this.listIndex
         rowData.status = item.status
-        rowData.statusText = STATUS_MAP[item.status]
+        rowData.statusText = STATUS_MAP[item.status] || '未知'
         rowData.qrcode = item.qrcode
         rowData.type = item.type
         rowData.upn = item.upn

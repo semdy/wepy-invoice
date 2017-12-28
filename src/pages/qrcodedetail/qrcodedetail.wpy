@@ -103,13 +103,13 @@
     <view class="detail-item">
       <text class="detail-label">型号</text>
       <view class="detail-value">
-        <typeinput :value.sync="lot" @change.user="lotChange"></typeinput>
+        <typeinput :value.sync="upn" @change.user="upnChange"></typeinput>
       </view>
     </view>
     <view class="detail-item">
       <text class="detail-label">批号</text>
       <view class="detail-value">
-        <numinput :value.sync="upn" @change.user="upnChange"></numinput>
+        <numinput :value.sync="lot" @change.user="lotChange"></numinput>
       </view>
     </view>
   </view>
