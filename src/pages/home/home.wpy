@@ -167,11 +167,13 @@
           }
         })
       }
+
+      this.fetchSwiper()
+      this.queryNotices()
+
     }
 
     onLoad () {
-      this.fetchSwiper()
-      this.queryNotices()
       this.$invoke('notice', 'startScroll')
     }
 

@@ -262,8 +262,8 @@
 
   const STATUS_MAP = {
     'waitSubmit': '待提交',
-    'submit' : '已提交',
-    'noProduct' : '缺信息'
+    'submit': '已提交',
+    'noProduct': '缺信息'
   }
 
   export default class Index extends wepy.page {
