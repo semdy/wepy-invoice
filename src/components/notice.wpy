@@ -89,7 +89,7 @@
             break
           }
         }
-        this.$emit('tap', index, e)
+        this.$emit('tap', index, this._notices[index], e)
       }
     }
 
@@ -141,7 +141,9 @@
     }
 
     init () {
-      this._speed = this.speed
+      if (this._speed === 0) {
+        this._speed = this.speed
+      }
       this._notices = this.notices.slice()
     }
   }

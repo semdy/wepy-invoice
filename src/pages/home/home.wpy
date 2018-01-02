@@ -98,8 +98,8 @@
           }
         }
       },
-      noticeTap (index) {
-        wx.setStorageSync('curNotice', this.notices[index])
+      noticeTap (index, data) {
+        wx.setStorageSync('curNotice', data)
         this.$navigate('/pages/noticedetail/noticedetail')
       },
       listitemTap (index, e) {
@@ -170,7 +170,6 @@
 
       this.fetchSwiper()
       this.queryNotices()
-
     }
 
     onLoad () {

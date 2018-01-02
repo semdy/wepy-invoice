@@ -62,7 +62,7 @@
 
     &.status {
       flex: none;
-      width: 100rpx;
+      width: 120rpx;
     }
 
     .icon {
