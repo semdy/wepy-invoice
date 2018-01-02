@@ -76,7 +76,7 @@
       }
     }
 
-    onLoad () {
+    onShow() {
       let notice = wx.getStorageSync('curNotice')
       this.target = notice.target
       this.content = notice.content
