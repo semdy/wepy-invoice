@@ -1,9 +1,9 @@
 
 let defaultOptions = {
-  borderWidth: 2, 
-  shadowColor: '#b4c7e7', 
-  color: '#4472c4', 
-  radius: 30, 
+  borderWidth: 2,
+  shadowColor: '#b4c7e7',
+  color: '#4472c4',
+  radius: 30,
   percent: 0
 };
 
@@ -92,6 +92,7 @@ Circle.prototype = {
     context.save();
     context.beginPath();
     context.setStrokeStyle(options.color);
+    context.setLineCap('round');
     context.translate(width/2, height/2);
     context.rotate(-90 * Math.PI / 180);
     context.arc(radius + borderWidth/2, radius + borderWidth/2, radius, 0, 2 * Math.PI*options.percent, false);
