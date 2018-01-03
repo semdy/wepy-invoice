@@ -1,11 +1,16 @@
 <style lang="less">
   @import "../../less/mixin";
 
+  page {
+    display: block;
+    height: auto;
+  }
+
   .index-main {
     position: relative;
     padding: 0 10rpx;
-    flex: 1;
-    overflow: hidden;
+    /*flex: 1;
+    overflow: hidden;*/
   }
 
   .top-main{

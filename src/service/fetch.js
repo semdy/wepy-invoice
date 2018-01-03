@@ -1,6 +1,6 @@
 import wepy from 'wepy'
 import {showError} from '../utils/util'
-import {version, from, ref} from '../config'
+import {version, ref} from '../config'
 import {session} from '../service/auth'
 
 export const serverUrl = 'https://bscqr.qtdatas.com/'
@@ -49,7 +49,7 @@ let fetchApi = (url, params = {}, useToken = true) => {
           })
         }
       } else {
-        reject(errorMsg = (res.data.message||'服务器发生错误'))
+        reject(errorMsg = (res.data.message || '服务器发生错误'))
       }
     })
     .catch(() => {
@@ -57,7 +57,7 @@ let fetchApi = (url, params = {}, useToken = true) => {
     })
     .finally(() => {
       if (--requestCount === 0) {
-        if(errorMsg){
+        if (errorMsg) {
           showError(errorMsg)
         } else {
           wx.hideLoading()
