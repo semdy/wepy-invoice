@@ -90,14 +90,6 @@
     }
   }
 
-  .tech-supply {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 20rpx;
-    text-align: center;
-  }
-
   .flow-item-bd .subtext {
     font-size: 26rpx;
     color: #666;
@@ -109,6 +101,49 @@
     text-indent: -2em;
   }
 
+  .flow-item-bd .flow-text.sub {
+    text-indent: 0;
+    color: #666;
+  }
+
+  .search-results {
+    position: relative;
+  }
+
+  .db-arrow-down {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    -webkit-transform: translate(-50%, 50%);
+    transform: translate(-50%, 50%);
+
+    image {
+      -webkit-animation: arrow-down .8s ease-in both alternate infinite;
+      animation: arrow-down .8s ease-in both alternate infinite;
+    }
+
+  }
+
+  @-webkit-keyframes arrow-down {
+    from {
+      -webkit-transform: translate3d(0,-30%,0);
+      transform: translate3d(0,-30%,0);
+    }
+    to {
+      -webkit-transform: translate3d(0,30%,0);
+      transform: translate3d(0,30%,0);
+    }
+  }
+  @keyframes arrow-down {
+    from {
+      -webkit-transform: translate3d(0,-30%,0);
+      transform: translate3d(0,-30%,0);
+    }
+    to {
+      -webkit-transform: translate3d(0,30%,0);
+      transform: translate3d(0,30%,0);
+    }
+  }
 </style>
 <template>
   <view class="query-form">
@@ -162,18 +197,20 @@
       </view>
     </view>
 
-    <scroll-view scroll-y="true" class="flow-container" style="height:{{flowHeight}}px;">
+    <scroll-view scroll-y="true" class="flow-container" style="height:{{flowHeight}}px;" lower-threshold="0" bindscrolltolower="onEndReached">
       <repeat for="{{flows}}" key="index">
         <flowitem :icon="item.icon">
           <text slot="time">{{item.time}}</text>
           <view class="flow-text" wx:if="{{item.text1}}">从：{{item.text1}}</view>
+          <view class="flow-text sub" wx:if="{{item.text1_sub}}">{{item.text1_sub}}</view>
           <view class="flow-text" wx:if="{{item.text2}}">到：{{item.text2}}</view>
+          <view class="flow-text sub" wx:if="{{item.text2_sub}}">{{item.text2_sub}}</view>
           <view class="subtext" wx:if="{{item.subtext}}">{{item.subtext}}</view>
         </flowitem>
       </repeat>
     </scroll-view>
 
-    <view class="tech-supply">本数据由<text class="h">波士顿科学</text>提供</view>
+    <arrowIcon class="db-arrow-down" name="double-arrow-down.svg" wx:if="{{showArrow}}"></arrowIcon>
 
   </view>
 
@@ -203,16 +240,18 @@
       scanIcon: Icon,
       closeIcon: Icon,
       clearIcon: Icon,
+      arrowIcon: Icon,
       queryButton: Button,
       flowitem: Flowitem,
       tabbar: Tabbar
     }
 
     data = {
-      flowHeight: wx.getSystemInfoSync().windowHeight - 300,
+      flowHeight: wx.getSystemInfoSync().windowHeight - 260,
       queryRecordshow: true,
       qrcode: '',
       showClose: false,
+      showArrow: false,
       product: {},
       flows: [],
       queryRecords: [],
@@ -309,7 +348,9 @@
           icon: i === 0 ? 'truck.svg' : (e.TransflowType === 'hospitalSales' ? 'hospital.svg' : 'transport.png'),
           time: formatDate(new Date(e.TransDate), 'yyyy.MM.dd HH:mm'),
           text1: e.FromName,
+          text1_sub: e.FromWarehouse,
           text2: e.ToName,
+          text2_sub: e.ToWarehouse,
           subtext: e.TransType
         })
       })
@@ -330,6 +371,7 @@
           if (res.success) {
             this.product = res.data[0] || {}
             this.flows = this.formatTransflow(res.data)
+            this.showArrow = this.flows.length > 3
             resolve(res.data)
             this.$apply()
             if (this.flows.length === 0) {
@@ -363,6 +405,10 @@
     clearRecords () {
       history.clear()
       this.queryRecords = []
+    }
+
+    onEndReached () {
+      this.showArrow = false
     }
 
     onLoad () {
