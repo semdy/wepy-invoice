@@ -3,11 +3,13 @@
 
   page {
     background-color: #fff;
+    padding-bottom: 102rpx;
   }
 
   .query-form {
     .flex();
     margin: 40rpx 30rpx 20rpx;
+    min-height: 76rpx;
   }
 
   .query-field {
@@ -64,6 +66,12 @@
     }
   }
 
+  .flow-container {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+  }
+
   .qrinfo-panel {
     border-radius: 16rpx;
     padding: 20rpx;
@@ -108,12 +116,17 @@
 
   .search-results {
     position: relative;
+    .flex();
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .db-arrow-down {
-    position: absolute;
+    position: fixed;
     left: 50%;
-    bottom: 0;
+    bottom: 120rpx;
     -webkit-transform: translate(-50%, 50%);
     transform: translate(-50%, 50%);
 
@@ -155,7 +168,7 @@
     <queryButton class="query-button" @tap.user="queryTap">查询</queryButton>
   </view>
 
-  <view class="query-history" style="display: {{queryRecordshow ? 'block' : 'none'}}">
+  <view class="query-history" wx:if="{{queryRecordshow}}">
     <view class="history-heading">
       <view>历史记录</view>
       <view @tap="clrHistory" style="display: {{queryRecords.length>0 ? '' : 'none'}}">
@@ -169,7 +182,7 @@
     </view>
   </view>
 
-  <view class="search-results" style="display: {{queryRecordshow ? 'none' : 'block'}}">
+  <view class="search-results" wx:if="{{!queryRecordshow}}">
     <view class="qrinfo-panel" wx:if="{{product.QRCode}}">
       <view class="qrinfo-item">
         <view class="qr-label">二维码：</view>
@@ -197,7 +210,7 @@
       </view>
     </view>
 
-    <scroll-view scroll-y="true" class="flow-container" style="height:{{flowHeight}}px;" lower-threshold="0" bindscrolltolower="onEndReached">
+    <scroll-view scroll-y="true" class="flow-container" lower-threshold="0" bindscrolltolower="onEndReached">
       <repeat for="{{flows}}" key="index">
         <flowitem :icon="item.icon">
           <text slot="time">{{item.time}}</text>
@@ -247,7 +260,6 @@
     }
 
     data = {
-      flowHeight: wx.getSystemInfoSync().windowHeight - 260,
       queryRecordshow: true,
       qrcode: '',
       showClose: false,
