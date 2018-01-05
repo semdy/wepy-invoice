@@ -168,8 +168,11 @@
         })
       }
 
-      this.fetchSwiper()
-      this.queryNotices()
+      if (!wx.getStorageSync('needRefresh.home')) {
+        wx.setStorageSync('needRefresh.home', 'true')
+        this.fetchSwiper()
+        this.queryNotices()
+      }
     }
 
     onLoad () {

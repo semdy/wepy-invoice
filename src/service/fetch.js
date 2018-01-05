@@ -49,11 +49,11 @@ let fetchApi = (url, params = {}, useToken = true) => {
           })
         }
       } else {
-        reject(errorMsg = (res.data.message || '服务器发生错误'))
+        reject(errorMsg = (res.data.message)) //|| '服务器发生错误'
       }
     })
     .catch(() => {
-      reject(errorMsg = '与服务器连接失败')
+      reject(errorMsg = '') //'与服务器连接失败'
     })
     .finally(() => {
       if (--requestCount === 0) {

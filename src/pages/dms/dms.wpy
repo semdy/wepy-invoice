@@ -263,7 +263,8 @@
   const STATUS_MAP = {
     'waitSubmit': '待提交',
     'submit': '已提交',
-    'noProduct': '缺信息'
+    'noProduct': '缺信息',
+    'error': '提交失败'
   }
 
   export default class Index extends wepy.page {
@@ -567,7 +568,7 @@
       let rowData = {}
       rowData.listIndex = ++this.listIndex
       rowData.status = data.receipt.status
-      rowData.statusText = STATUS_MAP[data.product.status] || '未知'
+      rowData.statusText = STATUS_MAP[data.product.status]
       rowData.qrcode = data.product.qrcode
       rowData.type = data.product.type
       rowData.upn = data.product.upn
@@ -588,7 +589,7 @@
         let rowData = {}
         rowData.listIndex = ++this.listIndex
         rowData.status = item.status
-        rowData.statusText = STATUS_MAP[item.status] || '未知'
+        rowData.statusText = STATUS_MAP[item.status]
         rowData.qrcode = item.qrcode
         rowData.type = item.type
         rowData.upn = item.upn

@@ -125,7 +125,8 @@
   const STATUS_MAP = {
     'unSubmit': '未提交',
     'submit': '已提交',
-    'partSubmit': '部分提交'
+    'partSubmit': '部分提交',
+    'error': '提交失败'
   }
 
   export default class Index extends wepy.page {
@@ -224,7 +225,7 @@
           if (res.success) {
             this.total = res.data.total
             res.data.docs.forEach(item => {
-              item.statusText = STATUS_MAP[item.status] || '未知'
+              item.statusText = STATUS_MAP[item.status]
               this.dataList.push(item)
             })
             resolve(res.data)
