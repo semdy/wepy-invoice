@@ -29,7 +29,7 @@ function getUserInfo (mergeData) {
   return new Promise((resolve, reject) => {
     wx.getUserInfo({
       success (res) {
-        if(typeof mergeData === 'object'){
+        if (typeof mergeData === 'object'){
           Object.assign(res.userInfo, mergeData)
         }
         resolve(res)
@@ -48,7 +48,7 @@ function getOpenIdByCode(code){
         let info = {}
         info.openid = res.data.openid
         info.expires_in = Date.now() + res.data.expires_in
-        if(res.data.unionid) {
+        if (res.data.unionid) {
           info.unionid = res.data.unionid
         }
         resolve(info)
@@ -77,7 +77,7 @@ function uploadFile(url, filePath, formParams, header) {
       title: '上传中...'
     })
 
-    for(let i in params) {
+    for (let i in params) {
       params[i] = typeof params[i] !== 'string' ? JSON.stringify(params[i]) : params[i]
     }
 
@@ -91,7 +91,7 @@ function uploadFile(url, filePath, formParams, header) {
         }),
         formData: params,
         success (res) {
-          if(res.statusCode === 200) {
+          if (res.statusCode === 200) {
             let data = JSON.parse(res.data)
             resolve(data)
           } else {

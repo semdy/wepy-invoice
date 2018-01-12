@@ -239,7 +239,7 @@
             reject(error)
             console.error('failed to get user info, error: ' + error)
             setTimeout(function () {
-              showError('用户信息获取失败: ' + error)
+              showError(error)
             })
           })
           .finally(wx.hideLoading)
