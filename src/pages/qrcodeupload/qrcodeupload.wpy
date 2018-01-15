@@ -327,6 +327,7 @@
     }
 
     onLoad () {
+      this.day = 1
       this.circle = new PercentageCircle('percentage-pie', {percent: 0, radius: 60, borderWidth: 12})
     }
 
