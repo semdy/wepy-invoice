@@ -59,7 +59,10 @@
       listitem: Listitem
     }
 
+    isLoading = false
+
     data = {
+      isLoading: false,
       swiperList: [],
       notices: [],
       listgroup: [
@@ -114,7 +117,7 @@
     }
 
     fetchSwiper () {
-      fetch.get('find/slide').then(res => {
+      return fetch.get('find/slide').then(res => {
         if (res.success) {
           this.swiperList = res.data
           this.$apply()
@@ -147,6 +150,17 @@
       })
     }
 
+    fechData () {
+      if (this.isLoading) return
+      this.isLoading = true
+      Promise.all([
+        this.fetchSwiper(),
+        this.queryNotices()
+      ]).finally(() => {
+        this.isLoading = false
+      })
+    }
+
     onShow () {
       let sessionInfo = session.get()
       if (!sessionInfo) return
@@ -170,17 +184,22 @@
 
       if (!wx.getStorageSync('needRefresh.home')) {
         wx.setStorageSync('needRefresh.home', 'true')
-        this.fetchSwiper()
-        this.queryNotices()
+        this.fechData()
       }
-    }
 
-    onLoad () {
       this.$invoke('notice', 'startScroll')
     }
 
-    onUnload () {
+    onHide () {
       this.$invoke('notice', 'stopScroll')
+    }
+
+    onLoad () {
+      this.isLoading = false
+      this.fechData()
+    }
+
+    onUnload () {
     }
   }
 </script>

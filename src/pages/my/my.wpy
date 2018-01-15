@@ -269,6 +269,7 @@
         this.login(userId).then(res => {
           this.changeSession()
           this.hideSubview()
+          wx.removeStorageSync('needRefresh.home')
         }, msg => {
           wx.showModal({
             title: '提示',
@@ -357,6 +358,7 @@
 
     logout () {
       session.clear()
+      wx.removeStorageSync('needRefresh.home')
       wx.reLaunch({url: '/pages/login/login'})
     }
 
