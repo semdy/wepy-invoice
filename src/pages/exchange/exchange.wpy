@@ -41,7 +41,7 @@
     box-sizing: border-box;
     padding-left: 20rpx;
     padding-right: 20rpx;
-    overflow: auto;
+    overflow: hidden;
   }
 
   .exchange-legend {

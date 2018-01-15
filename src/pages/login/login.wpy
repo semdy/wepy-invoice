@@ -54,7 +54,7 @@
     <loginButton class="login-button" @tap.user="loginButtonTap">登录</loginButton>
   </view>
   <view class="login-footer">
-    <view class="my-version">版本号: V1.0</view>
+    <view class="my-version">版本号: V1.2</view>
     <view>服务热线：021-33563567</view>
   </view>
 </template>

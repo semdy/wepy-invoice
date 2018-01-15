@@ -21,7 +21,7 @@
   }
 </style>
 <template>
-  <scroll-view scroll-y="true" class="notice-scrollview" lower-threshold="0" style="height:{{tableHeight}}px;" bindscrolltolower="onEndReached">
+  <scroll-view scroll-y="true" class="notice-scrollview" lower-threshold="0" bindscrolltolower="onEndReached">
     <view class="notice-listgroup">
       <repeat for="{{dataList}}">
         <listitem hasArrow="true" @tap.user="listitemTap">

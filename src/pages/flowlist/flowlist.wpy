@@ -1,6 +1,10 @@
 <style lang="less">
   @import "../../less/mixin";
 
+  page {
+    padding-bottom: 102rpx;
+  }
+
   .query-form-wrap {
     padding: 30rpx;
     margin: 10rpx;
@@ -20,7 +24,8 @@
 
   .export-footer {
     text-align: center;
-    padding-top: 18rpx;
+    padding-top: 10rpx;
+    padding-bottom: 10rpx;
 
     .button {
       width: 40%;
@@ -39,6 +44,18 @@
 
     &:active {
       background-color: #ececec;
+    }
+  }
+
+  .table {
+    .flex();
+    flex: 1;
+    flex-direction: column;
+
+    .table-body {
+      flex: 1;
+      height: 100%;
+      overflow: hidden;
     }
   }
 
@@ -85,7 +102,7 @@
       <view class="table-cell th opt"></view>
     </view>
 
-    <scroll-view scroll-y="true" class="table-body" lower-threshold="0" style="height:{{tableHeight}}px;" bindscrolltolower="onEndReached">
+    <scroll-view scroll-y="true" class="table-body" lower-threshold="0" bindscrolltolower="onEndReached">
       <block wx:for="{{dataList}}" wx:key="index">
         <view class="table-row" @tap="rowTap({{item}})">
           <view class="table-cell td order">{{index + 1}}</view>
@@ -100,8 +117,8 @@
       </block>
     </scroll-view>
 
-    <view class="export-footer">
-      <exportbutton inline="true" @tap.user="exportTap" wx:if="{{showExport}}">导出</exportbutton>
+    <view class="export-footer" wx:if="{{showExport}}">
+      <exportbutton inline="true" @tap.user="exportTap">导出</exportbutton>
     </view>
 
   </view>
@@ -150,7 +167,6 @@
       isModalShow: false,
       showExport: false,
       downloadUrl: '',
-      tableHeight: wx.getSystemInfoSync().windowHeight - 180,
       tabBar: {
         color: '#777',
         selectedColor: '#01458e',
@@ -311,7 +327,6 @@
     onLoad () {
       if (session.get().user.role === 3) {
         this.showExport = true
-        this.tableHeight = wx.getSystemInfoSync().windowHeight - 240
         wx.setNavigationBarTitle({
           title: '经销商审计'
         })

@@ -1,6 +1,10 @@
 <style lang="less">
   @import "../../less/mixin";
 
+  page {
+    padding-bottom: 102rpx;
+  }
+
   .query-form-wrap {
     padding: 30rpx;
     margin: 10rpx;
@@ -31,6 +35,18 @@
       z-index: 20;
     }
 
+  }
+
+  .table {
+    .flex();
+    flex: 1;
+    flex-direction: column;
+
+    .table-body {
+      flex: 1;
+      height: 100%;
+      overflow: hidden;
+    }
   }
 
   .table-row {
@@ -90,7 +106,7 @@
       <view class="table-cell th opt"></view>
     </view>
 
-    <scroll-view scroll-y="true" class="table-body" lower-threshold="0" style="height:{{tableHeight}}px;" bindscrolltolower="onEndReached">
+    <scroll-view scroll-y="true" class="table-body" lower-threshold="0" bindscrolltolower="onEndReached">
       <block wx:for="{{dataList}}" wx:key="index">
         <view class="table-row" @tap="rowTap({{item}})">
           <view class="table-cell td order">{{index + 1}}</view>
@@ -149,7 +165,6 @@
       dataList: [],
       total: 0,
       receiptNo: '',
-      tableHeight: wx.getSystemInfoSync().windowHeight - 180,
       tabBar: {
         color: '#777',
         selectedColor: '#01458e',

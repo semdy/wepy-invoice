@@ -1,6 +1,10 @@
 <style lang="less">
   @import "../../less/mixin";
 
+  page {
+    padding-bottom: 102rpx;
+  }
+
   .top-actions{
     .flex-v-center();
     justify-content: space-between;
@@ -65,6 +69,16 @@
   }
 
   .dms-table {
+    .flex();
+    flex: 1;
+    flex-direction: column;
+
+    .table-body {
+      flex: 1;
+      height: 100%;
+      overflow: hidden;
+    }
+
     .table-cell {
 
       font-size: 26rpx;
@@ -97,6 +111,7 @@
 
   .page-actions{
     margin-top: 20rpx;
+    margin-bottom: 20rpx;
     text-align: center;
 
     .button {
@@ -190,7 +205,7 @@
       <view class="table-cell th status">状态</view>
       <view class="table-cell th last"></view>
     </view>
-    <scroll-view scroll-y="true" class="table-body" style="height:{{tableHeight}}px;">
+    <scroll-view scroll-y="true" class="table-body">
       <block wx:for="{{dataList}}" wx:key="index">
         <view class="table-row">
           <view class="table-cell td order">{{item.listIndex}}</view>
@@ -290,7 +305,6 @@
     listIndex = 0
 
     data = {
-      tableHeight: wx.getSystemInfoSync().windowHeight - 370,
       pageDisabled: false,
       submitDisabled: true,
       scanContinue: true,
