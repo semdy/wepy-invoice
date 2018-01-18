@@ -15,7 +15,7 @@
 
   export default class Index extends wepy.page {
     config = {
-      navigationBarTitleText: '物联网'
+      navigationBarTitleText: '迪乐助手'
     }
 
     components = {

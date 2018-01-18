@@ -187,6 +187,10 @@
         this.fechData()
       }
 
+      wx.setNavigationBarTitle({
+        title: `主页(${session.get().user.code})`
+      })
+
       this.$invoke('notice', 'startScroll')
     }
 

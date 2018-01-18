@@ -49,7 +49,7 @@
     </view>
   </view>
   <view class="login-form">
-    <formitemuser icon="user.svg" placeholder="公司码" :value="username" @input.user="userChange"></formitemuser>
+    <formitemuser icon="user.svg" placeholder="公司码不加_01" :value="username" @input.user="userChange"></formitemuser>
     <formitemmobile icon="mobile.svg" placeholder="手机号" :value="mobile" @input.user="mobileChange"></formitemmobile>
     <loginButton class="login-button" @tap.user="loginButtonTap">登录</loginButton>
   </view>
