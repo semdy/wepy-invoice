@@ -108,7 +108,7 @@
           <view class="table-cell td">{{item.qrcode}}</view>
           <view class="table-cell td status">{{item.statusText}}</view>
           <view class="table-cell td opt">
-            <view class="icon-delete" @tap.stop="delTap({{item}})">
+            <view class="icon-delete" wx:if="{{item.status!='checkPass'}}" @tap.stop="delTap({{item}})">
               <deleteIcon name="delete.svg"></deleteIcon>
             </view>
           </view>

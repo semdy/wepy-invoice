@@ -34,8 +34,8 @@ function showError (msg, duration) {
         image: '../../images/error.png',
         duration: duration
       })
-    }, 20)
-    setTimeout(resolve, duration)
+      setTimeout(resolve, duration)
+    }, 50)
   })
 }
 
@@ -47,8 +47,8 @@ function showToast (msg, duration) {
         title: msg,
         duration: duration
       })
-    }, 20)
-    setTimeout(resolve, duration)
+      setTimeout(resolve, duration)
+    }, 50)
   })
 }
 
