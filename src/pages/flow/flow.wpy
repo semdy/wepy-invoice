@@ -241,7 +241,7 @@
   import Tabbar from '../../components/tabbar'
   import {showError, showToast, formatDate} from '../../utils/util'
   import {session} from '../../service/auth'
-  import {history} from '../../service/history'
+  import {History} from '../../service/history'
 
   export default class Index extends wepy.page {
     config = {
@@ -258,6 +258,8 @@
       flowitem: Flowitem,
       tabbar: Tabbar
     }
+
+    history = new History('BSC_HISTORY', 10)
 
     data = {
       queryRecordshow: true,
@@ -376,7 +378,7 @@
 
       this.qrcode = qrcode
       this.hideRecords()
-      history.add(qrcode)
+      this.history.add(qrcode)
 
       return new Promise((resolve, reject) => {
         fetch.get('find/transflow', params).then(res => {
@@ -405,7 +407,7 @@
     }
 
     showRecords () {
-      this.queryRecords = history.getAll()
+      this.queryRecords = this.history.getAll()
       this.queryRecordshow = true
     }
 
@@ -415,7 +417,7 @@
     }
 
     clearRecords () {
-      history.clear()
+      this.history.clear()
       this.queryRecords = []
     }
 

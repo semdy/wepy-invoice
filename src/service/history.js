@@ -1,47 +1,52 @@
-const HISTORY_KEY = 'BSC_HISTORY'
+export class History {
+  constructor (storeName, maxLength = 10) {
+    this.storeName = storeName
+    this.maxLength = maxLength
+    this._group = wx.getStorageSync(this.storeName) || []
+  }
 
-let _group = wx.getStorageSync(HISTORY_KEY) || []
-
-export const history = {
-  maxLength: 10,
   add(data) {
     if (!data) return
     if (this.has(data)) {
       this.remove(data)
     }
-    _group.unshift(data)
-    if (_group.length > this.maxLength) {
-      _group = _group.slice(0, this.maxLength)
+    this._group.unshift(data)
+    if (this._group.length > this.maxLength) {
+      this._group = this._group.slice(0, this.maxLength)
     }
     try {
-      wx.setStorageSync(HISTORY_KEY, _group)
+      wx.setStorageSync(this.storeName, this._group)
     } catch (e) {
-      console.error("storage save fail with key 'session'")
+      console.error(`storage save fail with key '${this.storeName}'`)
     }
-  },
+  }
+
   has (key) {
-    return _group.indexOf(key) > -1
-  },
+    return this._group.indexOf(key) > -1
+  }
+
   getAll() {
-    return _group
-  },
+    return this._group
+  }
+
   remove (key) {
-    let index = _group.indexOf(key)
+    let index = this._group.indexOf(key)
     if (index > -1) {
-      _group.splice(index, 1)
+      this._group.splice(index, 1)
       try {
-        wx.setStorageSync(HISTORY_KEY, _group)
+        wx.setStorageSync(this.storeName, this._group)
       } catch (e) {
-        console.error("storage save fail with key 'session'")
+        console.error(`storage save fail with key '${this.storeName}'`)
       }
     }
-  },
+  }
+
   clear() {
-    _group = []
+    this._group = []
     try {
-      wx.removeStorageSync(HISTORY_KEY)
+      wx.removeStorageSync(this.storeName)
     } catch (e) {
-      console.error("storage remove fail with key 'session'")
+      console.error(`storage remove fail with key '${this.storeName}'`)
     }
   }
 }

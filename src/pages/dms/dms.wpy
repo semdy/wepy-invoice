@@ -88,10 +88,10 @@
       &.order {
         width: 60rpx;
       }
-/*      &.upn {
+      &.upn {
         flex: none;
-        width: 160rpx;
-      }*/
+        width: 220rpx;
+      }
       &.status {
         flex: none;
         width: 100rpx;
@@ -171,6 +171,37 @@
 
   }
 
+  .remark-container {
+    position: relative;
+    display: inline-block;
+
+    .icon-img {
+      width: 24rpx !important;
+      height: 24rpx !important;
+      vertical-align: middle;
+    }
+  }
+
+  .remark-history-dropdown {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    margin-top: -2rpx;
+    background-color: #fff;
+    border:1px solid #ccc;
+    padding-top: 10rpx;
+    padding-bottom: 10rpx;
+
+    > view {
+      padding: 10rpx 24rpx;
+
+      &:active {
+        background-color: #f5f5f5;
+      }
+    }
+  }
+
 </style>
 <template>
   <view class="top-actions">
@@ -188,7 +219,14 @@
       </view>
       <view class="bill-field">
         <text class="bill-label">备 注：</text>
-        <remarkinput placeholder="备注可以为空" border="true" :value.sync="remark" :disabled.sync="pageDisabled" @change.user="remarkChange"></remarkinput>
+        <view class="remark-container">
+          <remarkinput placeholder="备注可以为空" border="true" icon="angle-down-black.png" iconRight="true" :value.sync="remark" :disabled.sync="pageDisabled" @focus.user="remarkFocus" @blur.user="remarkBlur" @change.user="remarkChange"></remarkinput>
+          <view class="remark-history-dropdown" hidden="{{!showRemarkDropDown}}">
+            <block wx:for="{{remarkHistory}}" wx:key="index">
+              <view @tap="onHistoryItemTap" data-remark="{{item}}">{{item}}</view>
+            </block>
+          </view>
+        </view>
       </view>
     </view>
   </view>
@@ -202,6 +240,7 @@
       <view class="table-cell th order">序号</view>
       <view class="table-cell th">二维码</view>
       <view class="table-cell th upn">upn</view>
+      <view class="table-cell th">lot</view>
       <view class="table-cell th status">状态</view>
       <view class="table-cell th last"></view>
     </view>
@@ -211,6 +250,7 @@
           <view class="table-cell td order">{{item.listIndex}}</view>
           <view class="table-cell td">{{item.qrcode}}</view>
           <view class="table-cell td upn">{{item.upn}}</view>
+          <view class="table-cell td">{{item.lot}}</view>
           <view class="table-cell td status">
             <text>{{item.statusText}}</text>
             <!--<cauthIcon name="cauth.svg" class="cauth-icon" size="small" wx:if="{{item.status !== 'submit'&&item.type==='manual'}}"></cauthIcon>-->
@@ -273,6 +313,7 @@
   import Button from '../../components/button'
   import Tabbar from '../../components/tabbar'
   import Modal from '../../components/modal'
+  import {History} from '../../service/history'
   import {showError, showToast} from '../../utils/util'
 
   const STATUS_MAP = {
@@ -280,6 +321,12 @@
     'submit': '已提交',
     'noProduct': '缺信息',
     'error': '提交失败'
+  }
+
+  const subSuffix = (str, subLen) => {
+    if (typeof str !== 'string') return ''
+    if (str.length <= subLen || typeof subLen !== 'number') return str
+    return `...${str.substr(str.length - subLen, str.length)}`
   }
 
   export default class Index extends wepy.page {
@@ -304,11 +351,14 @@
 
     listIndex = 0
 
+    history = new History('REMARK_HISTORY', 5)
+
     data = {
       pageDisabled: false,
       submitDisabled: true,
       scanContinue: true,
       isModalShow: false,
+      showRemarkDropDown: false,
       failedCount: 0,
       uploadType: '移库',
       remark: '',
@@ -318,6 +368,7 @@
       upn: '',
       lot: '',
       dataList: [],
+      remarkHistory: [],
       switchIndex: 0,
       switchButtons: ['移库', '上报销量'],
       tabBar: {
@@ -369,6 +420,19 @@
           this.updateReceipt()
         }
       },
+      remarkFocus () {
+        this.remarkHistory = this.history.getAll()
+        this.showRemarkDropDown = this.remarkHistory.length > 0
+      },
+      remarkBlur () {
+        this.showRemarkDropDown = false
+      },
+      onHistoryItemTap (e) {
+        setTimeout(() => {
+          this.remark = e.currentTarget.dataset.remark
+          this.$apply()
+        }, 80)
+      },
       upnChange (e) {
         this.upn = e.detail.value
       },
@@ -393,7 +457,7 @@
       submitReceipt () {
         const failed = this.dataList.filter(item => !item.upn && !item.lot)
         this.failedCount = failed.length
-        if(this.failedCount > 0) {
+        if (this.failedCount > 0) {
           this.showModal()
         } else {
           this.uploadReceipt()
@@ -556,6 +620,7 @@
       fetch.get('upload/receipt', params).then(res => {
         if (res.success) {
           showToast(res.message)
+          this.history.add(this.remark)
           this.reset()
         } else {
           showError(res.message)
@@ -583,10 +648,10 @@
       rowData.listIndex = ++this.listIndex
       rowData.status = data.receipt.status
       rowData.statusText = STATUS_MAP[data.product.status]
-      rowData.qrcode = data.product.qrcode
+      rowData.qrcode = subSuffix(data.product.qrcode, 6)
       rowData.type = data.product.type
       rowData.upn = data.product.upn
-      rowData.lot = data.product.lot
+      rowData.lot = subSuffix(data.product.lot, 4)
       rowData.productId = data.product.id
       rowData.receiptId = data.receipt.id
       /**
@@ -604,10 +669,10 @@
         rowData.listIndex = ++this.listIndex
         rowData.status = item.status
         rowData.statusText = STATUS_MAP[item.status]
-        rowData.qrcode = item.qrcode
+        rowData.qrcode = subSuffix(item.qrcode, 6)
         rowData.type = item.type
         rowData.upn = item.upn
-        rowData.lot = item.lot
+        rowData.lot = subSuffix(item.lot, 4)
         rowData.productId = item.id
         rowData.receiptId = data.id
         this.dataList.unshift(rowData)
@@ -652,6 +717,10 @@
         this.submitDisabled = this.pageDisabled
         this.addDataByReceipt(data)
       }, showError)
+    }
+
+    onLoad () {
+      this.listIndex = 0
     }
   }
 </script>

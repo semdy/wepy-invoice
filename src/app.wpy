@@ -138,6 +138,7 @@
         'pages/flowlist/flowlist',
         'pages/my/my',
         'pages/point/point',
+        'pages/pointflow/pointflow',
         'pages/exchange/exchange',
         'pages/qrcodeupload/qrcodeupload',
         'pages/qrcodelist/qrcodelist',

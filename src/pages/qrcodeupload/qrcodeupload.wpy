@@ -43,12 +43,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 48rpx;
+    font-size: 42rpx;
   }
 
   .circle-canvas{
-    width: 132px;
-    height: 132px;
+    width: 152px;
+    height: 152px;
   }
 
   .filter-buttons{
@@ -328,7 +328,7 @@
 
     onLoad () {
       this.day = 1
-      this.circle = new PercentageCircle('percentage-pie', {percent: 0, radius: 60, borderWidth: 12})
+      this.circle = new PercentageCircle('percentage-pie', {percent: 0, radius: 70, borderWidth: 12})
     }
 
     onPullDownRefresh () {

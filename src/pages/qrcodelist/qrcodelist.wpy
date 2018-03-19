@@ -251,7 +251,7 @@
     }
 
     appendQuery () {
-      if(!this.loaded) return
+      if (!this.loaded) return
       this.queryList(this.date, this.status, ++this.page)
     }
 
