@@ -13,9 +13,18 @@
 
   .record-item {
     .flex-v-center();
-    padding: 40rpx;
+    padding: 30rpx;
     border-bottom: 2rpx solid #dedede;
     background-color: #fff;
+
+    .record-desc {
+      flex:1;
+    }
+
+    .record-score {
+      width: 3em;
+      margin-right: -20rpx;
+    }
 
     &:before {
       content: "•";
@@ -45,7 +54,10 @@
   <scroll-view scroll-y="true" class="records-scrollview" lower-threshold="0" bindscrolltolower="onEndReached">
     <view class="point-records" wx:if="{{dataList.length>0}}">
       <repeat for="{{dataList}}">
-        <view class="record-item">{{item.dateString}} {{item.scoregoods.describe}} {{item.status}}</view>
+        <view class="record-item">
+          <text class="record-desc">{{item.dateString}}{{item.typeString}}</text>
+          <text class="record-score">{{item.scoreString}}</text>
+        </view>
       </repeat>
     </view>
   </scroll-view>
@@ -55,11 +67,27 @@
   import wepy from 'wepy'
   import fetch from '../../service/fetch'
   import Listitem from '../../components/listitem'
+  import {session} from '../../service/auth'
   import {showError, showToast, formatDate} from '../../utils/util'
+
+  const SCORE_TYPES = {
+    "scan": {
+      name: '扫码',
+      symbol: '+'
+    },
+    "20reward50": {
+      name: '奖励',
+      symbol: '+'
+    },
+    "exchange": {
+      name: '兑换',
+      symbol: '-'
+    }
+  };
 
   export default class Index extends wepy.page {
     config = {
-      navigationBarTitleText: '积分流向明细'
+      navigationBarTitleText: '积分管理'
     }
 
     components = {
@@ -91,6 +119,8 @@
     setRecords (list) {
       list.forEach(e => {
         e.dateString = formatDate(new Date(e.date), 'yyyy年MM月dd日')
+        e.typeString = SCORE_TYPES[e.type] ? SCORE_TYPES[e.type].name : e.type
+        e.scoreString = SCORE_TYPES[e.type] ? SCORE_TYPES[e.type].symbol + e.score : e.score
       })
       Array.prototype.push.apply(this.dataList, list)
       this.$apply()
@@ -109,9 +139,39 @@
     }
 
     queryExcRecords () {
-      fetch.get('find/exchange', {page: this.page++}).then(res => {
+      let params = {
+        page: this.page++,
+        userId: session.get().user.id
+      }
+      fetch.get('find/scorelog', params).then(res => {
         if (res.success) {
-          this.setRecords(res.data.docs)
+          this.setRecords([
+          {
+            "date": "2018-03-06",
+            "score": 4,
+            "type": "scan"
+          },
+          {
+            "date": "2018-03-01",
+            "score": 3,
+            "type": "scan"
+          },
+          {
+            "date": "2018-02-10",
+            "score": 50,
+            "type": "20reward50"
+          },
+          {
+            "date": "2018-02-10",
+            "score": 15,
+            "type": "scan"
+          },
+          {
+            "date": "2018-02-07",
+            "score": 500,
+            "type": "exchange"
+          }
+        ]); //res.data.docs
         } else {
           showError(res.message)
         }
