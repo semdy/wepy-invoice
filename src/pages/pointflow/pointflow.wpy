@@ -145,33 +145,7 @@
       }
       fetch.get('find/scorelog', params).then(res => {
         if (res.success) {
-          this.setRecords([
-          {
-            "date": "2018-03-06",
-            "score": 4,
-            "type": "scan"
-          },
-          {
-            "date": "2018-03-01",
-            "score": 3,
-            "type": "scan"
-          },
-          {
-            "date": "2018-02-10",
-            "score": 50,
-            "type": "20reward50"
-          },
-          {
-            "date": "2018-02-10",
-            "score": 15,
-            "type": "scan"
-          },
-          {
-            "date": "2018-02-07",
-            "score": 500,
-            "type": "exchange"
-          }
-        ]); //res.data.docs
+          this.setRecords(res.data.docs)
         } else {
           showError(res.message)
         }
