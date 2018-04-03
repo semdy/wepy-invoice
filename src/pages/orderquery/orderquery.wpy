@@ -1,0 +1,106 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  .query-form {
+    .flex();
+    margin: 40rpx 30rpx 20rpx;
+    min-height: 76rpx;
+  }
+
+  .query-field {
+    position: relative;
+    .flex-v-center();
+    flex: 1;
+
+    .form-item {
+      margin-bottom: 0;
+      flex: 1;
+    }
+  }
+
+  .query-button {
+    margin-left: 30rpx;
+  }
+
+  .scrollview-container {
+    flex: 1;
+    height: 100%;
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+
+</style>
+<template>
+  <view class="query-form">
+    <view class="query-field">
+      <datetimepicker :value.sync="date" @datetimechange.user="datetimechange"></datetimepicker>
+    </view>
+    <queryButton class="query-button" @tap.user="queryTap">查询</queryButton>
+  </view>
+
+  <scroll-view scroll-y="true" class="scrollview-container" lower-threshold="0" bindscrolltolower="onEndReached">
+    <repeat for="{{orders}}" key="index">
+      <orderItem></orderItem>
+    </repeat>
+  </scroll-view>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Icon from '../../components/icon'
+  import Button from '../../components/button'
+  import Datetimepicker from '../../components/datetimepicker'
+  import OrderItem from '../../components/orderitem'
+  import {showError, showToast, formatDate} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '订单查询'
+    }
+
+    components = {
+      queryButton: Button,
+      datetimepicker: Datetimepicker,
+      orderItem: OrderItem
+    }
+
+    data = {
+      orders: [1,2,3],
+      date: formatDate(new Date, 'yyyy-MM')
+    }
+
+    computed = {
+
+    }
+
+    watch = {
+
+    }
+
+    methods = {
+      queryTap () {
+        this.queryOrders(this.date)
+      },
+      datetimechange (e) {
+        this.date = e.detail.value
+      },
+    }
+
+    queryOrders () {
+
+    }
+
+    onEndReached () {
+
+    }
+
+    onLoad () {
+
+    }
+  }
+</script>

@@ -1,0 +1,113 @@
+<style type="less">
+  @import "../less/mixin";
+
+  .stock-check-item {
+    .flex();
+    background-color: #fff;
+    border:2rpx solid #bbb;
+    border-radius: 20rpx;
+    padding: 20rpx;
+    margin-bottom: 20rpx;
+  }
+
+  .stock-check-item-left {
+    margin-right: 40rpx;
+    text-align: center;
+  }
+
+  .stock-check-item-left-hd {
+    margin-bottom: 20rpx;
+    color: #457199;
+    font-weight: bold;
+  }
+
+  .stock-check-item-right {
+    flex:1;
+  }
+
+  .stock-number {
+    .inline-flex-center();
+    display: inline-flex;
+    width: 150rpx;
+    height: 150rpx;
+    background-color: #E1EDF2;
+    border: 2rpx solid #bbb;
+    border-radius: 50%;
+    color: #10458e;
+    font-size: 96rpx;
+  }
+
+  .stock-check-action {
+    .flex();
+    justify-content: space-around;
+    margin-top: 20rpx;
+
+    .button {
+      flex: 1;
+
+      &:first-child {
+        margin-right: 40rpx;
+      }
+    }
+  }
+</style>
+<template>
+  <view class="stock-check-item {{className}}" style="{{style}}" @tap="tap">
+    <view class="stock-check-item-left">
+      <view class="stock-check-item-left-hd">
+        <geoIcon name="geo.svg"></geoIcon>
+        <text>内部盘点</text>
+      </view>
+      <view class="stock-number">97</view>
+    </view>
+
+    <view class="stock-check-item-right">
+      <view class="stock-check-info">盘点任务：任务1</view>
+      <view class="stock-check-info">盘点状态：未提交</view>
+      <view class="stock-check-info">盘点生成日期：2017-01-02</view>
+      <view class="stock-check-info">盘点截止日期：2018-01-12</view>
+      <view class="stock-check-info">备注：</view>
+      <view class="stock-check-action">
+        <checkButton @tap.user="checkButtonTap">盘点</checkButton>
+        <submitButton @tap.user="submitButtonTap">提交</submitButton>
+      </view>
+    </view>
+
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import Icon from './icon'
+  import Button from './button'
+
+  export default class StockItem extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      }
+    }
+    components = {
+      geoIcon: Icon,
+      checkButton: Button,
+      submitButton: Button
+    }
+    data = {
+    }
+    methods = {
+      tap ($event) {
+        this.$emit('tap', Number(this.$index), $event)
+      },
+      checkButtonTap ($event) {
+        this.$emit('checkTap', $event)
+      },
+      submitButtonTap ($event) {
+        this.$emit('submitTap', $event)
+      }
+    }
+  }
+</script>

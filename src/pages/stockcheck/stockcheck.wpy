@@ -1,0 +1,220 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page {
+    display: block;
+    padding: 20rpx;
+  }
+
+  .stock-create-btn {
+    position: fixed;
+    right: 40rpx;
+    bottom: 40rpx;
+    background-color: #10458e;
+    width: 120rpx;
+    height: 120rpx;
+    border-radius: 50%;
+    .flex-center();
+
+    &:active {
+      background-color: darken(#10458e, 5%);
+    }
+  }
+
+  .stock-check-empty {
+    position: absolute;
+    left:50%;
+    top: 20%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    text-align: center;
+    opacity: .7;
+  }
+
+  .stock-new-icon .icon-img {
+    width: 200rpx !important;
+    height: 200rpx !important;
+  }
+
+  .stock-new-hint {
+    font-size:32rpx;
+    margin-top: 50rpx;
+    color:#7e7e7e;
+    white-space: nowrap;
+  }
+
+  .stock-check-remark {
+    textarea {
+      width:100%;
+      height:200rpx;
+      border:2rpx solid #aaa;
+      padding: 10rpx;
+      box-sizing: border-box;
+    }
+  }
+
+  .modal-footer {
+    .flex();
+    justify-content: flex-end;
+    padding-top: 30rpx;
+  }
+
+  .update-button {
+    .flex-center();
+    padding-left: 40rpx;
+    padding-right: 40rpx;
+    border-radius: 8rpx;
+    flex-direction: row;
+    color: #fff;
+    background-color: @gcolor;
+    height: @normal;
+
+    &:active {
+      background-color: darken(@gcolor, 10%);
+    }
+
+    &.cancel {
+      color: #666;
+      background-color: #e0e0e0;
+      margin-right: 40rpx;
+      &:active{
+        background-color: darken(#e5e5e5, 10%);
+      }
+    }
+
+  }
+
+  .stock-submit-confirm-text {
+    width: 340rpx;
+    margin: 0 auto;
+    padding-top: 20rpx;
+    padding-bottom: 20rpx;
+    text-align: center;
+  }
+</style>
+<template>
+  <view class="stock-check-empty" wx:if="{{stocks.length===0}}">
+    <newStockIcon className="stock-new-icon" name="stock-new.svg"></newStockIcon>
+    <view class="stock-new-hint">点击新建任务开始盘点吧！</view>
+  </view>
+
+  <repeat for="{{stocks}}" key="index">
+    <stockChemItem @tap.user="onItemTap" @checkTap.user="onCheckTap" @submitTap.user="onSubmitTap"></stockChemItem>
+  </repeat>
+
+  <view class="stock-create-btn" @tap="createTap">
+    <plusIcon name="plus_white.svg" size="large"></plusIcon>
+  </view>
+
+  <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
+    <view class="stock-check-remark">
+      <textarea @input="remarkChange" placeholder="请输入盘点备注(选填)"></textarea>
+    </view>
+    <view class="modal-footer">
+      <view class="update-button cancel" @tap="closeModal">取消</view>
+      <view class="update-button" @tap="saveRemarkTap">确定</view>
+    </view>
+  </modal>
+
+  <confirmModal wx:if="{{isConfirmModalShow}}" title="提示" @modalClose.user="closeConfirmModal">
+    <view class="stock-submit-confirm-text">
+      确定点击提交，结束本次盘点任务吗?
+    </view>
+    <view class="modal-footer">
+      <view class="update-button cancel" @tap="closeConfirmModal">取消</view>
+      <view class="update-button" @tap="saveStockTap">确定</view>
+    </view>
+  </confirmModal>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Icon from '../../components/icon'
+  import Modal from '../../components/modal'
+  import StockChemItem from '../../components/stockcheckitem'
+  import {showError, showToast, formatDate} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '库存盘点'
+    }
+
+    components = {
+      plusIcon: Icon,
+      newStockIcon: Icon,
+      modal: Modal,
+      confirmModal: Modal,
+      stockChemItem: StockChemItem
+    }
+
+    data = {
+      stocks: [1,2,3,4,5,6],
+      remark: '',
+      isModalShow: false,
+      isConfirmModalShow: false
+    }
+
+    computed = {
+
+    }
+
+    watch = {
+
+    }
+
+    methods = {
+      closeModal () {
+        this.hideModal()
+      },
+      closeConfirmModal () {
+        this.hideConfirmModal()
+      },
+      remarkChange (e) {
+        this.remark = e.detail.value
+      },
+      saveRemarkTap () {
+        console.log(this.remark)
+      },
+      createTap () {
+        this.showModal()
+      },
+      onItemTap () {
+        console.log('item tap...')
+      },
+      onCheckTap () {
+        console.log('check tap...')
+      },
+      onSubmitTap () {
+        this.showConfirmModal()
+      },
+      saveStockTap () {
+        this.$navigate('/pages/stockcheck/stockchecklist')
+      }
+    }
+
+    showModal () {
+      this.isModalShow = true
+      this.$apply()
+    }
+
+    hideModal () {
+      this.isModalShow = false
+      this.$apply()
+    }
+
+    showConfirmModal () {
+      this.isConfirmModalShow = true
+      this.$apply()
+    }
+
+    hideConfirmModal () {
+      this.isConfirmModalShow = false
+      this.$apply()
+    }
+
+    onLoad () {
+
+    }
+  }
+</script>

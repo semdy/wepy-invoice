@@ -1,0 +1,191 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page {
+    padding-left: 10rpx;
+    padding-right: 10rpx;
+  }
+
+  .stock-topbar {
+    .flex();
+    margin-top: 10rpx;
+    margin-bottom: 40rpx;
+
+    > view {
+      flex: 1;
+      font-size: 32rpx;
+      text-align: center;
+
+      &:last-child {
+        color: #ff0000;
+      }
+    }
+  }
+  .scrollview {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .stock-info-item {
+    background-color: #fff;
+    border-radius: 20rpx;
+    margin-bottom: 40rpx;
+    padding: 10rpx;
+  }
+
+  .stock-info-hd {
+    padding: 20rpx 0;
+    text-align: center;
+    font-size: 36rpx;
+    border-bottom: 2rpx solid #bbb;
+  }
+
+  .stock-info-details {
+    .flex();
+    padding-top: 20rpx;
+    padding-bottom: 20rpx;
+  }
+
+  .stock-info-detail {
+    flex: 1;
+    text-align: center;
+  }
+
+  .stocks-action {
+    padding-top: 20rpx;
+    padding-bottom: 20rpx;
+    text-align: center;
+
+    .export-button {
+      width: 35%;
+    }
+  }
+
+  .download-url {
+    padding: 16rpx 30rpx;
+    border: 2rpx solid #c5c5c5;
+    background-color: #f0f0f0;
+    color: #01458e;
+    border-radius: 8rpx;
+    margin-top: 10rpx;
+    word-wrap: break-word;
+    word-break: break-all;
+
+    &:active {
+      background-color: #ececec;
+    }
+  }
+
+</style>
+<template>
+  <view class="stock-topbar">
+    <view>实盘：100</view>
+    <view>系统：98</view>
+    <view>QR差异率：15%</view>
+  </view>
+
+  <scroll-view scroll-y="true" class="scrollview" lower-threshold="0" bindscrolltolower="onEndReached">
+    <block wx:for="{{dataList}}" wx:key="index">
+      <view class="stock-info-item">
+        <view class="stock-info-hd">UPN差异率：6%</view>
+        <view class="stock-info-details">
+          <view class="stock-info-detail">
+            <view>无差异数量</view>
+            <view>96</view>
+          </view>
+          <view class="stock-info-detail">
+            <view>实物有，系统没有</view>
+            <view>4</view>
+          </view>
+          <view class="stock-info-detail">
+            <view>实物没有，系统有</view>
+            <view>2</view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+
+  <view class="stocks-action">
+    <exportButton inline="true" class="export-button" @tap.user="onExportTap">导出</exportButton>
+  </view>
+
+  <modal wx:if="{{isModalShow}}" title="提示信息" @modalClose.user="closeModal">
+    <view>点击复制下面的链接去浏览器下载</view>
+    <view class="download-url" @tap="onDownloadTap">{{downloadUrl}}</view>
+  </modal>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Button from '../../components/button'
+  import Modal from '../../components/modal'
+  import {showError, showToast, formatDate} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '库存盘点'
+    }
+
+    components = {
+      modal: Modal,
+      exportButton: Button
+    }
+
+    data = {
+      dataList: [1,2,3,4,5,6],
+      isModalShow: false,
+      downloadUrl: 'http://www.baidu.com'
+    }
+
+    computed = {
+
+    }
+
+    watch = {
+
+    }
+
+    methods = {
+      closeModal () {
+        this.hideModal()
+      },
+      onExportTap () {
+        this.showModal()
+      },
+      onDownloadTap () {
+        wx.setClipboardData({
+          data: this.downloadUrl,
+          success: () => {
+            wx.getClipboardData({
+              success: (res) => {
+                if (res.data === this.downloadUrl) {
+                  showToast('复制成功')
+                } else {
+                  showError('复制失败，请手动长按复制')
+                }
+              }
+            })
+          }
+        })
+      }
+    }
+
+    showModal () {
+      this.isModalShow = true
+      this.$apply()
+    }
+
+    hideModal () {
+      this.isModalShow = false
+      this.$apply()
+    }
+
+    onLoad () {
+
+    }
+  }
+</script>

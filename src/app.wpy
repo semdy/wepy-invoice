@@ -130,6 +130,7 @@
   export default class extends wepy.app {
     config = {
       pages: [
+        'pages/orderquery/orderquery',
         'pages/home/home',
         'pages/login/login',
         'pages/dms/dms',
@@ -146,7 +147,12 @@
         'pages/webview/main',
         'pages/webview/notice',
         'pages/noticelist/noticelist',
-        'pages/noticedetail/noticedetail'
+        'pages/noticedetail/noticedetail',
+        'pages/stockquery/stockquery',
+        'pages/stockcheck/stockcheck',
+        'pages/stockcheck/stockchecklist',
+
+
       ],
       window: {
         // 类型：HexColor；默认值：#000000

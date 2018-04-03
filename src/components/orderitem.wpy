@@ -1,0 +1,41 @@
+<style type="less">
+  @import "../less/mixin";
+
+  .order-item{
+    background-color: #fff;
+    margin-bottom: 20rpx;
+  }
+</style>
+<template>
+  <view class="order-item {{className}}" style="{{style}}" @tap="tap">
+
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import Icon from './icon'
+
+  export default class StockItem extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      }
+    }
+    components = {
+      sumArrow: Icon,
+      subArrow: Icon
+    }
+    data = {
+    }
+    methods = {
+      tap ($event) {
+        this.$emit('tap', Number(this.$index), $event)
+      }
+    }
+  }
+</script>

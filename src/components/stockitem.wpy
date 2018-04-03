@@ -1,0 +1,142 @@
+<style type="less">
+  @import "../less/mixin";
+
+  .stock-item{
+    background-color: #fff;
+    margin-bottom: 20rpx;
+  }
+
+  .stock-item-bd{
+    position: relative;
+    padding: 20rpx 40rpx;
+    background-color: #e1edf2;
+    border:2rpx solid #bbb;
+    border-radius: 20rpx;
+
+    .sum-arrow {
+      position: absolute;
+      right: 20rpx;
+      top: 50%;
+      -webkit-transform: translateY(-50%);
+      transform: translateY(-50%);
+    }
+  }
+
+  .stock-summay-label {
+    margin-right: 40rpx;
+  }
+
+  .stock-subpanel {
+    border:2rpx solid #bbb;
+    border-radius: 20rpx;
+    margin-top: 10rpx;
+  }
+
+  .stock-subpanel-hd {
+    .flex-center();
+    justify-content: space-between;
+    padding: 16rpx 40rpx;
+    border-bottom: 2rpx solid #bbb;
+
+    .sub-arrow {
+      margin-right: -20rpx;
+    }
+  }
+
+  .stock-subtable{
+    padding: 6rpx 20rpx;
+  }
+
+  .stock-subtable-row {
+    .flex();
+    border-bottom: 2rpx dotted #bbb;
+  }
+
+  .stock-subtable-cell {
+    flex: 1;
+    padding: 8rpx 12rpx;
+    text-align: center;
+    font-size: 26rpx;
+  }
+
+  .stock-subtable-total {
+    text-align: right;
+    padding: 8rpx 50rpx;
+  }
+</style>
+<template>
+  <view class="stock-item {{className}}" style="{{style}}" @tap="tap">
+    <view class="stock-item-bd">
+      <view class="stock-summary-item">
+        <text class="stock-summay-label">产品型号：</text>
+        <text class="stock-summay-content">M123456788</text>
+      </view>
+      <view class="stock-summary-item">
+        <text class="stock-summay-label">产品名称：</text>
+        <text class="stock-summay-content">血栓保护系统</text>
+      </view>
+      <view class="stock-summary-item">
+        <text class="stock-summay-label">合计数量：</text>
+        <text class="stock-summay-content">1500</text>
+      </view>
+      <sumArrow className="sum-arrow" name="arrow-down-o.svg" size="small"></sumArrow>
+    </view>
+
+    <view class="stock-subpanel">
+      <view class="stock-subpanel-hd">
+        <text class="stock-copername">仓库：上海什么有限公司 - 主仓库</text>
+        <text>合计：300</text>
+        <subArrow className="sub-arrow" name="arrow-down-o.svg" size="small"></subArrow>
+      </view>
+      <view class="stock-subtable">
+        <view class="stock-subtable-row">
+          <view class="stock-subtable-cell">批号：19482719</view>
+          <view class="stock-subtable-cell">效期：20180820</view>
+          <view class="stock-subtable-cell">数量：100</view>
+        </view>
+        <view class="stock-subtable-row">
+          <view class="stock-subtable-cell">批号：19482719</view>
+          <view class="stock-subtable-cell">效期：20180820</view>
+          <view class="stock-subtable-cell">数量：100</view>
+        </view>
+        <view class="stock-subtable-row">
+          <view class="stock-subtable-cell">批号：19482719</view>
+          <view class="stock-subtable-cell">效期：20180820</view>
+          <view class="stock-subtable-cell">数量：100</view>
+        </view>
+        <view class="stock-subtable-total">
+          <view>合计：300</view>
+        </view>
+      </view>
+    </view>
+
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import Icon from './icon'
+
+  export default class StockItem extends wepy.component {
+    props = {
+      style: {
+        type: String,
+        default: ''
+      },
+      className: {
+        type: String,
+        default: ''
+      }
+    }
+    components = {
+      sumArrow: Icon,
+      subArrow: Icon
+    }
+    data = {
+    }
+    methods = {
+      tap ($event) {
+        this.$emit('tap', Number(this.$index), $event)
+      }
+    }
+  }
+</script>
