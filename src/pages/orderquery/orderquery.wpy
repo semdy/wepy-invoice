@@ -3,7 +3,7 @@
 
   .query-form {
     .flex();
-    margin: 40rpx 30rpx 20rpx;
+    margin: 20rpx 30rpx;
     min-height: 76rpx;
   }
 
@@ -43,7 +43,7 @@
 
   <scroll-view scroll-y="true" class="scrollview-container" lower-threshold="0" bindscrolltolower="onEndReached">
     <repeat for="{{orders}}" key="index">
-      <orderItem></orderItem>
+      <orderItem @tap.user="onItemTap"></orderItem>
     </repeat>
   </scroll-view>
 
@@ -71,7 +71,7 @@
 
     data = {
       orders: [1,2,3],
-      date: formatDate(new Date, 'yyyy-MM')
+      date: formatDate(new Date, 'yyyy-MM-dd')
     }
 
     computed = {
@@ -89,6 +89,9 @@
       datetimechange (e) {
         this.date = e.detail.value
       },
+      onItemTap () {
+        this.$navigate('/pages/orderdetail/orderdetail')
+      }
     }
 
     queryOrders () {

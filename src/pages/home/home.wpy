@@ -95,12 +95,12 @@
           visible: true
         },
         {
-          icon: 'picture.svg',
+          icon: 'orderquery.png',
           text: '订单查询',
           visible: true
         },
         {
-          icon: 'picture.svg',
+          icon: 'income-selected.svg',
           text: '收货校验',
           visible: true
         }
@@ -135,11 +135,13 @@
         } else if (index === 2) {
           this.$navigate('/pages/qrcodeupload/qrcodeupload')
         } else if (index === 3) {
-          this.$navigate('/pages/stockcheck/stockquery')
+          this.$navigate('/pages/stockquery/stockquery')
         } else if (index === 4) {
           this.$navigate('/pages/stockcheck/stockcheck')
         } else if (index === 5) {
           this.$navigate('/pages/orderquery/orderquery')
+        } else if (index === 6) {
+          this.$navigate('/pages/receiptcheck/receiptcheck')
         }
       }
     }

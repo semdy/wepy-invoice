@@ -1,0 +1,75 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  .order-detail-top {
+    padding: 20rpx 40rpx;
+    border-bottom: 2rpx dotted #bbb;
+  }
+
+  .scrollview-container {
+    flex: 1;
+    height: 100%;
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    .order-detail-item:first-child {
+      margin-top: 20rpx;
+    }
+  }
+</style>
+<template>
+  <view class="order-detail-top">
+    订单号：2310I1705001
+  </view>
+
+  <scroll-view scroll-y="true" class="scrollview-container" lower-threshold="0" bindscrolltolower="onEndReached">
+    <repeat for="{{orders}}" key="index">
+      <orderdetail></orderdetail>
+    </repeat>
+  </scroll-view>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Icon from '../../components/icon'
+  import Orderdetail from '../../components/orderdetail'
+  import {showError, showToast, formatDate} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '订单明细'
+    }
+
+    components = {
+      orderdetail: Orderdetail
+    }
+
+    data = {
+      orders: [1,2,3,4,5,6]
+    }
+
+    computed = {
+
+    }
+
+    watch = {
+
+    }
+
+    methods = {
+
+    }
+
+    onEndReached () {
+
+    }
+
+    onLoad () {
+
+    }
+  }
+</script>

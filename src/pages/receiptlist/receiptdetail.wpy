@@ -1,0 +1,226 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page {
+    padding: 10rpx;
+  }
+
+  .receipt-detail-item {
+    border-left:2rpx solid #bbb;
+    border-right:2rpx solid #bbb;
+    border-bottom: 2rpx dashed #bbb;
+    background-color: #fff;
+    overflow: hidden;
+
+    &:first-child {
+      border-top:2rpx solid #bbb;
+      border-top-left-radius: 16rpx;
+      border-top-right-radius: 16rpx;
+    }
+
+    &:last-child {
+      border-bottom:2rpx solid #bbb;
+      border-bottom-left-radius: 16rpx;
+      border-bottom-right-radius: 16rpx;
+    }
+  }
+
+  .receipt-detail-header {
+    padding: 10rpx 30rpx;
+
+    > view {
+      padding: 6rpx 0;
+    }
+  }
+
+  .receiptdetail-scrollview {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .receiptdetail-table {
+    .flex();
+    flex: 1;
+    flex-direction: column;
+
+    .table-cell {
+      font-size: 26rpx;
+      padding-left: 6rpx;
+      padding-right: 6rpx;
+    }
+  }
+
+  .receiptdetail-action {
+    padding: 20rpx 0 40rpx;
+    .flex();
+
+    .button {
+      flex: 1;
+      margin-left: 40rpx;
+      margin-right: 40rpx;
+    }
+  }
+
+  .download-url {
+    padding: 16rpx 30rpx;
+    border: 2rpx solid #c5c5c5;
+    background-color: #f0f0f0;
+    color: #01458e;
+    border-radius: 8rpx;
+    margin-top: 10rpx;
+    word-wrap: break-word;
+    word-break: break-all;
+
+    &:active {
+      background-color: #ececec;
+    }
+  }
+</style>
+<template>
+  <scroll-view scroll-y="true" class="receiptdetail-scrollview">
+    <block wx:for="{{dataList}}" wx:key="index">
+      <view class="receipt-detail-item">
+        <view class="receipt-detail-header">
+          <view>单据编号：20171031-001</view>
+          <view>发货单号：38179100101</view>
+        </view>
+        <view class="table receiptdetail-table">
+          <view class="table-row table-header">
+            <view class="table-cell th qrcode">二维码</view>
+            <view class="table-cell th upn">UPN</view>
+            <view class="table-cell th lot">LOT</view>
+          </view>
+          <view class="table-row">
+            <view class="table-cell td qrcode">421356781923156</view>
+            <view class="table-cell td upn">M1234567789</view>
+            <view class="table-cell td lot">12345678</view>
+          </view>
+          <view class="table-row">
+            <view class="table-cell td qrcode">421356781923156</view>
+            <view class="table-cell td upn">M1234567789</view>
+            <view class="table-cell td lot">12345678</view>
+          </view>
+          <view class="table-row">
+            <view class="table-cell td qrcode">421356781923156</view>
+            <view class="table-cell td upn">M1234567789</view>
+            <view class="table-cell td lot">12345678</view>
+          </view>
+          <view class="table-row">
+            <view class="table-cell td qrcode">421356781923156</view>
+            <view class="table-cell td upn">M1234567789</view>
+            <view class="table-cell td lot">12345678</view>
+          </view>
+          <view class="table-row">
+            <view class="table-cell td qrcode">421356781923156</view>
+            <view class="table-cell td upn">M1234567789</view>
+            <view class="table-cell td lot">12345678</view>
+          </view>
+          <view class="table-row">
+            <view class="table-cell td qrcode">421356781923156</view>
+            <view class="table-cell td upn">M1234567789</view>
+            <view class="table-cell td lot">12345678</view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+
+  <view class="receiptdetail-action">
+    <exportButton @tap.user="onExportTap">导出</exportButton>
+    <transformButton @tap.user="onTransformTap">转移库</transformButton>
+  </view>
+
+  <modal wx:if="{{isModalShow}}" title="提示信息" @modalClose.user="closeModal">
+    <view>点击复制下面的链接去浏览器下载</view>
+    <view class="download-url" @tap="onDownloadTap">{{downloadUrl}}</view>
+  </modal>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Button from '../../components/button'
+  import Modal from '../../components/modal'
+  import {showError, showToast} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '收货校验'
+    }
+
+    components = {
+      exportButton: Button,
+      transformButton: Button,
+      modal: Modal
+    }
+
+    data = {
+      dataList: [1, 2, 3],
+      isModalShow: false,
+      downloadUrl: 'http://www.baidu.com'
+    }
+
+    computed = {
+    }
+
+    watch = {
+    }
+
+    methods = {
+      closeModal () {
+        this.hideModal()
+      },
+      onExportTap () {
+        this.showModal()
+      },
+      onTransformTap () {
+        this.$navigate('/pages/dms/dms')
+      },
+      onDownloadTap () {
+        wx.setClipboardData({
+          data: this.downloadUrl,
+          success: () => {
+            wx.getClipboardData({
+              success: (res) => {
+                if (res.data === this.downloadUrl) {
+                  showToast('复制成功')
+                } else {
+                  showError('复制失败，请手动长按复制')
+                }
+              }
+            })
+          }
+        })
+      }
+    }
+
+    queryReceipt(receiptId) {
+      return new Promise((resolve, reject) => {
+        fetch.get(`find/receipt/${receiptId}`).then(res => {
+          if (res.success) {
+            resolve(res.data)
+          } else {
+            reject(res.message)
+          }
+        }, errMsg => {
+          reject(errMsg)
+        })
+      })
+    }
+
+    showModal () {
+      this.isModalShow = true
+      this.$apply()
+    }
+
+    hideModal () {
+      this.isModalShow = false
+      this.$apply()
+    }
+
+    onLoad () {
+
+    }
+  }
+</script>

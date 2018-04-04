@@ -8,8 +8,8 @@
 
   .stock-topbar {
     .flex();
-    margin-top: 10rpx;
-    margin-bottom: 40rpx;
+    margin-top: 20rpx;
+    margin-bottom: 20rpx;
 
     > view {
       flex: 1;

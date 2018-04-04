@@ -1,0 +1,402 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page {
+    padding-bottom: 102rpx;
+    background-color: #fff;
+  }
+
+  .scan-fields{
+    text-align: center;
+    padding: 20rpx;
+  }
+
+  .receiptcheck-table {
+    .flex();
+    flex: 1;
+    flex-direction: column;
+
+    .table-body {
+      flex: 1;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .table-cell {
+
+      font-size: 26rpx;
+      padding-left: 6rpx;
+      padding-right: 6rpx;
+
+      &.num {
+        flex: none;
+        width: 100rpx;
+      }
+
+      &.last {
+        flex: none;
+        width: 50rpx;
+      }
+    }
+
+
+  }
+
+  .page-actions{
+    margin-top: 20rpx;
+    margin-bottom: 20rpx;
+    text-align: center;
+
+    .button {
+      width: 200rpx;
+    }
+  }
+
+  .modal-confirm {
+    view {
+      text-align: center;
+      margin-bottom: 16rpx;
+      font-size: 32rpx;
+    }
+  }
+
+  .modal-footer {
+    .flex-h-center();
+    padding-top: 30rpx;
+  }
+
+  .update-button {
+    .flex-center();
+    padding-left: 40rpx;
+    padding-right: 40rpx;
+    border-radius: 8rpx;
+    flex-direction: row;
+    color: #fff;
+    background-color: @gcolor;
+    height: @normal;
+
+    &:active {
+      background-color: darken(@gcolor, 10%);
+    }
+
+    &.cancel {
+      color: #666;
+      background-color: #e0e0e0;
+      margin-right: 40rpx;
+      &:active{
+        background-color: darken(#e5e5e5, 10%);
+      }
+    }
+
+  }
+
+  .table-footer {
+    padding: 20rpx 40rpx 20rpx;
+    border-bottom: 2rpx solid #eee;
+    .flex();
+    justify-content: space-between;
+  }
+
+  .receipt-total {
+    padding:20rpx 40rpx;
+    text-align: right;
+    border-bottom: 2rpx solid #eee;
+  }
+</style>
+<template>
+  <view class="scan-fields">
+    <scanbutton :disabled.sync="pageDisabled" inline="true" size="large" @tap.user="onScanTap">扫 码 收 货</scanbutton>
+  </view>
+
+  <view class="table receiptcheck-table">
+    <view class="table-row table-header">
+      <view class="table-cell th upn">型号</view>
+      <view class="table-cell th zh">中文名</view>
+      <view class="table-cell th lot">批号</view>
+      <view class="table-cell th num">数量</view>
+    </view>
+    <scroll-view scroll-y="true" class="table-body">
+      <block wx:for="{{dataList}}" wx:key="index">
+        <view class="table-row">
+          <view class="table-cell td upn">M1923675318901</view>
+          <view class="table-cell td zh">阿姆西林药</view>
+          <view class="table-cell td lot">12345678</view>
+          <view class="table-cell td num">12</view>
+        </view>
+      </block>
+      <view class="table-footer">
+        <text>缺信息</text>
+        <text>5</text>
+      </view>
+    </scroll-view>
+    <view class="receipt-total">
+      合计：65
+    </view>
+  </view>
+
+  <view class="page-actions">
+    <submitbutton inline="true" :disabled.sync="submitDisabled" @tap.user="submitReceipt">提 交</submitbutton>
+  </view>
+
+  <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
+    <view class="modal-confirm">
+      <view>信息完整的<text class="h">{{dataList.length-failedCount}}</text>条</view>
+      <view>缺少信息的<text class="h">{{failedCount}}</text>条</view>
+      <view>确认提交吗?</view>
+    </view>
+    <view class="modal-footer">
+      <view class="update-button cancel" @tap="closeModal">取消</view>
+      <view class="update-button" @tap="doUploadReceipt">确定</view>
+    </view>
+  </modal>
+
+  <tabbar :tabBar="tabBar" disabled="true" @tabbarChange.user="tabbarChange"></tabbar>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Button from '../../components/button'
+  import Tabbar from '../../components/tabbar'
+  import Modal from '../../components/modal'
+  import {showError, showToast} from '../../utils/util'
+
+  const STATUS_MAP = {
+    'waitSubmit': '待提交',
+    'submit': '已提交',
+    'noProduct': '缺信息',
+    'error': '提交失败'
+  }
+
+  const subSuffix = (str, subLen) => {
+    if (typeof str !== 'string') return ''
+    if (str.length <= subLen || typeof subLen !== 'number') return str
+    return `...${str.substr(str.length - subLen, str.length)}`
+  }
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '收货校验'
+    }
+
+    components = {
+      scanbutton: Button,
+      submitbutton: Button,
+      tabbar: Tabbar,
+      modal: Modal
+    }
+
+    listIndex = 0
+
+    data = {
+      submitDisabled: false,
+      isModalShow: false,
+      failedCount: 0,
+      dataList: [1,2,3,4,5,6,7],
+      tabBar: {
+        color: '#777',
+        selectedColor: '#01458e',
+        borderStyle: '#ddd',
+        backgroundColor: '#fff',
+        list: [
+          {
+            text: '收货',
+            icon: 'income.svg',
+            selectedIcon: 'income-selected.svg'
+          },
+          {
+            text: '列表',
+            icon: 'list.svg',
+            selectedIcon: 'list-selected.png'
+          }
+        ]
+      }
+    }
+
+    computed = {
+    }
+
+    watch = {
+    }
+
+    methods = {
+      tabbarChange (index) {
+        if (index === 1) {
+          this.$navigate('/pages/receiptlist/receiptlist')
+        }
+      },
+      onScanTap () {
+        this.launchScaner()
+      },
+      submitReceipt () {
+        return this.$navigate('/pages/receiptlist/receiptlist')
+        const failed = this.dataList.filter(item => !item.upn && !item.lot)
+        this.failedCount = failed.length
+        if (this.failedCount > 0) {
+          this.showModal()
+        } else {
+          this.uploadReceipt()
+        }
+      },
+      closeModal() {
+        this.hideModal()
+      }
+    }
+
+    showModal () {
+      this.isModalShow = true
+      this.$apply()
+    }
+
+    hideModal() {
+      this.isModalShow = false
+      this.upn = ''
+      this.lot = ''
+      this.$apply()
+    }
+
+    reset () {
+      this.listIndex = 0
+      this.switchIndex = 0
+      this.failedCount = 0
+      this.uploadType = this.switchButtons[this.switchIndex]
+      this.remark = ''
+      this.scanContinue = true
+      this.submitDisabled = true
+      this.dataList = []
+      this.isModalShow = false
+      this.lastReceiptId = ''
+      this.lastReceiptNo = ''
+      this.lastQrcode = ''
+      this.upn = ''
+      this.lot = ''
+
+      this.$apply()
+    }
+
+    launchScaner () {
+      wepy.scanCode()
+        .then(res => {
+          this.queryQrCode(res.result).then(data => {
+            this.submitDisabled = false
+            if (!data.product) {
+              data.product = {}
+            }
+            this.addData(data)
+            if (this.scanContinue) {
+              this.launchScaner()
+            }
+          }).catch(msg => {
+            showError(msg)
+            if (this.scanContinue) {
+              setTimeout(() => {
+                this.launchScaner()
+              }, 1600)
+            }
+          })
+        })
+        .catch(() => {
+          console.log('scan canceled')
+        })
+    }
+
+    queryQrCode(data) {
+      let params = {
+        qrcode: data,
+        receiptId: this.lastReceiptId,
+        type: this.uploadType,
+        remark: this.remark
+      }
+      return new Promise((resolve, reject) => {
+        fetch.get('find/scan', params).then(res => {
+          if (res.success) {
+            resolve(res.data)
+          } else {
+            reject(res.message)
+          }
+        }, errMsg => {
+          reject(errMsg)
+        })
+      })
+    }
+
+    queryReceipt(receiptId) {
+      return new Promise((resolve, reject) => {
+        fetch.get(`find/receipt/${receiptId}`).then(res => {
+          if (res.success) {
+            resolve(res.data)
+          } else {
+            reject(res.message)
+          }
+        }, errMsg => {
+          reject(errMsg)
+        })
+      })
+    }
+
+    uploadReceipt () {
+      let params = {
+        receiptId: this.lastReceiptId,
+        remark: this.remark
+      }
+      fetch.get('upload/receipt', params).then(res => {
+        if (res.success) {
+          showToast(res.message)
+          this.reset()
+        } else {
+          showError(res.message)
+        }
+      }, showError)
+    }
+
+    addData (data) {
+      let rowData = {}
+      rowData.listIndex = ++this.listIndex
+      rowData.status = data.receipt.status
+      rowData.statusText = STATUS_MAP[data.product.status]
+      rowData.qrcode = subSuffix(data.product.qrcode, 6)
+      rowData.type = data.product.type
+      rowData.upn = data.product.upn
+      rowData.lot = subSuffix(data.product.lot, 4)
+      rowData.productId = data.product.id
+      rowData.receiptId = data.receipt.id
+      /**
+       * 倒序排序
+       */
+      this.dataList.unshift(rowData)
+      this.$apply()
+    }
+
+    addDataByReceipt (data) {
+      this.listIndex = 0
+      this.dataList = []
+      data.receiptQr.forEach(item => {
+        let rowData = {}
+        rowData.listIndex = ++this.listIndex
+        rowData.status = item.status
+        rowData.statusText = STATUS_MAP[item.status]
+        rowData.qrcode = subSuffix(item.qrcode, 6)
+        rowData.type = item.type
+        rowData.upn = item.upn
+        rowData.lot = subSuffix(item.lot, 4)
+        rowData.productId = item.id
+        rowData.receiptId = data.id
+        this.dataList.unshift(rowData)
+      })
+
+      this.$apply()
+    }
+
+    showReceipt (receiptId) {
+      this.queryReceipt(receiptId).then(data => {
+        this.submitDisabled = true
+        this.addDataByReceipt(data)
+      }, showError)
+    }
+
+    onLoad () {
+      this.listIndex = 0
+    }
+  }
+</script>

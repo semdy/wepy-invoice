@@ -7,7 +7,7 @@
 
   .query-form {
     .flex();
-    margin: 40rpx 30rpx 20rpx;
+    margin: 20rpx 30rpx;
     min-height: 76rpx;
   }
 

@@ -1,0 +1,172 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page {
+    padding-bottom: 102rpx;
+  }
+
+  .query-form {
+    .flex();
+    padding: 20rpx 30rpx;
+    min-height: 76rpx;
+    background-color: #fff;
+  }
+
+  .query-field {
+    position: relative;
+    .flex-v-center();
+    flex: 1;
+
+    .form-item {
+      margin-bottom: 0;
+      flex: 1;
+    }
+
+    .opt-icon {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+    }
+
+  }
+
+  .query-button {
+    margin-left: 30rpx;
+  }
+
+  .receiptlist-table {
+    .flex();
+    flex: 1;
+    flex-direction: column;
+
+    .table-body {
+      flex: 1;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .table-row {
+      &:active {
+        background-color: darken(#fff, 6%);
+      }
+    }
+
+    .table-cell {
+      font-size: 26rpx;
+      padding-left: 6rpx;
+      padding-right: 6rpx;
+    }
+  }
+
+</style>
+<template>
+  <view class="query-form">
+    <view class="query-field">
+      <queryinput placeholder="二维码/单据编号" border="true" icon="find-g.svg" :value.sync="queryStr" @input.user="queryChange"></queryinput>
+      <clearIcon name="clear.svg" className="opt-icon" @tap.user="clearTap"></clearIcon>
+    </view>
+    <queryButton class="query-button" @tap.user="queryTap">查询</queryButton>
+  </view>
+
+  <view class="table receiptlist-table">
+    <view class="table-row table-header">
+      <view class="table-cell th order">序号</view>
+      <view class="table-cell th code">单据编号</view>
+      <view class="table-cell th num">产品数量</view>
+    </view>
+    <scroll-view scroll-y="true" class="table-body">
+      <block wx:for="{{dataList}}" wx:key="index">
+        <view class="table-row" @tap="onRowTap">
+          <view class="table-cell td order">{{index+1}}</view>
+          <view class="table-cell td code">20178944344</view>
+          <view class="table-cell td num">12</view>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
+
+  <tabbar :tabBar="tabBar" disabled="true" tabIndex="1" @tabbarChange.user="tabbarChange"></tabbar>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Formitem from '../../components/formitem'
+  import Icon from '../../components/icon'
+  import Button from '../../components/button'
+  import Tabbar from '../../components/tabbar'
+  import {showError, showToast} from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '收货校验'
+    }
+
+    components = {
+      queryinput: Formitem,
+      clearIcon: Icon,
+      queryButton: Button,
+      tabbar: Tabbar
+    }
+
+    data = {
+      dataList: [1,2,3,4],
+      tabBar: {
+        color: '#777',
+        selectedColor: '#01458e',
+        borderStyle: '#ddd',
+        backgroundColor: '#fff',
+        list: [
+          {
+            text: '收货',
+            icon: 'income.svg',
+            selectedIcon: 'income-selected.svg'
+          },
+          {
+            text: '列表',
+            icon: 'list.svg',
+            selectedIcon: 'list-selected.png'
+          }
+        ]
+      }
+    }
+
+    computed = {
+    }
+
+    watch = {
+    }
+
+    methods = {
+      onRowTap () {
+        this.$navigate('/pages/receiptlist/receiptdetail')
+      },
+      tabbarChange (index) {
+        if (index === 0) {
+          this.$back()
+        }
+      }
+    }
+
+    queryReceipt(receiptId) {
+      return new Promise((resolve, reject) => {
+        fetch.get(`find/receipt/${receiptId}`).then(res => {
+          if (res.success) {
+            resolve(res.data)
+          } else {
+            reject(res.message)
+          }
+        }, errMsg => {
+          reject(errMsg)
+        })
+      })
+    }
+
+    onLoad () {
+
+    }
+  }
+</script>
