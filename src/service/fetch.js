@@ -26,7 +26,7 @@ let fetchApi = (url, params = {}, useToken = true) => {
     let sessionInfo = session.get()
 
     if (useToken && sessionInfo && sessionInfo.token) {
-      initParams = Object.assign({
+      initParams = Object.assign(initParams, {
         'access-token': sessionInfo.token
       })
     }
