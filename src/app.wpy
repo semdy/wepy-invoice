@@ -276,6 +276,16 @@
      * 当小程序启动，或从后台进入前台显示，会触发 onShow
      */
     onShow () {
+      wx.getLocation({
+        type: 'wgs84',
+        success: function(res) {
+          let latitude = res.latitude
+          let longitude = res.longitude
+          let speed = res.speed
+          let accuracy = res.accuracy
+          wx.setStorageSync('LOCATION_DATA', {latitude, longitude, speed, accuracy})
+        }
+      })
     }
     /**
      * 生命周期函数--监听小程序隐藏

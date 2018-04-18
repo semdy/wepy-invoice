@@ -21,21 +21,25 @@ let fetchApi = (url, params = {}, useToken = true) => {
       })
     }
 
-    let tokenParam = {}
+    let initParams = {'content-type': 'application/json'}
+    let locationData = wx.getStorageSync('LOCATION_DATA')
     let sessionInfo = session.get()
+
     if (useToken && sessionInfo && sessionInfo.token) {
-      tokenParam = {
+      initParams = Object.assign({
         'access-token': sessionInfo.token
-      }
+      })
+    }
+
+    if (locationData) {
+      initParams = Object.assign(initParams, {latitude: locationData.latitude, longitude: locationData.longitude, accuracy: locationData.accuracy})
     }
 
     wepy.request({
       url: `${serverUrl}api/${url}?version=${version}`,
       data: Object.assign({}, params.method === 'POST' ? {ref} : {}, params.data),
       method: params.method || 'GET',
-      header: Object.assign(tokenParam, params.header || {
-        'content-type': 'application/json'
-      })
+      header: Object.assign(initParams, params.header)
     })
     .then(res => {
       if (res.statusCode === 200) {
