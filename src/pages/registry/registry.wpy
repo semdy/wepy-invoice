@@ -274,6 +274,7 @@
           showToast(res.message)
           this.$back()
         }, res => {
+          this.isReging = false
           if (res.message === '公司名错误!') {
             this.compername = res.data.name
             this.showModal()
