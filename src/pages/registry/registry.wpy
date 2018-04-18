@@ -1,0 +1,303 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  .registry-logo{
+    margin: 6% 30%;
+
+    > image{
+      display: block;
+      width: 400rpx;
+      height: 200rpx;
+    }
+  }
+
+  .registry-form{
+    width: 60%;
+    max-width: 1000rpx;
+    .marign-auto();
+
+    .registry-actions{
+      margin-top: 80rpx;
+    }
+  }
+
+  .registry-footer{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 80rpx;
+    color: #002178;
+    text-align: center;
+  }
+
+  .input {
+    color: @gcolor;
+  }
+
+  .my-version {
+    text-align: center;
+    font-size: 24rpx;
+    margin-bottom: 20rpx;
+  }
+
+  .code-wrapper {
+    position: relative;
+
+    .code-trigger {
+      position: absolute;
+      padding-left:20rpx;
+      padding-right: 20rpx;
+      height: 100%;
+      top: 0;
+      right: 0;
+      color: #01458e;
+      font-size: 24rpx;
+      line-height: 72rpx;
+      background-color: #fff;
+      text-decoration: underline;
+      z-index: 50;
+
+      &.wait {
+        color: #666;
+        text-decoration: none;
+      }
+    }
+  }
+
+  .registry-actions {
+    .flex-h-center();
+
+    .button {
+      width: 40%;
+    }
+  }
+
+  .modal-confirm {
+    view {
+      text-align: center;
+      margin-bottom: 16rpx;
+    }
+  }
+
+  .modal-footer {
+    .flex-h-center();
+    padding-top: 30rpx;
+  }
+
+  .update-button {
+    .flex-center();
+    padding-left: 40rpx;
+    padding-right: 40rpx;
+    border-radius: 8rpx;
+    flex-direction: row;
+    color: #fff;
+    background-color: @gcolor;
+    height: @normal;
+
+    &:active {
+      background-color: darken(@gcolor, 10%);
+    }
+
+    &.cancel {
+      color: #666;
+      background-color: #e0e0e0;
+      margin-right: 40rpx;
+      &:active{
+        background-color: darken(#e5e5e5, 10%);
+      }
+    }
+
+  }
+</style>
+<template>
+  <view class="container">
+    <view class="registry-logo">
+      <image src="../../images/login_logo.png" mode="aspectFit"></image>
+    </view>
+  </view>
+  <view class="registry-form">
+    <formitemvcode icon="building.svg" placeholder="公司码(不加_01)" :value="vcode" @input.user="vcodeChange"></formitemvcode>
+    <formitemname icon="home-selected.svg" placeholder="公司全称" :value="vname" @input.user="vnameChange"></formitemname>
+    <formitemuser icon="user.svg" placeholder="用户名" :value="username" @input.user="userChange"></formitemuser>
+    <formitemmobile icon="mobile.svg" placeholder="手机号" :value="mobile" @input.user="mobileChange"></formitemmobile>
+    <view class="code-wrapper">
+      <formitemcode placeholder="请输入验证码" :value="code" @input.user="codeChange"></formitemcode>
+      <view wx:if="{{!isCodeGet}}" class="code-trigger" @tap="onGetCode">获取验证码</view>
+      <view wx:if="{{isCodeGet}}" class="code-trigger wait">{{secs}}秒后重新获取</view>
+    </view>
+    <view class="registry-actions">
+      <submitbutton @tap.user="submitButtonTap">提交</submitbutton>
+    </view>
+  </view>
+  <view class="registry-footer">
+    <view class="my-version">版本号: V1.2</view>
+    <view>服务热线：021-33563567</view>
+  </view>
+
+  <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
+    <view class="modal-confirm">
+      <view>该公司在迪乐助手历史记录中的公司名称为“xxxx”，点击确认按钮更新至输入框，如有疑问请拨打服务热线。</view>
+    </view>
+    <view class="modal-footer">
+      <view class="update-button cancel" @tap="closeModal">取消</view>
+      <view class="update-button" @tap="correctCopername">确定</view>
+    </view>
+  </modal>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Formitem from '../../components/formitem'
+  import Button from '../../components/button'
+  import Modal from '../../components/modal'
+  import {showError, showToast} from '../../utils/util'
+  import {registry, sendMessage} from '../../service/user'
+
+  const SEND_WAIT_TIME = 61
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '注册'
+    }
+
+    components = {
+      formitemvcode: Formitem,
+      formitemname: Formitem,
+      formitemuser: Formitem,
+      formitemmobile: Formitem,
+      formitemcode: Formitem,
+      submitbutton: Button,
+      modal: Modal
+    }
+
+    compername = ''
+
+    data = {
+      vcode: '',
+      vname: '',
+      username: '',
+      mobile: '',
+      code: '',
+      secs: SEND_WAIT_TIME,
+      isCodeGet: false,
+      isModalShow: false
+    }
+
+    isReging = false
+
+    computed = {
+
+    }
+
+    events = {
+
+    }
+
+    showModal () {
+      this.isModalShow = true
+      this.$apply()
+    }
+
+    hideModal() {
+      this.isModalShow = false
+      this.$apply()
+    }
+
+    methods = {
+      vcodeChange (e) {
+        this.vcode = e.detail.value
+      },
+      vnameChange (e) {
+        this.vname = e.detail.value
+      },
+      userChange (e) {
+        this.username = e.detail.value
+      },
+      mobileChange (e) {
+        this.mobile = e.detail.value
+      },
+      codeChange (e) {
+        this.code = e.detail.value
+      },
+      closeModal() {
+        this.hideModal()
+      },
+      onGetCode () {
+        if (!this.vcode) {
+          return showError('请输入公司码')
+        }
+        if (!this.mobile) {
+          return showError('请输入手机号')
+        }
+        if (!/^1[3456789]\d{9}$/.test(this.mobile)) {
+          return showError('请输入正确手机号')
+        }
+        let params = {code: this.vcode, password: this.mobile, type: 'register'}
+        sendMessage(params).then(res => {
+          showToast(res.message)
+          this.startCountDown()
+        }, err => {
+          showError(err)
+        })
+      },
+      correctCopername () {
+        this.vname = this.compername
+      },
+      submitButtonTap () {
+        if (this.isReging) return
+
+        if (!this.vcode) {
+          return showError('请输入公司码')
+        }
+        if (!this.vname) {
+          return showError('请输入公司全称')
+        }
+        if (!this.username) {
+          return showError('请输入用户名')
+        }
+        if (!this.mobile) {
+          return showError('请输入手机号')
+        }
+        if (!/^1[3456789]\d{9}$/.test(this.mobile)) {
+          return showError('请输入正确手机号')
+        }
+        if (!this.code) {
+          return showError('请输入验证码')
+        }
+
+        this.isReging = true
+
+        let params = {code: this.vcode, name: this.vname, username: this.username, phone: this.mobile, validateCode: this.code}
+        registry(params).then((res) => {
+          this.isReging = false
+          showToast(res.message)
+          this.$back()
+        }, res => {
+          if (res.message === '公司名错误!') {
+            this.compername = res.data.name
+            this.showModal()
+          } else {
+            showError(res.message)
+          }
+        })
+      }
+    }
+
+    startCountDown() {
+      this.isCodeGet = true
+      if (--this.secs > 0) {
+        setTimeout(() => {
+          this.startCountDown()
+        }, 1000)
+      } else {
+        this.isCodeGet = false
+        this.secs = SEND_WAIT_TIME
+      }
+      this.$apply()
+    }
+
+    onLoad () {
+    }
+  }
+</script>

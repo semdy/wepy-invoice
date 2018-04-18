@@ -132,8 +132,10 @@
       pages: [
         'pages/home/home',
         'pages/login/login',
+        'pages/registry/registry',
         'pages/dms/dms',
         'pages/dmslist/dmslist',
+        'pages/dmshistory/dmshistory',
         'pages/flow/flow',
         'pages/flowlist/flowlist',
         'pages/my/my',

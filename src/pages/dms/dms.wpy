@@ -53,10 +53,16 @@
   }
 
   .scan-fields{
+    .flex();
+    justify-content: space-around;
     background-color: #fff;
     padding-left: 40rpx;
     padding-right: 40rpx;
     padding-bottom: 20rpx;
+
+    .button {
+      width: 40%
+    }
 
     .form-item{
       margin-bottom: 0;
@@ -115,7 +121,7 @@
     text-align: center;
 
     .button {
-      width: 200rpx;
+      width: 240rpx;
     }
   }
 
@@ -233,6 +239,7 @@
 
   <view class="scan-fields">
     <scanbutton icon="qr-code.svg" :disabled.sync="pageDisabled" @tap.user="onScanTap">扫 码</scanbutton>
+    <historybutton icon="history.svg" @tap.user="onHistoryTap">扫码历史</historybutton>
   </view>
 
   <view class="table dms-table">
@@ -342,6 +349,7 @@
       switchbutton: Switchbutton,
       submitbutton: Button,
       scanbutton: Button,
+      historybutton: Button,
       updatebutton: Button,
       deleteIcon: Icon,
       cauthIcon: Icon,
@@ -449,6 +457,9 @@
       },
       onScanTap () {
         this.launchScaner()
+      },
+      onHistoryTap () {
+        this.$navigate('/pages/dmshistory/dmshistory')
       },
       delTap (e) {
         let item = e.currentTarget.dataset.wepyParamsA

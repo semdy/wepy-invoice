@@ -1,0 +1,368 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page {
+    padding-bottom: 102rpx;
+  }
+
+  .query-form-wrap {
+    padding: 30rpx;
+    margin: 10rpx;
+    border-radius: 8rpx;
+    .flex();
+    background-color: #fff;
+
+    .query-form {
+      flex: 1;
+      margin-right: 20rpx;
+    }
+  }
+
+  .query-form {
+    position: relative;
+    .flex-v-center();
+
+    .form-item {
+      margin-bottom: 0;
+      flex: 1;
+    }
+
+    .clear-icon {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+    }
+
+  }
+
+  .table {
+    .flex();
+    flex: 1;
+    flex-direction: column;
+
+    .table-body {
+      flex: 1;
+      height: 100%;
+      overflow: hidden;
+    }
+  }
+
+  .table-row {
+    &:active {
+      background-color: #f2f2f2;
+    }
+  }
+
+  .table-cell {
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space:normal;
+    padding-left: 4rpx;
+    padding-right: 4rpx;
+    font-size: 26rpx;
+
+    &.opt {
+      flex: none;
+      width: 60rpx;
+    }
+
+    &.lot {
+      width: 140rpx;
+      flex: none;
+    }
+
+    .icon {
+      padding: 0;
+    }
+  }
+
+  .page-actions{
+    margin-top: 20rpx;
+    margin-bottom: 20rpx;
+    text-align: center;
+
+    .button {
+      width: 240rpx;
+    }
+  }
+
+  .modal-confirm {
+    view {
+      text-align: center;
+      margin-bottom: 16rpx;
+    }
+  }
+
+  .modal-footer {
+    .flex-h-center();
+    padding-top: 30rpx;
+  }
+
+  .update-button {
+    .flex-center();
+    padding-left: 40rpx;
+    padding-right: 40rpx;
+    border-radius: 8rpx;
+    flex-direction: row;
+    color: #fff;
+    background-color: @gcolor;
+    height: @normal;
+
+    &:active {
+      background-color: darken(@gcolor, 10%);
+    }
+
+    &.cancel {
+      color: #666;
+      background-color: #e0e0e0;
+      margin-right: 40rpx;
+      &:active{
+        background-color: darken(#e5e5e5, 10%);
+      }
+    }
+
+  }
+
+</style>
+<template>
+  <view class="query-form-wrap">
+    <view class="query-form">
+      <queryinput placeholder="搜索二维码" border="true" icon="find-g.svg" :value.sync="qrcode" @input.user="queryChange"></queryinput>
+      <clearIcon name="clear.svg" className="clear-icon" @tap.user="clearTap"></clearIcon>
+    </view>
+    <querybutton @tap.user="queryTap">查询</querybutton>
+  </view>
+
+  <view class="table">
+    <view class="table-row table-header">
+      <view class="table-cell th order">序号</view>
+      <view class="table-cell th">二维码</view>
+      <view class="table-cell th">UPN</view>
+      <view class="table-cell th lot">LOT</view>
+      <view class="table-cell th opt"></view>
+    </view>
+
+    <scroll-view scroll-y="true" class="table-body" lower-threshold="0">
+      <block wx:for="{{dataList}}" wx:key="index">
+        <view class="table-row" @tap="rowTap({{item}})">
+          <view class="table-cell td order">{{item.listIndex}}</view>
+          <view class="table-cell td">{{item.qrcode}}</view>
+          <view class="table-cell td">{{item.upn}}</view>
+          <view class="table-cell td lot">{{item.lot}}</view>
+          <view class="table-cell td opt">
+            <view class="icon-delete" @tap.stop="delTap({{item}})">
+              <deleteIcon name="delete.svg"></deleteIcon>
+            </view>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+
+  </view>
+
+  <view class="page-actions">
+    <submitbutton inline="true" :disabled.sync="submitDisabled" @tap.user="submitQrcode">添 加</submitbutton>
+  </view>
+
+
+  <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
+    <view class="modal-confirm">
+      <view>{{queryMsg}}</view>
+    </view>
+    <view class="modal-footer">
+      <view class="update-button" @tap="closeModal">确定</view>
+    </view>
+  </modal>
+
+  <tabbar :tabBar="tabBar" disabled="true" tabIndex="1" @tabbarChange.user="tabbarChange"></tabbar>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Formitem from '../../components/formitem'
+  import Button from '../../components/button'
+  import Icon from '../../components/icon'
+  import Modal from '../../components/modal'
+  import Tabbar from '../../components/tabbar'
+  import {showError, showToast, confirm} from '../../utils/util'
+  import Storage from '../../service/storage'
+
+  let storage = new Storage('DMS_HISTORY')
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '二维码上传DMS'
+    }
+
+    components = {
+      queryinput: Formitem,
+      clearIcon: Icon,
+      deleteIcon: Icon,
+      tabbar: Tabbar,
+      querybutton: Button,
+      submitbutton: Button,
+      modal: Modal
+    }
+
+    tempData = []
+
+    data = {
+      dataList: [],
+      qrcode: '',
+      queryMsg: '',
+      failedCount: 0,
+      isModalShow: false,
+      submitDisabled: true,
+      tabBar: {
+        color: '#777',
+        selectedColor: '#01458e',
+        borderStyle: '#ddd',
+        backgroundColor: '#fff',
+        list: [
+          {
+            text: '扫码',
+            icon: 'scan-new.svg',
+            selectedIcon: 'scan-new-selected.svg'
+          },
+          {
+            text: '列表',
+            icon: 'list.svg',
+            selectedIcon: 'list-selected.png'
+          }
+        ]
+      }
+    }
+
+    watch = {
+      dataList (newVal) {
+        if (newVal.length > 0) {
+          this.submitDisabled = false
+        } else {
+          this.submitDisabled = true
+        }
+      }
+    }
+
+    computed = {
+
+    }
+
+    methods = {
+      queryTap () {
+        this.handleQuery()
+      },
+      clearTap () {
+        this.qrcode = ''
+      },
+      queryChange (e) {
+        this.qrcode = e.detail.value
+      },
+      tabbarChange (index) {
+        if (index === 0) {
+          this.$back()
+        }
+      },
+      closeModal() {
+        this.hideModal()
+      },
+      delTap (e) {
+        let item = e.currentTarget.dataset.wepyParamsA
+        confirm('确定要删除吗?').then(() => {
+          this.deleteHistory(item.id)
+        })
+      },
+      submitQrcode () {
+        this.saveQrcode()
+      }
+    }
+
+    showModal (msg) {
+      this.queryMsg = msg
+      this.isModalShow = true
+      this.$apply()
+    }
+
+    hideModal() {
+      this.isModalShow = false
+      this.$apply()
+    }
+
+    handleQuery () {
+      if (!this.qrcode) return showError('请输入二维码')
+      let target = this.dataList.find(item => item.qrcode === this.qrcode)
+      if (target) {
+        this.showModal('您查询的二维码在列表中已存在')
+      } else {
+        this.queryHistory(this.qrcode)
+      }
+    }
+
+    queryHistory(qrcode) {
+      fetch.get('handle/findHistory', { qrcode }).then(res => {
+        if (res.success) {
+          this.addData(res.data)
+        } else {
+          this.showModal(res.message)
+        }
+      }, errMsg => {
+        showError(errMsg)
+      })
+    }
+
+    saveQrcode () {
+      storage.add(this.tempData)
+      this.dataList = storage.getAll()
+      this.showModal(`已成功提交${this.tempData.length}条`)
+      this.tempData = []
+    }
+
+    deleteHistory (id) {
+      storage.remove(id)
+      this.removeData(id, 'dataList')
+      this.removeData(id, 'tempData')
+      this.refreshOrder()
+      this.$apply()
+    }
+
+    addData (data) {
+      let rowData = {}
+      rowData.qrcode = data.qrcode
+      rowData.upn = data.upn
+      rowData.lot = data.lot
+      rowData.id = data.id
+      this.dataList.unshift(rowData)
+      this.tempData.unshift(rowData)
+      this.refreshOrder()
+      this.$apply()
+    }
+
+    removeData (id, keyScope) {
+      let index = this[keyScope].findIndex(item => item.id === id)
+      if (index > -1) {
+        this[keyScope].splice(index, 1)
+      }
+    }
+
+    refreshOrder() {
+      let index = this.dataList.length
+      this.dataList.forEach((item, i) => {
+        item.listIndex = index--
+      })
+    }
+
+    getPrevPage () {
+      const pages = this.getCurrentPages()
+      return pages[pages.length - 2]
+    }
+
+    onLoad () {
+      this.tempData = []
+      this.dataList = storage.getAll()
+      this.getPrevPage().reset()
+    }
+  }
+</script>

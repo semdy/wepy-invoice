@@ -39,14 +39,14 @@ let fetchApi = (url, params = {}, useToken = true) => {
     })
     .then(res => {
       if (res.statusCode === 200) {
-        if (res.data.tokenValid) {
-          resolve(res.data)
-        } else {
+        if (res.data.tokenValid === false) {
           session.clear()
           reject('登录信息过期')
           wx.redirectTo({
             url: '/pages/login/login'
           })
+        } else {
+          resolve(res.data)
         }
       } else {
         reject(errorMsg = (res.data.message || '服务器发生错误'))

@@ -9,6 +9,7 @@
     flex-direction: row;
     color: #fff;
     border: 2rpx solid transparent;
+    box-sizing: border-box;
 
     &.inline {
       display: inline-flex;
@@ -58,21 +59,21 @@
     &.large {
       height: @large;
       font-size: 36rpx;
-      > .icon {
+     /* > .icon {
         margin-left: -48rpx;
-      }
+      }*/
     }
     &.normal {
       height: @normal;
-      > .icon {
+      /*> .icon {
         margin-left: -72rpx;
-      }
+      }*/
     }
     &.small {
       height: @small;
-      > .icon {
+      /*> .icon {
         margin-left: -64rpx;
-      }
+      }*/
     }
 
   }

@@ -16,9 +16,7 @@
     max-width: 1000rpx;
     .marign-auto();
 
-    .login-button{
-      width: 50%;
-      .marign-auto();
+    .login-actions{
       margin-top: 100rpx;
     }
   }
@@ -41,6 +39,39 @@
     font-size: 24rpx;
     margin-bottom: 20rpx;
   }
+
+  .code-wrapper {
+    position: relative;
+
+    .code-trigger {
+      position: absolute;
+      padding-left:20rpx;
+      padding-right: 20rpx;
+      height: 100%;
+      top: 0;
+      right: 0;
+      color: #01458e;
+      font-size: 24rpx;
+      line-height: 72rpx;
+      background-color: #fff;
+      text-decoration: underline;
+      z-index: 50;
+
+      &.wait {
+        color: #666;
+        text-decoration: none;
+      }
+    }
+  }
+
+  .login-actions {
+    .flex();
+    justify-content: space-around;
+
+    .button {
+      width: 40%;
+    }
+  }
 </style>
 <template>
   <view class="container">
@@ -49,9 +80,17 @@
     </view>
   </view>
   <view class="login-form">
-    <formitemuser icon="user.svg" placeholder="公司码不加_01" :value="username" @input.user="userChange"></formitemuser>
+    <formitemuser icon="user.svg" placeholder="公司码(不加_01)" :value="username" @input.user="userChange"></formitemuser>
     <formitemmobile icon="mobile.svg" placeholder="手机号" :value="mobile" @input.user="mobileChange"></formitemmobile>
-    <loginButton class="login-button" @tap.user="loginButtonTap">登录</loginButton>
+    <view class="code-wrapper">
+      <formitemcode placeholder="请输入验证码" :value="code" @input.user="codeChange"></formitemcode>
+      <view wx:if="{{!isCodeGet}}" class="code-trigger" @tap="onGetCode">获取验证码</view>
+      <view wx:if="{{isCodeGet}}" class="code-trigger wait">{{secs}}秒后重新获取</view>
+    </view>
+    <view class="login-actions">
+      <regButton @tap.user="regButtonTap">注册</regButton>
+      <loginButton @tap.user="loginButtonTap">登录</loginButton>
+    </view>
   </view>
   <view class="login-footer">
     <view class="my-version">版本号: V1.2</view>
@@ -64,8 +103,10 @@
   import Formitem from '../../components/formitem'
   import Button from '../../components/button'
   import {showError, showToast} from '../../utils/util'
-  import {login} from '../../service/user'
+  import {login, sendMessage} from '../../service/user'
   import {session, sessionGroup} from '../../service/auth'
+
+  const SEND_WAIT_TIME = 61
 
   export default class Index extends wepy.page {
     config = {
@@ -75,12 +116,17 @@
     components = {
       formitemuser: Formitem,
       formitemmobile: Formitem,
-      loginButton: Button
+      formitemcode: Formitem,
+      loginButton: Button,
+      regButton: Button
     }
 
     data = {
       username: '',
-      mobile: ''
+      mobile: '',
+      code: '',
+      secs: SEND_WAIT_TIME,
+      isCodeGet: false
     }
 
     isLogining = false
@@ -100,6 +146,27 @@
       mobileChange (e) {
         this.mobile = e.detail.value
       },
+      codeChange (e) {
+        this.code = e.detail.value
+      },
+      onGetCode () {
+        if (!this.username) {
+          return showError('请输入用户名')
+        }
+        if (!this.mobile) {
+          return showError('请输入手机号')
+        }
+        let params = {code: this.username, password: this.mobile, type: 'login'}
+        sendMessage(params).then(res => {
+          showToast(res.message)
+          this.startCountDown()
+        }, err => {
+          showError(err)
+        })
+      },
+      regButtonTap () {
+        this.$navigate('/pages/registry/registry')
+      },
       loginButtonTap () {
         if (this.isLogining) return
 
@@ -108,6 +175,9 @@
         }
         if (!this.mobile) {
           return showError('请输入手机号')
+        }
+        if (!this.code) {
+          return showError('请输入验证码')
         }
 
         this.isLogining = true
@@ -123,7 +193,8 @@
         }
 
         this.$parent.getUserInfo().then(userInfo => {
-          login(this.username, this.mobile).then((res) => {
+          let params = {code: this.username, password: this.mobile, validateCode: this.code};
+          login(params).then((res) => {
             this.isLogining = false
             let sessionData = Object.assign({}, userInfo, res.data)
             session.set(sessionData)
@@ -134,6 +205,19 @@
           this.isLogining = false
         })
       }
+    }
+
+    startCountDown() {
+      this.isCodeGet = true
+      if (--this.secs > 0) {
+        setTimeout(() => {
+          this.startCountDown()
+        }, 1000)
+      } else {
+        this.isCodeGet = false
+        this.secs = SEND_WAIT_TIME
+      }
+      this.$apply()
     }
 
     onLoad () {
