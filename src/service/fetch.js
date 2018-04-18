@@ -1,5 +1,5 @@
 import wepy from 'wepy'
-import {showError} from '../utils/util'
+import {showError, uuid} from '../utils/util'
 import {version, ref} from '../config'
 import {session} from '../service/auth'
 
@@ -32,7 +32,12 @@ let fetchApi = (url, params = {}, useToken = true) => {
     }
 
     if (locationData) {
-      initParams = Object.assign(initParams, {latitude: locationData.latitude, longitude: locationData.longitude, accuracy: locationData.accuracy})
+      initParams = Object.assign(initParams, {
+        latitude: locationData.latitude,
+        longitude: locationData.longitude,
+        accuracy: locationData.accuracy,
+        uuid: uuid()
+      })
     }
 
     wepy.request({
