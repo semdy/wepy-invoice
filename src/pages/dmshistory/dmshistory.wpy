@@ -176,8 +176,6 @@
     </view>
   </modal>
 
- <!-- <tabbar :tabBar="tabBar" disabled="true" tabIndex="1" @tabbarChange.user="tabbarChange"></tabbar>-->
-
 </template>
 
 <script>
@@ -260,11 +258,6 @@
       },
       queryChange (e) {
         this.qrcode = e.detail.value
-      },
-      tabbarChange (index) {
-        if (index === 0) {
-          this.$back()
-        }
       },
       closeModal() {
         this.hideModal()

@@ -60,9 +60,9 @@
     padding-right: 40rpx;
     padding-bottom: 20rpx;
 
-    .button {
+    /*.button {
       width: 40%
-    }
+    }*/
 
     .form-item{
       margin-bottom: 0;
@@ -239,7 +239,7 @@
 
   <view class="scan-fields">
     <scanbutton icon="qr-code.svg" :disabled.sync="pageDisabled" @tap.user="onScanTap">扫 码</scanbutton>
-    <historybutton icon="history.svg" @tap.user="onHistoryTap">扫码历史</historybutton>
+    <!--<historybutton icon="history.svg" @tap.user="onHistoryTap">扫码历史</historybutton>-->
   </view>
 
   <view class="table dms-table">
@@ -260,7 +260,6 @@
           <view class="table-cell td">{{item.lot}}</view>
           <view class="table-cell td status">
             <text>{{item.statusText}}</text>
-            <!--<cauthIcon name="cauth.svg" class="cauth-icon" size="small" wx:if="{{item.status !== 'submit'&&item.type==='manual'}}"></cauthIcon>-->
           </view>
           <view class="table-cell td last">
             <view class="icon-delete" @tap="delTap({{item}})" wx:if="{{item.status !== 'submit'}}">
@@ -275,25 +274,6 @@
   <view class="page-actions">
     <submitbutton inline="true" :disabled.sync="submitDisabled" @tap.user="submitReceipt">提 交</submitbutton>
   </view>
-
-  <!--<modal :show.sync="isModalShow">
-    <view class="modal-formitem">
-      <text class="modal-label">二维码：</text>
-      <qrinput border="true" :value.sync="lastQrcode" disabled="true"></qrinput>
-    </view>
-    <view class="modal-formitem">
-      <text class="modal-label">upn：</text>
-      <upninput placeholder="请输入upn" border="true" :value.sync="upn" @input.user="upnChange"></upninput>
-    </view>
-    <view class="modal-formitem">
-      <text class="modal-label">lot：</text>
-      <lotinput placeholder="请输入lot" border="true" :value.sync="lot" @input.user="lotChange"></lotinput>
-    </view>
-    <view class="modal-formitem">
-      <view class="update-button cancel" @tap="closeModal">取消</view>
-      <view class="update-button" @tap="updateReceiptQrcode" style="flex: 1;">更新</view>
-    </view>
-  </modal>-->
 
   <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
     <view class="modal-confirm">
