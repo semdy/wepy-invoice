@@ -64,6 +64,10 @@
       width: 40%
     }*/
 
+    .button {
+      width: 100%;
+    }
+
     .form-item{
       margin-bottom: 0;
       flex: 1;
