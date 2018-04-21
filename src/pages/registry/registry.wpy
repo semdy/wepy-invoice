@@ -117,7 +117,7 @@
   </view>
   <view class="registry-form">
     <formitemvcode icon="building.svg" placeholder="公司码(不加_01)" :value="vcode" @input.user="vcodeChange"></formitemvcode>
-    <formitemname icon="home-selected.svg" placeholder="公司全称" :value="vname" @input.user="vnameChange"></formitemname>
+    <formitemname icon="home-selected.svg" placeholder="公司全称" :value.sync="vname" @input.user="vnameChange"></formitemname>
     <formitemuser icon="user.svg" placeholder="用户名" :value="username" @input.user="userChange"></formitemuser>
     <formitemmobile icon="mobile.svg" placeholder="手机号" :value="mobile" @input.user="mobileChange"></formitemmobile>
     <view class="code-wrapper">
@@ -136,7 +136,7 @@
 
   <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
     <view class="modal-confirm">
-      <view>该公司在迪乐助手历史记录中的公司名称为“xxxx”，点击确认按钮更新至输入框，如有疑问请拨打服务热线。</view>
+      <view>该公司在迪乐助手历史记录中的公司名称为“{{compername}}”，点击确认按钮更新至输入框，如有疑问请拨打服务热线。</view>
     </view>
     <view class="modal-footer">
       <view class="update-button cancel" @tap="closeModal">取消</view>
@@ -171,14 +171,13 @@
       modal: Modal
     }
 
-    compername = ''
-
     data = {
       vcode: '',
       vname: '',
       username: '',
       mobile: '',
       code: '',
+      compername: '',
       secs: SEND_WAIT_TIME,
       isCodeGet: false,
       isModalShow: false
@@ -243,6 +242,7 @@
       },
       correctCopername () {
         this.vname = this.compername
+        this.hideModal()
       },
       submitButtonTap () {
         if (this.isReging) return
@@ -275,7 +275,7 @@
           this.$back()
         }, res => {
           this.isReging = false
-          if (res.message === '公司名错误!') {
+          if (res.message === '公司名错误') {
             this.compername = res.data.name
             this.showModal()
           } else {

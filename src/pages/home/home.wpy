@@ -84,7 +84,7 @@
           text: '二维码照片上报',
           visible: true
         },
-        {
+        /*{
           icon: 'stock-query.svg',
           text: '库存查询',
           visible: true
@@ -103,7 +103,7 @@
           icon: 'income-selected.svg',
           text: '收货校验',
           visible: true
-        }
+        }*/
       ]
     }
 

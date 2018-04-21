@@ -184,10 +184,9 @@
 
         let errorHandler = errMsg => {
           this.isLogining = false
-          //showError(errMsg)
           wx.showModal({
             title: '提示',
-            content: '公司码或手机号错误，请重试或联系管理人员',
+            content: errMsg || '公司码或手机号错误，请重试或联系管理人员',
             showCancel: false
           })
         }
