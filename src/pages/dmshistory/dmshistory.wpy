@@ -176,7 +176,7 @@
     </view>
   </modal>
 
-  <tabbar :tabBar="tabBar" disabled="true" tabIndex="1" @tabbarChange.user="tabbarChange"></tabbar>
+ <!-- <tabbar :tabBar="tabBar" disabled="true" tabIndex="1" @tabbarChange.user="tabbarChange"></tabbar>-->
 
 </template>
 
