@@ -619,6 +619,7 @@
           showToast(res.message)
           this.history.add(this.remark)
           this.reset()
+          wx.removeStorageSync('DMS_HISTORY')
         } else {
           showError(res.message)
         }
@@ -723,7 +724,7 @@
           return this.addQrcode(data, false)
         })
         Promise.all(promises).then(() => {
-          wx.removeStorageSync('DMS_HISTORY')
+          console.log('add history done!')
         })
       }
     }

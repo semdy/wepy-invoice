@@ -303,7 +303,6 @@
       this.tempData = this.tempData.concat(addedData)
       wx.setStorageSync('DMS_HISTORY', this.tempData)
       this.dataList = []
-      this.tempData = []
       this.showModal(`已成功提交${addedData.length}条`)
     }
 
