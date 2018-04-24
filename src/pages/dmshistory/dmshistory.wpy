@@ -1,10 +1,6 @@
 <style lang="less">
   @import "../../less/mixin";
 
-  page {
-    padding-bottom: 102rpx;
-  }
-
   .query-form-wrap {
     padding: 30rpx;
     margin: 10rpx;
@@ -187,9 +183,6 @@
   import Modal from '../../components/modal'
   import Tabbar from '../../components/tabbar'
   import {showError, showToast, confirm} from '../../utils/util'
-  import Storage from '../../service/storage'
-
-  let storage = new Storage('DMS_HISTORY')
 
   export default class Index extends wepy.page {
     config = {
@@ -212,7 +205,6 @@
       dataList: [],
       qrcode: '',
       queryMsg: '',
-      failedCount: 0,
       isModalShow: false,
       submitDisabled: true,
       tabBar: {
@@ -307,16 +299,16 @@
     }
 
     saveQrcode () {
-      storage.add(this.tempData)
-      this.dataList = storage.getAll()
-      this.showModal(`已成功提交${this.tempData.length}条`)
+      let addedData = this.dataList.map(e => e.qrcode)
+      this.tempData = this.tempData.concat(addedData)
+      wx.setStorageSync('DMS_HISTORY', this.tempData)
+      this.dataList = []
       this.tempData = []
+      this.showModal(`已成功提交${addedData.length}条`)
     }
 
     deleteHistory (id) {
-      storage.remove(id)
-      this.removeData(id, 'dataList')
-      this.removeData(id, 'tempData')
+      this.removeData(id)
       this.refreshOrder()
       this.$apply()
     }
@@ -328,15 +320,14 @@
       rowData.lot = data.lot
       rowData.id = data.id
       this.dataList.unshift(rowData)
-      this.tempData.unshift(rowData)
       this.refreshOrder()
       this.$apply()
     }
 
-    removeData (id, keyScope) {
-      let index = this[keyScope].findIndex(item => item.id === id)
+    removeData (id) {
+      let index = this.dataList.findIndex(item => item.id === id)
       if (index > -1) {
-        this[keyScope].splice(index, 1)
+        this.dataList.splice(index, 1)
       }
     }
 
@@ -353,8 +344,7 @@
     }
 
     onLoad () {
-      this.tempData = []
-      this.dataList = storage.getAll()
+      this.tempData = wx.getStorageSync('DMS_HISTORY') || []
       this.getPrevPage().reset()
     }
   }

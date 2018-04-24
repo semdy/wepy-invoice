@@ -177,7 +177,7 @@
 
     data = {
       dataList: [],
-      date: formatDate(new Date, 'yyyy-MM'),
+      date: formatDate(new Date(), 'yyyy-MM'),
       status: '',
       statusArray: STATUS_ARRAY,
       statusIndex: 0,
@@ -209,7 +209,7 @@
       status (value) {
         let index = 0
         this.statusArray.forEach((item, i) => {
-          if(item.value === value) {
+          if (item.value === value) {
             index = i
           }
         })
@@ -301,7 +301,7 @@
     }
 
     onLoad (params) {
-      if(params.status) {
+      if (params.status) {
         this.status = params.status
       }
       this.handleQuery()

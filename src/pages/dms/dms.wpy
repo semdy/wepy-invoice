@@ -60,12 +60,8 @@
     padding-right: 40rpx;
     padding-bottom: 20rpx;
 
-    /*.button {
-      width: 40%
-    }*/
-
     .button {
-      width: 100%;
+      width: 40%
     }
 
     .form-item{
@@ -243,7 +239,7 @@
 
   <view class="scan-fields">
     <scanbutton icon="qr-code.svg" :disabled.sync="pageDisabled" @tap.user="onScanTap">扫 码</scanbutton>
-    <!--<historybutton icon="history.svg" @tap.user="onHistoryTap">扫码历史</historybutton>-->
+    <historybutton icon="history.svg" @tap.user="onHistoryTap">扫码历史</historybutton>
   </view>
 
   <view class="table dms-table">
@@ -504,34 +500,40 @@
     launchScaner () {
       wepy.scanCode()
         .then(res => {
-          this.queryQrCode(res.result).then(data => {
-            this.lastReceiptId = data.receipt.id
-            this.lastQrcode = res.result
-            this.lastReceiptNo = data.receipt.receiptNo
-            this.submitDisabled = false
-            /*if (!data.product || (!data.product.upn && !data.product.lot)) {
-              this.showModal()
-            } else {*/
-            if (!data.product) {
-              data.product = {}
-            }
-            this.addData(data)
-            if (this.scanContinue) {
-              this.launchScaner()
-            }
-            //}
-          }).catch(msg => {
-            showError(msg)
-            if (this.scanContinue) {
-              setTimeout(() => {
-                this.launchScaner()
-              }, 1600)
-            }
-          })
+          this.addQrcode(res.result, this.scanContinue)
         })
         .catch(() => {
           console.log('scan canceled')
         })
+    }
+
+    addQrcode (qrcode, scanContinue) {
+      return this.queryQrCode(qrcode).then(data => {
+        this.lastReceiptId = data.receipt.id
+        this.lastQrcode = qrcode
+        this.lastReceiptNo = data.receipt.receiptNo
+        this.submitDisabled = false
+        if (!data.product) {
+          data.product = {}
+        }
+        this.addData(data)
+        if (scanContinue) {
+          this.launchScaner()
+        }
+      }).catch(msg => {
+        showError(msg)
+        if (scanContinue) {
+          setTimeout(() => {
+            this.launchScaner()
+          }, 1600)
+        }
+      })
+    }
+
+    addQrcodeByHistory (list) {
+      list.forEach(item => {
+        this.addQrcode(item)
+      })
     }
 
     queryQrCode(data) {
@@ -712,6 +714,18 @@
         this.submitDisabled = this.pageDisabled
         this.addDataByReceipt(data)
       }, showError)
+    }
+
+    onShow () {
+      let cacheData = wx.getStorageSync('DMS_HISTORY')
+      if (cacheData) {
+        let promises = cacheData.map(data => {
+          return this.addQrcode(data, false)
+        })
+        Promise.all(promises).then(() => {
+          wx.removeStorageSync('DMS_HISTORY')
+        })
+      }
     }
 
     onLoad () {

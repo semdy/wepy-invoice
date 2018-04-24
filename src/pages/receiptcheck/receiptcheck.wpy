@@ -193,7 +193,7 @@
       submitDisabled: false,
       isModalShow: false,
       failedCount: 0,
-      dataList: [1,2,3,4,5,6,7],
+      dataList: [1, 2, 3, 4, 5, 6, 7],
       tabBar: {
         color: '#777',
         selectedColor: '#01458e',

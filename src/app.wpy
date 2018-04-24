@@ -167,7 +167,7 @@
         navigationBarTextStyle: '#fff',
         // 类型：String；默认值：无
         // 导航栏标题文字内容
-        navigationBarTitleText: '物联网',
+        navigationBarTitleText: '迪乐助手',
         // 类型：HexColor；默认值：#ffffff
         // 窗口的背景色
         backgroundColor: '#e6edf4',
@@ -271,10 +271,6 @@
       wx.removeStorageSync('needRefresh.home')
     }
 
-    /**
-     * 生命周期函数--监听小程序显示
-     * 当小程序启动，或从后台进入前台显示，会触发 onShow
-     */
     onShow () {
       wx.getLocation({
         type: 'wgs84',
@@ -287,10 +283,7 @@
         }
       })
     }
-    /**
-     * 生命周期函数--监听小程序隐藏
-     * 当小程序从前台进入后台，会触发 onHide
-     */
+
     onHide () {
       wx.removeStorageSync('needRefresh.home')
     }

@@ -153,6 +153,7 @@
   import Modal from '../../components/modal'
   import {showError, showToast} from '../../utils/util'
   import {registry, sendMessage} from '../../service/user'
+  import {session, sessionGroup} from '../../service/auth'
 
   const SEND_WAIT_TIME = 61
 
@@ -268,19 +269,25 @@
 
         this.isReging = true
 
-        let params = {code: this.vcode, name: this.vname, username: this.username, phone: this.mobile, validateCode: this.code}
-        registry(params).then((res) => {
+        this.$parent.getUserInfo().then(userInfo => {
+          let params = {code: this.vcode, name: this.vname, username: this.username, phone: this.mobile, validateCode: this.code}
+          registry(params).then((res) => {
+            this.isReging = false
+            let sessionData = Object.assign({}, userInfo, res.data)
+            session.set(sessionData)
+            sessionGroup.add(res.data.user.id, sessionData)
+            this.$switch('/pages/home/home')
+          }, res => {
+            this.isReging = false
+            if (res.message === '公司名错误') {
+              this.compername = res.data.name
+              this.showModal()
+            } else {
+              showError(res.message)
+            }
+          })
+        }, msg => {
           this.isReging = false
-          showToast(res.message)
-          this.$back()
-        }, res => {
-          this.isReging = false
-          if (res.message === '公司名错误') {
-            this.compername = res.data.name
-            this.showModal()
-          } else {
-            showError(res.message)
-          }
         })
       }
     }
