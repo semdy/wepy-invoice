@@ -65,7 +65,7 @@
     }
 
     &.lot {
-      width: 140rpx;
+      width: 120rpx;
       flex: none;
     }
 
@@ -76,7 +76,7 @@
 
   .page-actions{
     margin-top: 20rpx;
-    margin-bottom: 20rpx;
+    margin-bottom: 40rpx;
     text-align: center;
 
     .button {
@@ -278,9 +278,10 @@
 
     handleQuery () {
       if (!this.qrcode) return showError('请输入二维码')
-      let target = this.dataList.find(item => item.qrcode === this.qrcode)
-      if (target) {
-        this.showModal('您查询的二维码在列表中已存在')
+      let targetIndata = this.dataList.find(item => item.qrcode === this.qrcode)
+      let targetInCache = this.tempData.find(value => value === this.qrcode)
+      if (targetIndata || targetInCache) {
+        this.showModal('您查询的二维码已被添加')
       } else {
         this.queryHistory(this.qrcode)
       }

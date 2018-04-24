@@ -238,7 +238,7 @@
   </view>
 
   <view class="scan-fields">
-    <scanbutton icon="qr-code.svg" :disabled.sync="pageDisabled" @tap.user="onScanTap">扫 码</scanbutton>
+    <scanbutton icon="qr-code.svg" :disabled.sync="cantScan" @tap.user="onScanTap">扫 码</scanbutton>
     <historybutton icon="history.svg" @tap.user="onHistoryTap">扫码历史</historybutton>
   </view>
 
@@ -345,6 +345,8 @@
       pageDisabled: false,
       submitDisabled: true,
       scanContinue: true,
+      scanDisable: false,
+      cantScan: false,
       isModalShow: false,
       showRemarkDropDown: false,
       failedCount: 0,
@@ -383,16 +385,13 @@
     }
 
     watch = {
-      /*lastReceiptId (newVal, oldVal) {
-        if (!oldVal) {
-          this.submitDisabled = this.pageDisabled ? true : false
-          this.$apply()
+      scanDisable (value) {
+        if (value === true) {
+          this.cantScan = true
+        } else {
+          this.cantScan = this.pageDisabled
         }
-        if (newVal) {
-          this.submitDisabled = false
-          this.$apply()
-        }
-      }*/
+      }
     }
 
     methods = {
@@ -486,6 +485,7 @@
       this.scanContinue = true
       this.submitDisabled = true
       this.pageDisabled = false
+      this.scanDisable = false
       this.dataList = []
       this.isModalShow = false
       this.lastReceiptId = ''
@@ -619,7 +619,7 @@
           showToast(res.message)
           this.history.add(this.remark)
           this.reset()
-          wx.removeStorageSync('DMS_HISTORY')
+          this.removeHistory()
         } else {
           showError(res.message)
         }
@@ -657,6 +657,10 @@
        */
       this.dataList.unshift(rowData)
       this.$apply()
+    }
+
+    removeHistory () {
+      wx.removeStorageSync('DMS_HISTORY')
     }
 
     addDataByReceipt (data) {
@@ -705,6 +709,8 @@
     }
 
     showReceipt (receiptId) {
+      this.scanDisable = true
+      this.removeHistory()
       this.queryReceipt(receiptId).then(data => {
         this.lastReceiptId = receiptId
         this.lastReceiptNo = data.receiptNo
