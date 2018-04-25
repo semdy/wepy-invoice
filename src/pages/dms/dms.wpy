@@ -727,9 +727,11 @@
       let cacheData = wx.getStorageSync('DMS_HISTORY')
       if (cacheData) {
         let promises = cacheData.map(data => {
-          return this.addQrcode(data, false)
+          return () => {
+            return this.addQrcode(data, false)
+          }
         })
-        Promise.all(promises).then(() => {
+        Promise.queue(promises).then(() => {
           console.log('add history done!')
         })
       }

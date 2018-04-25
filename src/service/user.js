@@ -1,6 +1,6 @@
-
 import fetch from './fetch'
-import {session} from './auth'
+import { session, sessionGroup } from './auth'
+import { redirectToLogin, setLogout } from '../utils/util'
 
 export const login = params => {
   return new Promise((resolve, reject) => {
@@ -9,6 +9,7 @@ export const login = params => {
         if (res.success === false) {
           reject(res.message)
         } else {
+          setLogout(false)
           resolve(res)
         }
       }, reject)
@@ -16,10 +17,9 @@ export const login = params => {
 }
 
 export const logout = () => {
-  return new Promise((resolve, reject) => {
-    session.clear()
-    resolve()
-  })
+  session.clear()
+  wx.removeStorageSync('needRefresh.home')
+  redirectToLogin()
 }
 
 export const registry = params => {
@@ -29,6 +29,7 @@ export const registry = params => {
         if (res.success === false) {
           reject(res)
         } else {
+          setLogout(false)
           resolve(res)
         }
       }, reject)
@@ -45,5 +46,21 @@ export const sendMessage = params => {
           resolve(res)
         }
       }, reject)
+  })
+}
+
+export const checkAndSetSessionByUserId = userId => {
+  return new Promise((resolve, reject) => {
+    let curSession = sessionGroup.get(userId)
+    if (curSession) {
+      fetch('find/slide', {header: {'access-token': curSession.token}}).then(res => {
+        wx.removeStorageSync('needRefresh.home')
+        session.set(curSession)
+        resolve(curSession)
+      }, reject)
+    } else {
+      logout()
+      reject(null)
+    }
   })
 }

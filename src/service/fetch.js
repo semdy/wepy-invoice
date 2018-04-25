@@ -1,9 +1,15 @@
 import wepy from 'wepy'
-import {showError, uuid} from '../utils/util'
+import {showError, uuid, redirectToLogin} from '../utils/util'
 import {version, ref} from '../config'
 import {session} from '../service/auth'
 
 export const serverUrl = 'https://bscqr.qtdatas.com/'
+
+const logout = () => {
+  session.clear()
+  wx.removeStorageSync('needRefresh.home')
+  redirectToLogin()
+}
 
 let requestCount = 0
 let errorMsg = ''
@@ -49,11 +55,8 @@ let fetchApi = (url, params = {}, useToken = true) => {
     .then(res => {
       if (res.statusCode === 200) {
         if (res.data.tokenValid === false) {
-          session.clear()
+          logout()
           reject('登录信息过期')
-          wx.redirectTo({
-            url: '/pages/login/login'
-          })
         } else {
           resolve(res.data)
         }

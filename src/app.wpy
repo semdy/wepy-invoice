@@ -124,7 +124,7 @@
   import 'wepy-async-function'
   import './pollyfill'
   import wechat from './utils/wechat'
-  import {showError} from './utils/util'
+  import {showError, redirectToLogin} from './utils/util'
   import {session} from './service/auth'
 
   export default class extends wepy.app {
@@ -264,9 +264,7 @@
     onLaunch () {
       //this.getUserInfo()
       if (!session.get()) {
-        wx.redirectTo({
-          url: '/pages/login/login'
-        })
+        redirectToLogin()
       }
       wx.removeStorageSync('needRefresh.home')
     }

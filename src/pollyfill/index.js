@@ -5,6 +5,40 @@ Promise.prototype['finally'] = function (onResolveOrReject) {
   }).then(onResolveOrReject);
 };
 
+if (Promise.queue === undefined) {
+  Promise.queue = function (queue) {
+    'use strict';
+    if (!Array.isArray(queue)) {
+      throw new TypeError('arguments must be a array')
+    }
+    var queueIndex = 0
+    var returnPool = []
+    var queueHandler = function (resolve, reject) {
+      if (queueIndex > queue.length - 1) {
+        return resolve(returnPool)
+      }
+      var callFun = queue[queueIndex]
+      if (!(callFun instanceof Function)) {
+        reject('argument ' + queueIndex + ' is not a Function')
+      } else {
+        var promise = callFun();
+        if (!(promise instanceof Promise)) {
+          reject('argument ' + queueIndex + ' is not return a Promise instance')
+        } else {
+          promise.then(function (res) {
+            queueIndex++
+            returnPool.push(res)
+            queueHandler(resolve, reject)
+          }, function (obj) {
+            reject(obj)
+          })
+        }
+      }
+    }
+    return new Promise(queueHandler)
+  }
+}
+
 if (typeof Object.assign !== 'function') {
   Object.assign = function(target) {
     'use strict';

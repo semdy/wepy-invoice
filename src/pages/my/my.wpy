@@ -161,7 +161,7 @@
   import Formitem from '../../components/formitem'
   import {showError, showToast} from '../../utils/util'
   import {session, sessionGroup} from '../../service/auth'
-  import {login} from '../../service/user'
+  import {login, logout, checkAndSetSessionByUserId} from '../../service/user'
 
   export default class Index extends wepy.page {
     config = {
@@ -248,7 +248,7 @@
         }
       },
       logoutTap () {
-        this.logout()
+        logout()
       },
       saveEmailTap () {
         if (!/^\w+@\w+\.\w+$/.test(this.tmpEmail)) {
@@ -266,7 +266,7 @@
       },
       subviewTap (e) {
         let userId = e.currentTarget.dataset.id
-        this.login(userId).then(res => {
+        /*this.login(userId).then(res => {
           this.changeSession()
           this.hideSubview()
           wx.removeStorageSync('needRefresh.home')
@@ -276,7 +276,11 @@
             content: msg,
             showCancel: false
           })
-        })
+        })*/
+        checkAndSetSessionByUserId(userId).then(() => {
+          this.changeSession()
+          this.hideSubview()
+        }, showError)
       },
       emailChange (e) {
         this.tmpEmail = e.detail.value
@@ -354,12 +358,6 @@
           reject('未找到当前用户信息')
         }
       })
-    }
-
-    logout () {
-      session.clear()
-      wx.removeStorageSync('needRefresh.home')
-      wx.reLaunch({url: '/pages/login/login'})
     }
 
     changeSession () {

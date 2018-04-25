@@ -75,4 +75,17 @@ function confirm (msg) {
   })
 }
 
-module.exports = {formatDate, uuid, showError, showToast, confirm}
+let isLogouted = false
+
+function redirectToLogin () {
+  if (!isLogouted) {
+    setLogout(true)
+    wx.reLaunch({url: '/pages/login/login'})
+  }
+}
+
+function setLogout (status) {
+  isLogouted = status
+}
+
+module.exports = {formatDate, uuid, showError, showToast, confirm, redirectToLogin, setLogout}
