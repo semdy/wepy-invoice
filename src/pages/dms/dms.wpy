@@ -616,7 +616,7 @@
       }
       fetch.get('upload/receipt', params).then(res => {
         if (res.success) {
-          showToast(res.message)
+          showToast(res.message || '提交成功')
           this.history.add(this.remark)
           this.reset()
           this.removeHistory()
