@@ -124,7 +124,7 @@
   import 'wepy-async-function'
   import './pollyfill'
   import wechat from './utils/wechat'
-  import {showError, redirectToLogin} from './utils/util'
+  import {showError, setLogout, redirectToLogin} from './utils/util'
   import {session} from './service/auth'
 
   export default class extends wepy.app {
@@ -283,6 +283,7 @@
     }
 
     onHide () {
+      setLogout(false)
       wx.removeStorageSync('needRefresh.home')
     }
   }
