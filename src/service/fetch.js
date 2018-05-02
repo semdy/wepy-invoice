@@ -27,18 +27,18 @@ let fetchApi = (url, params = {}, useToken = true) => {
       })
     }
 
-    let initParams = {'content-type': 'application/json'}
+    let defHeaders = {'content-type': 'application/json'}
     let locationData = wx.getStorageSync('LOCATION_DATA')
     let sessionInfo = session.get()
 
     if (useToken && sessionInfo && sessionInfo.token) {
-      initParams = Object.assign(initParams, {
+      defHeaders = Object.assign(defHeaders, {
         'access-token': sessionInfo.token
       })
     }
 
     if (locationData) {
-      initParams = Object.assign(initParams, {
+      defHeaders = Object.assign(defHeaders, {
         latitude: locationData.latitude,
         longitude: locationData.longitude,
         accuracy: locationData.accuracy,
@@ -50,7 +50,7 @@ let fetchApi = (url, params = {}, useToken = true) => {
       url: `${serverUrl}api/${url}?version=${version}`,
       data: Object.assign({}, params.method === 'POST' ? {ref} : {}, params.data),
       method: params.method || 'GET',
-      header: Object.assign(initParams, params.header)
+      header: Object.assign(defHeaders, params.header)
     })
     .then(res => {
       if (res.statusCode === 200) {

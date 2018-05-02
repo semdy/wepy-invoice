@@ -1,6 +1,7 @@
-import {version, ref} from '../config'
-import {session} from '../service/auth'
-import fetch, {serverUrl} from '../service/fetch'
+import { version, ref } from '../config'
+import { session } from '../service/auth'
+import fetch, { serverUrl } from '../service/fetch'
+import { uuid } from '../utils/util'
 
 function login (needOpenId) {
   return new Promise((resolve, reject) => {
@@ -29,7 +30,7 @@ function getUserInfo (mergeData) {
   return new Promise((resolve, reject) => {
     wx.getUserInfo({
       success (res) {
-        if (typeof mergeData === 'object'){
+        if (typeof mergeData === 'object') {
           Object.assign(res.userInfo, mergeData)
         }
         resolve(res)
@@ -41,7 +42,7 @@ function getUserInfo (mergeData) {
   })
 }
 
-function getOpenIdByCode(code){
+function getOpenIdByCode (code) {
   return new Promise((resolve, reject) => {
     fetch.get('auth/wx-auth', {code}).then(res => {
       if (res.success) {
@@ -59,53 +60,62 @@ function getOpenIdByCode(code){
   })
 }
 
-function uploadFile(url, filePath, formParams, header) {
-    let params = Object.assign({
-      ref
-    }, formParams || {})
+function uploadFile (url, filePath, formParams, header) {
+  wx.showLoading({
+    mask: true,
+    title: '上传中...'
+  })
 
-    let tokenParam = {}
-    let sessionInfo = session.get()
-    if(sessionInfo && sessionInfo.token) {
-      tokenParam = {
-        'access-token': sessionInfo.token
-      }
-    }
+  let params = Object.assign({
+    ref
+  }, formParams || {})
 
-    wx.showLoading({
-      mask: true,
-      title: '上传中...'
+  let defHeaders = {'content-type': 'application/json'}
+  let locationData = wx.getStorageSync('LOCATION_DATA')
+  let sessionInfo = session.get()
+
+  if (sessionInfo && sessionInfo.token) {
+    defHeaders = Object.assign(defHeaders, {
+      'access-token': sessionInfo.token
     })
+  }
 
-    for (let i in params) {
-      params[i] = typeof params[i] !== 'string' ? JSON.stringify(params[i]) : params[i]
-    }
+  if (locationData) {
+    defHeaders = Object.assign(defHeaders, {
+      latitude: locationData.latitude,
+      longitude: locationData.longitude,
+      accuracy: locationData.accuracy,
+      uuid: uuid()
+    })
+  }
 
-    return new Promise((resolve, reject) => {
-      wx.uploadFile({
-        url: `${serverUrl}api/${url}?version=${version}`,
-        filePath: filePath,
-        name: 'file',
-        header: Object.assign(tokenParam, header || {
-          'content-type': 'application/json'
-        }),
-        formData: params,
-        success (res) {
-          if (res.statusCode === 200) {
-            let data = JSON.parse(res.data)
-            resolve(data)
-          } else {
-            reject(res.errMsg)
-          }
-        },
-        fail () {
-          reject('上传接口调用失败')
-        },
-        complete () {
-          wx.hideLoading()
+  for (let i in params) {
+    params[i] = typeof params[i] !== 'string' ? JSON.stringify(params[i]) : params[i]
+  }
+
+  return new Promise((resolve, reject) => {
+    wx.uploadFile({
+      url: `${serverUrl}api/${url}?version=${version}`,
+      filePath: filePath,
+      name: 'file',
+      header: Object.assign(defHeaders, header),
+      formData: params,
+      success (res) {
+        if (res.statusCode === 200) {
+          let data = JSON.parse(res.data)
+          resolve(data)
+        } else {
+          reject(res.errMsg)
         }
-      })
+      },
+      fail () {
+        reject('上传接口调用失败')
+      },
+      complete () {
+        wx.hideLoading()
+      }
     })
+  })
 }
 
-module.exports = { login, getUserInfo, getOpenIdByCode, uploadFile }
+module.exports = {login, getUserInfo, getOpenIdByCode, uploadFile}
