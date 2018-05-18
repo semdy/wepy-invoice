@@ -14,14 +14,14 @@ const logout = () => {
 let requestCount = 0
 let errorMsg = ''
 
-let fetchApi = (url, params = {}, useToken = true) => {
+let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
   return new Promise((resolve, reject) => {
 
     requestCount++
     errorMsg = ''
 
     if (requestCount === 1) {
-      wx.showLoading({
+      showLoading && wx.showLoading({
         mask: true,
         title: '请稍候...'
       })
@@ -72,7 +72,7 @@ let fetchApi = (url, params = {}, useToken = true) => {
         if (errorMsg) {
           showError(errorMsg)
         } else {
-          wx.hideLoading()
+          showLoading && wx.hideLoading()
         }
         wx.stopPullDownRefresh()
       }
@@ -80,12 +80,12 @@ let fetchApi = (url, params = {}, useToken = true) => {
   })
 }
 
-fetchApi.post = (url, params, useToken) => {
-  return fetchApi(url, Object.assign({data: params}, {method: 'POST'}), useToken)
+fetchApi.post = (url, params, useToken, showLoading) => {
+  return fetchApi(url, Object.assign({data: params}, {method: 'POST'}), useToken, showLoading)
 }
 
-fetchApi.get = (url, params, useToken) => {
-  return fetchApi(url, Object.assign({data: params}, {method: 'GET'}), useToken)
+fetchApi.get = (url, params, useToken, showLoading) => {
+  return fetchApi(url, Object.assign({data: params}, {method: 'GET'}), useToken, showLoading)
 }
 
 export default fetchApi

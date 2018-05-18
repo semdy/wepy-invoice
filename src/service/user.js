@@ -64,3 +64,7 @@ export const checkAndSetSessionByUserId = userId => {
     }
   })
 }
+
+export const updateToken = () => {
+  return fetch.get('update/token', {}, true, false)
+}

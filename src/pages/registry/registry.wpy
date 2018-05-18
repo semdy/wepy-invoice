@@ -118,7 +118,7 @@
   <view class="registry-form">
     <formitemvcode icon="building.svg" placeholder="公司码(不加_01)" :value="vcode" @input.user="vcodeChange"></formitemvcode>
     <formitemname icon="home-selected.svg" placeholder="公司全称" :value.sync="vname" @input.user="vnameChange"></formitemname>
-    <formitemuser icon="user.svg" placeholder="用户名" :value="username" @input.user="userChange"></formitemuser>
+    <formitemuser icon="user.svg" placeholder="姓名" :value="username" @input.user="userChange"></formitemuser>
     <formitemmobile icon="mobile.svg" placeholder="手机号" :value="mobile" @input.user="mobileChange"></formitemmobile>
     <view class="code-wrapper">
       <formitemcode placeholder="请输入验证码" :value="code" @input.user="codeChange"></formitemcode>

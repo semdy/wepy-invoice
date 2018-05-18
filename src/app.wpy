@@ -126,6 +126,7 @@
   import wechat from './utils/wechat'
   import {showError, setLogout, redirectToLogin} from './utils/util'
   import {session} from './service/auth'
+  import {updateToken} from './service/user'
 
   export default class extends wepy.app {
     config = {
@@ -270,6 +271,11 @@
     }
 
     onShow () {
+      updateToken().then(res => {
+        let sessionInfo = session.get()
+        sessionInfo.token = res.data.token
+        session.set(sessionInfo)
+      })
       wx.getLocation({
         type: 'wgs84',
         success: function(res) {
