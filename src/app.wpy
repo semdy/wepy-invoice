@@ -271,11 +271,13 @@
     }
 
     onShow () {
-      updateToken().then(res => {
-        let sessionInfo = session.get()
-        sessionInfo.token = res.data.token
-        session.set(sessionInfo)
-      })
+      if (session.get()) {
+        updateToken().then(res => {
+          let sessionInfo = session.get()
+          sessionInfo.token = res.data.token
+          session.set(sessionInfo)
+        })
+      }
       wx.getLocation({
         type: 'wgs84',
         success: function(res) {
