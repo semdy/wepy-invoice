@@ -7,7 +7,7 @@
     border:2rpx solid #bbb;
     border-radius: 20rpx;
     padding: 20rpx;
-    margin-bottom: 20rpx;
+    margin-top: 20rpx;
   }
 
   .stock-check-item-left {
@@ -56,20 +56,27 @@
     <view class="stock-check-item-left">
       <view class="stock-check-item-left-hd">
         <geoIcon name="geo.svg"></geoIcon>
-        <text>内部盘点</text>
+        <text>{{stock.type}}</text>
       </view>
-      <view class="stock-number">97</view>
+      <view class="stock-number">{{stock.count}}</view>
     </view>
 
     <view class="stock-check-item-right">
-      <view class="stock-check-info">盘点任务：任务1</view>
-      <view class="stock-check-info">盘点状态：未提交</view>
-      <view class="stock-check-info">盘点生成日期：2017-01-02</view>
-      <view class="stock-check-info">盘点截止日期：2018-01-12</view>
-      <view class="stock-check-info">备注：</view>
+      <view class="stock-check-info">盘点任务：{{stock.name}}</view>
+      <view class="stock-check-info">盘点状态：{{stock.statusText}}</view>
+      <view class="stock-check-info">盘点生成日期：{{stock.createdAt}}</view>
+      <view class="stock-check-info">盘点截止日期：{{stock.endDate}}</view>
+      <view class="stock-check-info">备注：{{stock.remark}}</view>
       <view class="stock-check-action">
-        <checkButton @tap.user="checkButtonTap">盘点</checkButton>
-        <submitButton @tap.user="submitButtonTap">提交</submitButton>
+        <checkButton @tap.user="checkButtonTap" wx:if="{{stock.status=='unSubmit'}}">盘点</checkButton>
+        <!--<submitButton @tap.user="submitButtonTap" :disabled="true" wx:if="{{stock.status=='unSubmit'}}">提交</submitButton>-->
+        <view class="button normal primary {{stock.count == 0 ? 'disabled' : ''}}"
+              wx:if="{{stock.status=='unSubmit'}}"
+              @tap="submitButtonTap"
+        >
+          提交
+        </view>
+        <historyButton @tap.user="historyButtonTap" wx:if="{{stock.status=='submit'}}">历史记录</historyButton>
       </view>
     </view>
 
@@ -89,24 +96,30 @@
       className: {
         type: String,
         default: ''
+      },
+      stock: {
+        type: Object,
+        default: {}
       }
     }
     components = {
       geoIcon: Icon,
       checkButton: Button,
-      submitButton: Button
-    }
-    data = {
+      submitButton: Button,
+      historyButton: Button
     }
     methods = {
       tap ($event) {
         this.$emit('tap', Number(this.$index), $event)
       },
       checkButtonTap ($event) {
-        this.$emit('checkTap', $event)
+        this.$emit('checkTap', Number(this.$index), $event)
       },
       submitButtonTap ($event) {
-        this.$emit('submitTap', $event)
+        this.$emit('submitTap', Number(this.$index), $event)
+      },
+      historyButtonTap ($event) {
+        this.$emit('historyTap', Number(this.$index), $event)
       }
     }
   }

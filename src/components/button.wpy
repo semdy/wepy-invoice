@@ -101,7 +101,10 @@
         type: String,
         default: ''
       },
-      icon: String,
+      icon: {
+        type: String,
+        default: ''
+      },
       size: {
         type: String,
         default: 'normal'
@@ -115,10 +118,13 @@
         default: 'false'
       },
       disabled: {
-        type: Boolean,
+        type: [Boolean, String],
         default: false
       },
-      text: String
+      text: {
+        type: String,
+        default: ''
+      }
     }
 
     components = {

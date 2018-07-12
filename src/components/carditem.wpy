@@ -52,7 +52,10 @@
         type: String,
         default: ''
       },
-      cover: String
+      cover: {
+        type: String,
+        default: ''
+      }
     }
     components = {
       counter: Counter

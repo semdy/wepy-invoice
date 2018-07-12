@@ -614,6 +614,7 @@
         receiptId: this.lastReceiptId,
         remark: this.remark
       }
+      this.submitDisabled = true
       fetch.get('upload/receipt', params).then(res => {
         if (res.success) {
           showToast(res.message || '提交成功')
@@ -623,7 +624,11 @@
         } else {
           showError(res.message)
         }
-      }, showError)
+      }, (msg) => {
+        this.submitDisabled = false
+        this.$apply()
+        showError(msg)
+      })
     }
 
     deleteQrcode (receiptId, qrId) {

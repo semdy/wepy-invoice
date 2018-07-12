@@ -2,8 +2,7 @@
   @import "../../less/mixin";
 
   page {
-    display: block;
-    padding: 20rpx;
+    padding-top: 82rpx;
   }
 
   .stock-create-btn {
@@ -55,7 +54,7 @@
 
   .modal-footer {
     .flex();
-    justify-content: flex-end;
+    justify-content: center;
     padding-top: 30rpx;
   }
 
@@ -91,24 +90,86 @@
     padding-bottom: 20rpx;
     text-align: center;
   }
+
+  .scrollview {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+    padding-bottom: 20rpx;
+  }
+
+  .header-tabs {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: #fff;
+    .flex();
+    z-index: 100;
+  }
+
+  .header-tab-item {
+    flex: 1;
+    text-align: center;
+
+    > text {
+      display: inline-block;
+      padding: 20rpx 16rpx;
+      border-bottom: 1px solid transparent;
+    }
+
+    &.selected {
+      > text {
+        color: @gcolor;
+        border-bottom-color: @gcolor;
+      }
+    }
+  }
 </style>
 <template>
-  <view class="stock-check-empty" wx:if="{{stocks.length===0}}">
-    <newStockIcon className="stock-new-icon" name="stock-new.svg"></newStockIcon>
+
+  <view class="header-tabs">
+    <view class="header-tab-item" :class="{selected: tabIndex == 0}" data-index="0" @tap="switchTabTap">
+      <text>未完成</text>
+    </view>
+    <view class="header-tab-item" :class="{selected: tabIndex == 1}" data-index="1" @tap="switchTabTap">
+      <text>已完成</text>
+    </view>
+  </view>
+
+  <view class="stock-check-empty" wx:if="{{dataList.length===0&&loaded===true}}">
+    <newStockIcon className="stock-new-icon" name="stock-new.svg" />
     <view class="stock-new-hint">点击新建任务开始盘点吧！</view>
   </view>
 
-  <repeat for="{{stocks}}" key="index">
-    <stockChemItem @tap.user="onItemTap" @checkTap.user="onCheckTap" @submitTap.user="onSubmitTap"></stockChemItem>
-  </repeat>
+  <scroll-view
+    wx:if="{{dataList.length!==0}}"
+    scroll-y="true"
+    class="scrollview"
+    lower-threshold="0"
+    bindscrolltolower="onEndReached"
+  >
+    <repeat for="{{dataList}}" key="index">
+      <stockChemItem
+        :stock="item"
+         @tap.user="onItemTap"
+         @checkTap.user="onCheckTap"
+         @submitTap.user="onSubmitTap"
+         @historyTap.user="onHistoryTap"
+      />
+    </repeat>
+  </scroll-view>
 
   <view class="stock-create-btn" @tap="createTap">
-    <plusIcon name="plus_white.svg" size="large"></plusIcon>
+    <plusIcon name="plus_white.svg" size="large" />
   </view>
 
   <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
     <view class="stock-check-remark">
-      <textarea @input="remarkChange" placeholder="请输入盘点备注(选填)"></textarea>
+      <textarea value="{{remark}}" @input="remarkChange" placeholder="请输入盘点备注(选填)" />
     </view>
     <view class="modal-footer">
       <view class="update-button cancel" @tap="closeModal">取消</view>
@@ -125,6 +186,25 @@
       <view class="update-button" @tap="saveStockTap">确定</view>
     </view>
   </confirmModal>
+
+  <hintModal wx:if="{{isHintModalShow}}" title="提示" @modalClose.user="closeHintModal">
+    <view class="stock-submit-confirm-text">
+      请务必在每晚六点以后进行库存盘点任务
+    </view>
+    <view class="modal-footer">
+      <view class="update-button" @tap="closeHintModal">知道了</view>
+    </view>
+  </hintModal>
+
+  <genderModal wx:if="{{isGenderModalShow}}" title="提示" @modalClose.user="closeGenderModal">
+    <view class="stock-submit-confirm-text">
+      报告生成中，请在xxx工作日后参考报告
+    </view>
+    <view class="modal-footer">
+      <view class="update-button" @tap="showSubmitTask">知道了</view>
+    </view>
+  </genderModal>
+
 </template>
 
 <script>
@@ -134,6 +214,11 @@
   import Modal from '../../components/modal'
   import StockChemItem from '../../components/stockcheckitem'
   import {showError, showToast, formatDate} from '../../utils/util'
+
+  const STOCK_STATUS = {
+    'submit': '已提交',
+    'unSubmit': '未提交'
+  }
 
   export default class Index extends wepy.page {
     config = {
@@ -145,14 +230,24 @@
       newStockIcon: Icon,
       modal: Modal,
       confirmModal: Modal,
+      hintModal: Modal,
+      genderModal: Modal,
       stockChemItem: StockChemItem
     }
 
+    loaded = false
+    page = 1
+    curIndex = 0
+
     data = {
-      stocks: [1,2,3,4,5,6],
+      tabIndex: 0,
+      queryType: 'unSubmit',
+      dataList: [],
       remark: '',
       isModalShow: false,
-      isConfirmModalShow: false
+      isConfirmModalShow: false,
+      isHintModalShow: true,
+      isGenderModalShow: false
     }
 
     computed = {
@@ -170,25 +265,50 @@
       closeConfirmModal () {
         this.hideConfirmModal()
       },
+      closeHintModal () {
+        this.hideHintModal()
+      },
+      closeGenderModal () {
+        this.hideGenderModal()
+      },
       remarkChange (e) {
         this.remark = e.detail.value
       },
       saveRemarkTap () {
-        console.log(this.remark)
+        this.createTask()
+      },
+      switchTabTap (e) {
+        let index = Number(e.currentTarget.dataset.index)
+        this.switchTab(index)
       },
       createTap () {
         this.showModal()
       },
-      onItemTap () {
-        console.log('item tap...')
+      onItemTap (index) {
+
       },
-      onCheckTap () {
-        console.log('check tap...')
+      onCheckTap (index) {
+        this.curIndex = index
+        let curItem = this.dataList[this.curIndex]
+        if (curItem) {
+          this.launchScaner(curItem.id)
+        }
       },
-      onSubmitTap () {
+      onSubmitTap (index) {
+        this.curIndex = index
         this.showConfirmModal()
       },
-      saveStockTap () {
+      async saveStockTap () {
+        let curItem = this.dataList[this.curIndex]
+        if (curItem) {
+          this.uploadTask(curItem.id)
+        }
+      },
+      showSubmitTask () {
+        this.hideGenderModal()
+        this.switchTab(1)
+      },
+      onHistoryTap () {
         this.$navigate('/pages/stockcheck/stockchecklist')
       }
     }
@@ -213,8 +333,122 @@
       this.$apply()
     }
 
-    onLoad () {
+    hideHintModal () {
+      this.isHintModalShow = false
+      this.$apply()
+    }
 
+    showGenderModal () {
+      this.isGenderModalShow = true
+      this.$apply()
+    }
+
+    hideGenderModal () {
+      this.isGenderModalShow = false
+      this.$apply()
+    }
+
+    formatData(item) {
+      return Object.assign(item, {
+        statusText: STOCK_STATUS[item.status] || '',
+        createdAt: formatDate(new Date(item.createdAt), 'yyyy-MM-dd'),
+        endDate: formatDate(new Date(item.endDate.replace(/-/g, '/')), 'yyyy-MM-dd')
+      })
+    }
+
+    launchScaner (id) {
+      wepy.scanCode()
+        .then(res => {
+          this.uploadTaskQr(id, res.result)
+        })
+        .catch(() => {
+          console.log('scan canceled')
+        })
+    }
+
+    switchTab (index) {
+      this.tabIndex = index
+      switch (index) {
+        case 0:
+          this.queryType = 'unSubmit'
+          this.handleQuery()
+          break
+        case 1:
+          this.queryType = 'submit'
+          this.handleQuery()
+          break
+      }
+    }
+
+    async createTask () {
+      if (!this.remark) {
+        return showError('请输入备注')
+      }
+      let res = await fetch.get('create/Inventory', { remark: this.remark })
+      if (res.success) {
+        this.remark = ''
+        this.hideModal()
+        this.handleQuery()
+      } else {
+        showError(res.message)
+      }
+    }
+
+    async queryTasks (page, status, refresh = false) {
+      this.loaded = false
+      try {
+        let res = await fetch.get('query/Inventory', {limit: 20, page, status})
+        res = res.data.result.docs.map(item => this.formatData(item))
+        if (refresh) {
+          this.dataList = res
+        } else {
+          this.dataList = this.dataList.concat(res)
+        }
+        this.loaded = true
+        this.$apply()
+      } catch (e) {
+        this.loaded = true
+      }
+    }
+
+    async uploadTask (id) {
+      this.hideConfirmModal()
+      let res = await fetch.get('update/Inventory', {id})
+      if (res.success) {
+        this.showGenderModal()
+      } else {
+        showError(res.message)
+      }
+    }
+
+    async uploadTaskQr (inventoryId, qrCode) {
+      let res = await fetch.get('create/InventoryQr', {inventoryId, qrCode})
+      if (res.success) {
+        this.handleQuery()
+        showToast(res.message)
+      } else {
+        showError(res.message)
+      }
+    }
+
+    handleQuery () {
+      this.page = 1
+      this.queryTasks(this.page, this.queryType, true)
+    }
+
+    appendQuery () {
+      if (!this.loaded) return
+      this.queryTasks(++this.page, this.queryType)
+    }
+
+    onEndReached () {
+      this.appendQuery()
+    }
+
+    onLoad () {
+      this.page = 1
+      this.loaded = false
+      this.queryTasks(this.page, this.queryType)
     }
   }
 </script>

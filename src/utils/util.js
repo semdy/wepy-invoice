@@ -32,7 +32,7 @@ function uuid() {
   })
 }
 
-function showError (msg, duration) {console.log(msg)
+function showError (msg, duration) {
   duration = duration || 1500;
   return new Promise((resolve, reject) => {
     setTimeout(function(){

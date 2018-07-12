@@ -63,7 +63,10 @@
         type: String,
         default: ''
       },
-      icon: String,
+      icon: {
+        type: String,
+        default: ''
+      },
       iconLeft: {
         type: String,
         default: 'true'
