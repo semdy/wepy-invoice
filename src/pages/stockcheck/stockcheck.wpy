@@ -2,7 +2,7 @@
   @import "../../less/mixin";
 
   page {
-    padding-top: 82rpx;
+    padding-top: 80rpx;
   }
 
   .stock-create-btn {
@@ -96,9 +96,9 @@
     height: 100%;
     overflow: hidden;
     box-sizing: border-box;
-    padding-left: 20rpx;
-    padding-right: 20rpx;
-    padding-bottom: 20rpx;
+    padding-left: 10rpx;
+    padding-right: 10rpx;
+    padding-bottom: 10rpx;
   }
 
   .header-tabs {
@@ -388,7 +388,7 @@
       if (res.success) {
         this.remark = ''
         this.hideModal()
-        this.handleQuery()
+        this.switchTab(0)
       } else {
         showError(res.message)
       }

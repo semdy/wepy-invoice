@@ -8,6 +8,7 @@
     border-radius: 20rpx;
     flex-direction: row;
     color: #fff;
+    font-size: 28rpx;
     border: 2rpx solid transparent;
     box-sizing: border-box;
 

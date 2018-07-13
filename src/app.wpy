@@ -247,7 +247,6 @@
           .then(res => (this.globalData.userInfo = res.userInfo))
           .then(info => resolve(info))
           .catch(error => {
-            error = JSON.stringify(error)
             reject(error)
             console.error('failed to get user info, error: ' + error)
             setTimeout(function () {

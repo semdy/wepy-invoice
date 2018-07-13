@@ -89,7 +89,8 @@
     </view>
     <view class="login-actions">
       <regButton @tap.user="regButtonTap">注册</regButton>
-      <loginButton @tap.user="loginButtonTap">登录</loginButton>
+      <!--<loginButton @tap.user="loginButtonTap">登录</loginButton>-->
+      <button open-type="getUserInfo" class="button primary" @getuserinfo="onGetuserinfo">登录</button>
     </view>
   </view>
   <view class="login-footer">
@@ -149,6 +150,9 @@
       codeChange (e) {
         this.code = e.detail.value
       },
+      onGetuserinfo(e) {
+        this.doLogin(e.detail.userInfo)
+      },
       onGetCode () {
         if (!this.username) {
           return showError('请输入用户名')
@@ -166,44 +170,40 @@
       },
       regButtonTap () {
         this.$navigate('/pages/registry/registry')
-      },
-      loginButtonTap () {
-        if (this.isLogining) return
+      }
+    }
 
-        if (!this.username) {
-          return showError('请输入用户名')
-        }
-        if (!this.mobile) {
-          return showError('请输入手机号')
-        }
-        if (!this.code) {
-          return showError('请输入验证码')
-        }
+    doLogin (userInfo) {
+      if (this.isLogining) return
 
-        this.isLogining = true
+      if (!this.username) {
+        return showError('请输入用户名')
+      }
+      if (!this.mobile) {
+        return showError('请输入手机号')
+      }
+      if (!this.code) {
+        return showError('请输入验证码')
+      }
 
-        let errorHandler = errMsg => {
-          this.isLogining = false
-          wx.showModal({
-            title: '提示',
-            content: errMsg || '公司码或手机号错误，请重试或联系管理人员',
-            showCancel: false
-          })
-        }
+      this.isLogining = true
 
-        this.$parent.getUserInfo().then(userInfo => {
-          let params = {code: this.username, password: this.mobile, validateCode: this.code};
-          login(params).then((res) => {
-            this.isLogining = false
-            let sessionData = Object.assign({}, userInfo, res.data)
-            session.set(sessionData)
-            sessionGroup.add(res.data.user.id, sessionData)
-            this.$switch('/pages/home/home')
-          }, errorHandler)
-        }, msg => {
-          this.isLogining = false
+      let errorHandler = errMsg => {
+        this.isLogining = false
+        wx.showModal({
+          title: '提示',
+          content: errMsg || '公司码或手机号错误，请重试或联系管理人员',
+          showCancel: false
         })
       }
+      let params = {code: this.username, password: this.mobile, validateCode: this.code}
+      login(params).then((res) => {
+        this.isLogining = false
+        let sessionData = Object.assign({}, userInfo, res.data)
+        session.set(sessionData)
+        sessionGroup.add(res.data.user.id, sessionData)
+        this.$switch('/pages/home/home')
+      }, errorHandler)
     }
 
     startCountDown() {
