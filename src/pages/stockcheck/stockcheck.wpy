@@ -2,16 +2,16 @@
   @import "../../less/mixin";
 
   page {
-    padding-top: 80rpx;
+    padding-top: 80 rpx;
   }
 
   .stock-create-btn {
     position: fixed;
-    right: 40rpx;
-    bottom: 40rpx;
+    right: 40 rpx;
+    bottom: 40 rpx;
     background-color: #10458e;
-    width: 120rpx;
-    height: 120rpx;
+    width: 120 rpx;
+    height: 120 rpx;
     border-radius: 50%;
     .flex-center();
 
@@ -22,7 +22,7 @@
 
   .stock-check-empty {
     position: absolute;
-    left:50%;
+    left: 50%;
     top: 20%;
     -webkit-transform: translateX(-50%);
     transform: translateX(-50%);
@@ -31,23 +31,23 @@
   }
 
   .stock-new-icon .icon-img {
-    width: 200rpx !important;
-    height: 200rpx !important;
+    width: 200 rpx !important;
+    height: 200 rpx !important;
   }
 
   .stock-new-hint {
-    font-size:32rpx;
-    margin-top: 50rpx;
-    color:#7e7e7e;
+    font-size: 32 rpx;
+    margin-top: 50 rpx;
+    color: #7e7e7e;
     white-space: nowrap;
   }
 
   .stock-check-remark {
     textarea {
-      width:100%;
-      height:200rpx;
-      border:2rpx solid #aaa;
-      padding: 10rpx;
+      width: 100%;
+      height: 200 rpx;
+      border: 2 rpx solid #aaa;
+      padding: 10 rpx;
       box-sizing: border-box;
     }
   }
@@ -55,14 +55,14 @@
   .modal-footer {
     .flex();
     justify-content: center;
-    padding-top: 30rpx;
+    padding-top: 30 rpx;
   }
 
   .update-button {
     .flex-center();
-    padding-left: 40rpx;
-    padding-right: 40rpx;
-    border-radius: 8rpx;
+    padding-left: 40 rpx;
+    padding-right: 40 rpx;
+    border-radius: 8 rpx;
     flex-direction: row;
     color: #fff;
     background-color: @gcolor;
@@ -75,8 +75,8 @@
     &.cancel {
       color: #666;
       background-color: #e0e0e0;
-      margin-right: 40rpx;
-      &:active{
+      margin-right: 40 rpx;
+      &:active {
         background-color: darken(#e5e5e5, 10%);
       }
     }
@@ -84,10 +84,10 @@
   }
 
   .stock-submit-confirm-text {
-    width: 340rpx;
+    width: 340 rpx;
     margin: 0 auto;
-    padding-top: 20rpx;
-    padding-bottom: 20rpx;
+    padding-top: 20 rpx;
+    padding-bottom: 20 rpx;
     text-align: center;
   }
 
@@ -96,9 +96,9 @@
     height: 100%;
     overflow: hidden;
     box-sizing: border-box;
-    padding-left: 10rpx;
-    padding-right: 10rpx;
-    padding-bottom: 10rpx;
+    padding-left: 10 rpx;
+    padding-right: 10 rpx;
+    padding-bottom: 10 rpx;
   }
 
   .header-tabs {
@@ -117,7 +117,7 @@
 
     > text {
       display: inline-block;
-      padding: 20rpx 16rpx;
+      padding: 20 rpx 16 rpx;
       border-bottom: 1px solid transparent;
     }
 
@@ -141,7 +141,7 @@
   </view>
 
   <view class="stock-check-empty" wx:if="{{dataList.length===0&&loaded===true}}">
-    <newStockIcon className="stock-new-icon" name="stock-new.svg" />
+    <newStockIcon className="stock-new-icon" name="stock-new.svg"/>
     <view class="stock-new-hint">点击新建任务开始盘点吧！</view>
   </view>
 
@@ -155,21 +155,21 @@
     <repeat for="{{dataList}}" key="index">
       <stockChemItem
         :stock="item"
-         @tap.user="onItemTap"
-         @checkTap.user="onCheckTap"
-         @submitTap.user="onSubmitTap"
-         @historyTap.user="onHistoryTap"
+        @tap.user="onItemTap"
+        @checkTap.user="onCheckTap"
+        @submitTap.user="onSubmitTap"
+        @historyTap.user="onHistoryTap"
       />
     </repeat>
   </scroll-view>
 
   <view class="stock-create-btn" @tap="createTap">
-    <plusIcon name="plus_white.svg" size="large" />
+    <plusIcon name="plus_white.svg" size="large"/>
   </view>
 
   <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
     <view class="stock-check-remark">
-      <textarea value="{{remark}}" @input="remarkChange" placeholder="请输入盘点备注(选填)" />
+      <textarea value="{{remark}}" @input="remarkChange" placeholder="请输入盘点备注(选填)"/>
     </view>
     <view class="modal-footer">
       <view class="update-button cancel" @tap="closeModal">取消</view>
@@ -213,7 +213,7 @@
   import Icon from '../../components/icon'
   import Modal from '../../components/modal'
   import StockChemItem from '../../components/stockcheckitem'
-  import {showError, showToast, formatDate} from '../../utils/util'
+  import { showError, showToast, formatDate } from '../../utils/util'
 
   const STOCK_STATUS = {
     'submit': '已提交',
@@ -250,13 +250,9 @@
       isGenderModalShow: false
     }
 
-    computed = {
+    computed = {}
 
-    }
-
-    watch = {
-
-    }
+    watch = {}
 
     methods = {
       closeModal () {
@@ -348,12 +344,13 @@
       this.$apply()
     }
 
-    formatData(item) {
-      return Object.assign(item, {
+    formatData (item) {
+      return {
+        ...item,
         statusText: STOCK_STATUS[item.status] || '',
         createdAt: formatDate(new Date(item.createdAt), 'yyyy-MM-dd'),
         endDate: formatDate(new Date(item.endDate.replace(/-/g, '/')), 'yyyy-MM-dd')
-      })
+      }
     }
 
     launchScaner (id) {
@@ -371,20 +368,16 @@
       switch (index) {
         case 0:
           this.queryType = 'unSubmit'
-          this.handleQuery()
           break
         case 1:
           this.queryType = 'submit'
-          this.handleQuery()
           break
       }
+      this.handleQuery()
     }
 
     async createTask () {
-      if (!this.remark) {
-        return showError('请输入备注')
-      }
-      let res = await fetch.get('create/Inventory', { remark: this.remark })
+      let res = await fetch.get('create/Inventory', {remark: this.remark})
       if (res.success) {
         this.remark = ''
         this.hideModal()

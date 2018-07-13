@@ -48,7 +48,7 @@ let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
 
     wepy.request({
       url: `${serverUrl}api/${url}?version=${version}`,
-      data: Object.assign({}, params.method === 'POST' ? {ref} : {}, params.data),
+      data: Object.assign(params.data || {}, params.method === 'POST' && {ref}),
       method: params.method || 'GET',
       header: Object.assign(defHeaders, params.header)
     })
@@ -81,11 +81,11 @@ let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
 }
 
 fetchApi.post = (url, params, useToken, showLoading) => {
-  return fetchApi(url, Object.assign({data: params}, {method: 'POST'}), useToken, showLoading)
+  return fetchApi(url, {data: params, method: 'POST'}, useToken, showLoading)
 }
 
 fetchApi.get = (url, params, useToken, showLoading) => {
-  return fetchApi(url, Object.assign({data: params}, {method: 'GET'}), useToken, showLoading)
+  return fetchApi(url, {data: params, method: 'GET'}, useToken, showLoading)
 }
 
 export default fetchApi
