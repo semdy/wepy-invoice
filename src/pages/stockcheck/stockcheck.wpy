@@ -2,16 +2,16 @@
   @import "../../less/mixin";
 
   page {
-    padding-top: 80 rpx;
+    padding-top: 80rpx;
   }
 
   .stock-create-btn {
     position: fixed;
-    right: 40 rpx;
-    bottom: 40 rpx;
+    right: 40rpx;
+    bottom: 40rpx;
     background-color: #10458e;
-    width: 120 rpx;
-    height: 120 rpx;
+    width: 120rpx;
+    height: 120rpx;
     border-radius: 50%;
     .flex-center();
 
@@ -31,13 +31,13 @@
   }
 
   .stock-new-icon .icon-img {
-    width: 200 rpx !important;
-    height: 200 rpx !important;
+    width: 200rpx !important;
+    height: 200rpx !important;
   }
 
   .stock-new-hint {
-    font-size: 32 rpx;
-    margin-top: 50 rpx;
+    font-size: 32rpx;
+    margin-top: 50rpx;
     color: #7e7e7e;
     white-space: nowrap;
   }
@@ -45,9 +45,9 @@
   .stock-check-remark {
     textarea {
       width: 100%;
-      height: 200 rpx;
-      border: 2 rpx solid #aaa;
-      padding: 10 rpx;
+      height: 200rpx;
+      border: 2rpx solid #aaa;
+      padding: 10rpx;
       box-sizing: border-box;
     }
   }
@@ -55,14 +55,14 @@
   .modal-footer {
     .flex();
     justify-content: center;
-    padding-top: 30 rpx;
+    padding-top: 30rpx;
   }
 
   .update-button {
     .flex-center();
-    padding-left: 40 rpx;
-    padding-right: 40 rpx;
-    border-radius: 8 rpx;
+    padding-left: 40rpx;
+    padding-right: 40rpx;
+    border-radius: 8rpx;
     flex-direction: row;
     color: #fff;
     background-color: @gcolor;
@@ -75,7 +75,7 @@
     &.cancel {
       color: #666;
       background-color: #e0e0e0;
-      margin-right: 40 rpx;
+      margin-right: 40rpx;
       &:active {
         background-color: darken(#e5e5e5, 10%);
       }
@@ -84,10 +84,10 @@
   }
 
   .stock-submit-confirm-text {
-    width: 340 rpx;
+    width: 340rpx;
     margin: 0 auto;
-    padding-top: 20 rpx;
-    padding-bottom: 20 rpx;
+    padding-top: 20rpx;
+    padding-bottom: 20rpx;
     text-align: center;
   }
 
@@ -96,9 +96,9 @@
     height: 100%;
     overflow: hidden;
     box-sizing: border-box;
-    padding-left: 10 rpx;
-    padding-right: 10 rpx;
-    padding-bottom: 10 rpx;
+    padding-left: 10rpx;
+    padding-right: 10rpx;
+    padding-bottom: 10rpx;
   }
 
   .header-tabs {
@@ -117,7 +117,7 @@
 
     > text {
       display: inline-block;
-      padding: 20 rpx 16 rpx;
+      padding: 20rpx 16rpx;
       border-bottom: 1px solid transparent;
     }
 
@@ -235,11 +235,11 @@
       stockChemItem: StockChemItem
     }
 
-    loaded = false
     page = 1
     curIndex = 0
 
     data = {
+      loaded: false,
       tabIndex: 0,
       queryType: 'unSubmit',
       dataList: [],
@@ -416,8 +416,8 @@
 
     async uploadTaskQr (inventoryId, qrCode) {
       let res = await fetch.get('create/InventoryQr', {inventoryId, qrCode})
+      this.handleQuery()
       if (res.success) {
-        this.handleQuery()
         showToast(res.message)
       } else {
         showError(res.message)
@@ -440,7 +440,6 @@
 
     onLoad () {
       this.page = 1
-      this.loaded = false
       this.queryTasks(this.page, this.queryType)
     }
   }

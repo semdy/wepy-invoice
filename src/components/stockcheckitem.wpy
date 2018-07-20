@@ -76,7 +76,8 @@
         >
           提交
         </view>
-        <historyButton @tap.user="historyButtonTap" wx:if="{{stock.status=='submit'}}">历史记录</historyButton>
+        <genButton wx:if="{{stock.status=='submit'}}">报告生成中</genButton>
+        <historyButton @tap.user="historyButtonTap" wx:if="{{stock.status=='reckon'}}">历史记录</historyButton>
       </view>
     </view>
 
@@ -106,6 +107,7 @@
       geoIcon: Icon,
       checkButton: Button,
       submitButton: Button,
+      genButton: Button,
       historyButton: Button
     }
     methods = {
