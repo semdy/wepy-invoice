@@ -68,8 +68,8 @@
       padding: 0;
 
       .icon-img {
-        width: 24rpx !important;
-        height: 24rpx !important;
+        width: 20rpx !important;
+        height: 20rpx !important;
         vertical-align: middle;
       }
     }
@@ -153,6 +153,7 @@
         'pages/stockquery/stockquery',
         'pages/stockcheck/stockcheck',
         'pages/stockcheck/stockchecklist',
+        'pages/stockcheck/stockdetail',
         'pages/orderquery/orderquery',
         'pages/orderdetail/orderdetail',
         'pages/receiptcheck/receiptcheck',

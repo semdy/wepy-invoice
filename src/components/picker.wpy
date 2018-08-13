@@ -66,11 +66,11 @@
     methods = {
       change ($event) {
         this.selectIndex = $event.detail.value
-        this.$emit('pickerchange', $event)
+        this.$emit('pickerchange', this.items[this.selectIndex], $event)
       },
       columnchange ($event) {
         this.selectIndex = $event.detail.value
-        this.$emit('pickercolumnchange', $event)
+        this.$emit('pickercolumnchange', this.selectIndex, $event)
       }
     }
   }

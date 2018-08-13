@@ -1,0 +1,127 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  .stockdetail-table {
+    .flex();
+    flex: 1;
+    flex-direction: column;
+    border-radius: 8rpx;
+    overflow: hidden;
+
+    .table-body {
+      flex: 1;
+      height: 100%;
+      overflow: hidden;
+    }
+  }
+
+  .table-row {
+    &:active {
+      background-color: #f2f2f2;
+    }
+  }
+</style>
+<template>
+
+  <view class="table stockdetail-table">
+    <view class="table-row table-header">
+      <view class="table-cell th order">序号</view>
+      <view class="table-cell th">二维码</view>
+      <view class="table-cell th upn">upn</view>
+      <view class="table-cell th lot">lot</view>
+    </view>
+    <scroll-view scroll-y="true" class="table-body" lower-threshold="0" bindscrolltolower="onEndReached">
+      <block wx:for="{{dataList}}" wx:key="index">
+        <view class="table-row" @tap="tablerowTap({{item}})">
+          <view class="table-cell td order">{{index + 1}}</view>
+          <view class="table-cell td">{{item.qrCode}}</view>
+          <view class="table-cell td upn">{{item.upn}}</view>
+          <view class="table-cell td lot">{{item.lot}}</view>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Icon from '../../components/icon'
+  import { showError, showToast, formatDate } from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '库存盘点'
+    }
+
+    components = {
+      deleteIcon: Icon
+    }
+
+    page = 1
+    loaded = false
+    inventoryId = ''
+
+    data = {
+      dataList: []
+    }
+
+    computed = {}
+
+    watch = {}
+
+    methods = {
+
+    }
+
+    handleQuery () {
+      this.page = 1
+      this.dataList = []
+      this.queryList(this.inventoryId, this.page)
+    }
+
+    appendQuery () {
+      if (!this.loaded) return
+      this.queryList(this.inventoryId, ++this.page)
+    }
+
+    queryList(inventoryId, page) {
+      let params = {
+        inventoryId,
+        page,
+        limit: 20
+      }
+      this.loaded = false
+      return new Promise((resolve, reject) => {
+        fetch.get('query/InventoryQr', params).then(res => {
+          if (res.success) {
+            this.dataList = this.dataList.concat(res.data.docs)
+            resolve(res.data.docs)
+            this.$apply()
+          } else {
+            reject(res.message)
+            showError(res.message)
+          }
+        }, errMsg => {
+          reject(errMsg)
+          showError(errMsg)
+        })
+      }).finally(res => {
+        this.loaded = true
+      })
+    }
+
+    onEndReached () {
+      this.appendQuery()
+    }
+
+    onLoad (params) {
+      if (params.inventoryId) {
+        this.inventoryId = params.inventoryId
+      }
+      this.page = 1
+      this.handleQuery()
+    }
+  }
+</script>

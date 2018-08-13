@@ -13,7 +13,7 @@
 
     > view {
       flex: 1;
-      font-size: 32rpx;
+      font-size: 30rpx;
       text-align: center;
 
       &:last-child {
@@ -80,50 +80,84 @@
 
 </style>
 <template>
-  <view class="stock-topbar">
-    <view>实盘：100</view>
-    <view>系统：98</view>
-    <view>QR差异率：15%</view>
-  </view>
+  <block wx:if="{{loaded}}">
+    <view class="stock-topbar">
+      <view>实盘：{{result.realNum}}</view>
+      <view>系统：{{result.sysNum}}</view>
+      <view>QR差异率：{{result.qrDiffRate}}%</view>
+    </view>
 
-  <scroll-view scroll-y="true" class="scrollview" lower-threshold="0" bindscrolltolower="onEndReached">
-    <block wx:for="{{dataList}}" wx:key="index">
+    <scroll-view scroll-y="true" class="scrollview" lower-threshold="0" bindscrolltolower="onEndReached">
       <view class="stock-info-item">
-        <view class="stock-info-hd">UPN差异率：6%</view>
+        <view class="stock-info-hd">UPN差异率：{{result.upnDiffRate}}%</view>
         <view class="stock-info-details">
           <view class="stock-info-detail">
             <view>无差异数量</view>
-            <view>96</view>
+            <view>{{result.upn.sameNum}}</view>
           </view>
           <view class="stock-info-detail">
             <view>实物有，系统没有</view>
-            <view>4</view>
+            <view>{{result.upn.realLackNum}}</view>
           </view>
           <view class="stock-info-detail">
             <view>实物没有，系统有</view>
-            <view>2</view>
+            <view>{{result.upn.sysLackNum}}</view>
           </view>
         </view>
       </view>
-    </block>
-  </scroll-view>
+      <view class="stock-info-item">
+        <view class="stock-info-hd">LOT差异率：{{result.lotDiffRate}}%</view>
+        <view class="stock-info-details">
+          <view class="stock-info-detail">
+            <view>无差异数量</view>
+            <view>{{result.lot.sameNum}}</view>
+          </view>
+          <view class="stock-info-detail">
+            <view>实物有，系统没有</view>
+            <view>{{result.lot.realLackNum}}</view>
+          </view>
+          <view class="stock-info-detail">
+            <view>实物没有，系统有</view>
+            <view>{{result.lot.sysLackNum}}</view>
+          </view>
+        </view>
+      </view>
+      <view class="stock-info-item">
+        <view class="stock-info-hd">QR差异率：{{result.qrDiffRate}}%</view>
+        <view class="stock-info-details">
+          <view class="stock-info-detail">
+            <view>无差异数量</view>
+            <view>{{result.qrcode.sameNum}}</view>
+          </view>
+          <view class="stock-info-detail">
+            <view>实物有，系统没有</view>
+            <view>{{result.qrcode.realLackNum}}</view>
+          </view>
+          <view class="stock-info-detail">
+            <view>实物没有，系统有</view>
+            <view>{{result.qrcode.sysLackNum}}</view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
 
-  <view class="stocks-action">
-    <exportButton inline="true" class="export-button" @tap.user="onExportTap">导出</exportButton>
-  </view>
+    <view class="stocks-action">
+      <exportButton inline="true" class="export-button" @tap.user="onExportTap">导出</exportButton>
+    </view>
 
-  <modal wx:if="{{isModalShow}}" title="提示信息" @modalClose.user="closeModal">
-    <view>点击复制下面的链接去浏览器下载</view>
-    <view class="download-url" @tap="onDownloadTap">{{downloadUrl}}</view>
-  </modal>
+    <modal wx:if="{{isModalShow}}" title="提示信息" @modalClose.user="closeModal">
+      <view>点击复制下面的链接去浏览器下载</view>
+      <view class="download-url" @tap="onDownloadTap">{{result.fileName}}</view>
+    </modal>
+  </block>
 </template>
 
 <script>
   import wepy from 'wepy'
-  import fetch from '../../service/fetch'
+  import fetch, {serverUrl} from '../../service/fetch'
   import Button from '../../components/button'
   import Modal from '../../components/modal'
-  import {showError, showToast, formatDate} from '../../utils/util'
+  import {showError, showToast} from '../../utils/util'
 
   export default class Index extends wepy.page {
     config = {
@@ -135,10 +169,12 @@
       exportButton: Button
     }
 
+    inventoryId = null
+    loaded = false
+
     data = {
-      dataList: [1,2,3,4,5,6],
-      isModalShow: false,
-      downloadUrl: 'http://www.baidu.com'
+      result: {},
+      isModalShow: false
     }
 
     computed = {
@@ -158,11 +194,11 @@
       },
       onDownloadTap () {
         wx.setClipboardData({
-          data: this.downloadUrl,
+          data:  this.result.fileName,
           success: () => {
             wx.getClipboardData({
               success: (res) => {
-                if (res.data === this.downloadUrl) {
+                if (res.data ===  this.result.fileName) {
                   showToast('复制成功')
                 } else {
                   showError('复制失败，请手动长按复制')
@@ -184,8 +220,27 @@
       this.$apply()
     }
 
-    onLoad () {
+    queryList(id) {
+      fetch.get('query/inventoryResult', {id}).then(res => {
+        if (res.success) {
+          this.result = res.data.result
+          this.result.fileName = serverUrl + 'export/inventory/' + this.result.fileName
+          this.loaded = true
+          this.$apply()
+        } else {
+          showError(res.message)
+        }
+      }, errMsg => {
+        showError(errMsg)
+      })
+    }
 
+    onLoad (params) {
+      if (params.id) {
+        this.inventoryId = params.id
+      }
+      this.loaded = false
+      this.queryList(this.inventoryId)
     }
   }
 </script>

@@ -115,7 +115,6 @@
         </view>
       </block>
     </scroll-view>
-
   </view>
 
   <tabbar :tabBar="tabBar" disabled="true" tabIndex="1" @tabbarChange.user="tabbarChange"></tabbar>
@@ -224,8 +223,8 @@
       datetimechange (e) {
         this.date = e.detail.value
       },
-      pickerChange (e) {
-        this.status = this.statusArray[e.detail.value].value
+      pickerChange (item) {
+        this.status = item.value
       },
       tabbarChange (index) {
         if (index === 0) {

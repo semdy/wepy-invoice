@@ -3,11 +3,16 @@
 
   .stock-check-item {
     .flex();
+    position: relative;
     background-color: #fff;
     border:2rpx solid #bbb;
     border-radius: 20rpx;
     padding: 20rpx;
     margin-top: 10rpx;
+
+    &.disabled {
+      background-color: #f0f0f0;
+    }
   }
 
   .stock-check-item-left {
@@ -49,35 +54,41 @@
         margin-right: 40rpx;
       }
     }
+
+    .delete-icon {
+      position: absolute;
+      top: 20rpx;
+      right: 20rpx;
+    }
   }
 </style>
 <template>
-  <view class="stock-check-item {{className}}" style="{{style}}" @tap="tap">
+  <view class="stock-check-item {{stock.status === 'expired' ? 'disabled' : '' }} {{className}}" style="{{style}}" @tap="tap">
     <view class="stock-check-item-left">
       <view class="stock-check-item-left-hd">
-        <geoIcon name="geo.svg"></geoIcon>
+        <geoIcon name="stock.png"></geoIcon>
         <text>{{stock.type}}</text>
       </view>
-      <view class="stock-number">{{stock.count}}</view>
+      <view class="stock-number" @tap="stockDetailTap">{{stock.count}}</view>
     </view>
 
     <view class="stock-check-item-right">
-      <view class="stock-check-info">盘点任务：{{stock.name}}</view>
-      <view class="stock-check-info">盘点状态：{{stock.statusText}}</view>
-      <view class="stock-check-info">盘点生成日期：{{stock.createdAt}}</view>
-      <view class="stock-check-info">盘点截止日期：{{stock.endDate}}</view>
-      <view class="stock-check-info">备注：{{stock.remark}}</view>
+      <view class="stock-check-info">盘点任务名称：{{stock.name}}</view>
+      <view class="stock-check-info">盘点任务状态：{{stock.statusText}}</view>
+      <view class="stock-check-info">盘点任务编码：{{stock.code}}</view>
+      <view class="stock-check-info">产品线：{{stock.divisionID}}</view>
+      <view class="stock-check-info">仓库类型：{{stock.stockType}}</view>
+      <view class="stock-check-info">盘点任务创建日期：{{stock.createdAt}}</view>
       <view class="stock-check-action">
-        <checkButton @tap.user="checkButtonTap" wx:if="{{stock.status=='unSubmit'}}">盘点</checkButton>
-        <!--<submitButton @tap.user="submitButtonTap" :disabled="true" wx:if="{{stock.status=='unSubmit'}}">提交</submitButton>-->
-        <view class="button normal primary {{stock.count == 0 ? 'disabled' : ''}}"
-              wx:if="{{stock.status=='unSubmit'}}"
-              @tap="submitButtonTap"
-        >
+        <checkButton @tap.user="checkButtonTap" wx:if="{{stock.status==='unSubmit'}}">盘点</checkButton>
+        <view class="button normal primary {{stock.count === 0 ? 'disabled' : ''}}" wx:if="{{stock.status==='unSubmit'}}" @tap="submitButtonTap">
           提交
         </view>
-        <genButton wx:if="{{stock.status=='submit'}}">报告生成中</genButton>
-        <historyButton @tap.user="historyButtonTap" wx:if="{{stock.status=='reckon'}}">历史记录</historyButton>
+        <block wx:if="stock.status!=='expired'">
+          <genButton @tap.user="buttonTap" wx:if="{{stock.status==='submit'}}">报告生成中</genButton>
+          <historyButton @tap.user="buttonTap" wx:if="{{stock.status==='reckon'}}">历史记录</historyButton>
+        </block>
+        <delIcon name="trash.png" class="delete-icon" @tap.user="onDelTap"></delIcon>
       </view>
     </view>
 
@@ -105,6 +116,7 @@
     }
     components = {
       geoIcon: Icon,
+      delIcon: Icon,
       checkButton: Button,
       submitButton: Button,
       genButton: Button,
@@ -120,8 +132,14 @@
       submitButtonTap ($event) {
         this.$emit('submitTap', Number(this.$index), $event)
       },
-      historyButtonTap ($event) {
-        this.$emit('historyTap', Number(this.$index), $event)
+      stockDetailTap ($event) {
+        this.$emit('stockDetailTap', Number(this.$index), $event)
+      },
+      buttonTap ($event) {
+        this.$emit('buttonTap', Number(this.$index), $event)
+      },
+      onDelTap ($event) {
+        this.$emit('delTap', Number(this.$index), $event)
       }
     }
   }

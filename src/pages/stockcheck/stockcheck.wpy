@@ -42,14 +42,19 @@
     white-space: nowrap;
   }
 
-  .stock-check-remark {
+  .stock-check-form {
     textarea {
       width: 100%;
-      height: 200rpx;
+      height: 120rpx;
       border: 2rpx solid #aaa;
       padding: 10rpx;
       box-sizing: border-box;
     }
+  }
+
+  .stock-check-label {
+    margin-top: 10rpx;
+    margin-bottom: 10rpx;
   }
 
   .modal-footer {
@@ -83,12 +88,16 @@
 
   }
 
-  .stock-submit-confirm-text {
-    width: 340rpx;
-    margin: 0 auto;
-    padding-top: 20rpx;
-    padding-bottom: 20rpx;
+  .stock-modal-inner {
+    width: 350rpx;
+    margin: 20rpx auto;
     text-align: center;
+  }
+
+  .stock-modal-hints view {
+    padding-left: 1em;
+    text-indent: -1em;
+    margin-bottom: 10rpx;
   }
 
   .scrollview {
@@ -158,7 +167,9 @@
         @tap.user="onItemTap"
         @checkTap.user="onCheckTap"
         @submitTap.user="onSubmitTap"
-        @historyTap.user="onHistoryTap"
+        @buttonTap.user="onButtonTap"
+        @stockDetailTap.user="onStockDetailTap"
+        @delTap.user="onDelTap"
       />
     </repeat>
   </scroll-view>
@@ -168,17 +179,22 @@
   </view>
 
   <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
-    <view class="stock-check-remark">
-      <textarea value="{{remark}}" @input="remarkChange" placeholder="请输入盘点备注(选填)"/>
+    <view class="stock-check-form">
+      <view class="stock-check-label">盘点仓库：</view>
+      <textarea value="{{remark}}" @input="remarkChange" placeholder="请输入盘点任务名称(必填)"/>
+      <view class="stock-check-label">盘点仓库：</view>
+      <storepicker :items.sync="warehouseTypes" @pickerchange.user="storeChange"></storepicker>
+      <view class="stock-check-label">产品线：</view>
+      <divisionpicker :items.sync="divisions" @pickerchange.user="divisionChange"></divisionpicker>
     </view>
     <view class="modal-footer">
       <view class="update-button cancel" @tap="closeModal">取消</view>
-      <view class="update-button" @tap="saveRemarkTap">确定</view>
+      <view class="update-button" @tap="startCreate">确定</view>
     </view>
   </modal>
 
   <confirmModal wx:if="{{isConfirmModalShow}}" title="提示" @modalClose.user="closeConfirmModal">
-    <view class="stock-submit-confirm-text">
+    <view class="stock-modal-inner">
       确定点击提交，结束本次盘点任务吗?
     </view>
     <view class="modal-footer">
@@ -188,8 +204,10 @@
   </confirmModal>
 
   <hintModal wx:if="{{isHintModalShow}}" title="提示" @modalClose.user="closeHintModal">
-    <view class="stock-submit-confirm-text">
-      请务必在每晚六点以后进行库存盘点任务
+    <view class="stock-modal-hints">
+      <view>1. 当日结束全部系统操作后，再进行盘点；</view>
+      <view>2. 21：00点前提交盘点单据的，可在第二天上午查询盘点报告；21：00点后提交盘点单据的，可在第三天上午查询盘点报告；</view>
+      <view>3. 目前库存盘点的仓库类型仅开放了缺省仓库，即主仓库。</view>
     </view>
     <view class="modal-footer">
       <view class="update-button" @tap="closeHintModal">知道了</view>
@@ -197,8 +215,8 @@
   </hintModal>
 
   <genderModal wx:if="{{isGenderModalShow}}" title="提示" @modalClose.user="closeGenderModal">
-    <view class="stock-submit-confirm-text">
-      报告生成中，请在xxx工作日后参考报告
+    <view class="stock-modal-hints">
+      报告生成中，21:00点前提交盘点单据的，可在第二天上午查询盘点报告；21:00点后提交盘点单据的，可在第三天上午查询盘点报告；
     </view>
     <view class="modal-footer">
       <view class="update-button" @tap="showSubmitTask">知道了</view>
@@ -212,12 +230,14 @@
   import fetch from '../../service/fetch'
   import Icon from '../../components/icon'
   import Modal from '../../components/modal'
+  import Picker from '../../components/picker'
   import StockChemItem from '../../components/stockcheckitem'
-  import { showError, showToast, formatDate } from '../../utils/util'
+  import { showError, showToast, confirm, formatDate } from '../../utils/util'
 
   const STOCK_STATUS = {
     'submit': '已提交',
-    'unSubmit': '未提交'
+    'unSubmit': '未提交',
+    'expired': '过期未完成'
   }
 
   export default class Index extends wepy.page {
@@ -232,17 +252,24 @@
       confirmModal: Modal,
       hintModal: Modal,
       genderModal: Modal,
+      storepicker: Picker,
+      divisionpicker: Picker,
       stockChemItem: StockChemItem
     }
 
     page = 1
     curIndex = 0
+    createErrMsg = null
+    divisionID = ''
+    warehouseType = ''
 
     data = {
       loaded: false,
       tabIndex: 0,
       queryType: 'unSubmit',
       dataList: [],
+      divisions: [],
+      warehouseTypes: [],
       remark: '',
       isModalShow: false,
       isConfirmModalShow: false,
@@ -270,7 +297,7 @@
       remarkChange (e) {
         this.remark = e.detail.value
       },
-      saveRemarkTap () {
+      startCreate () {
         this.createTask()
       },
       switchTabTap (e) {
@@ -278,7 +305,11 @@
         this.switchTab(index)
       },
       createTap () {
-        this.showModal()
+        if (!this.createErrMsg) {
+          this.showModal()
+        } else {
+          showError(this.createErrMsg)
+        }
       },
       onItemTap (index) {
 
@@ -294,7 +325,7 @@
         this.curIndex = index
         this.showConfirmModal()
       },
-      async saveStockTap () {
+      saveStockTap () {
         let curItem = this.dataList[this.curIndex]
         if (curItem) {
           this.uploadTask(curItem.id)
@@ -302,10 +333,31 @@
       },
       showSubmitTask () {
         this.hideGenderModal()
-        this.switchTab(1)
       },
-      onHistoryTap () {
-        this.$navigate('/pages/stockcheck/stockchecklist')
+      divisionChange (item) {
+        this.divisionID = item.value
+      },
+      storeChange (item) {
+        this.warehouseType = item.value
+      },
+      onButtonTap (index) {
+        if (this.dataList[index].status === 'submit') {
+          this.showGenderModal()
+        } else {
+          const id = this.dataList[index].id
+          this.$navigate('/pages/stockcheck/stockchecklist', {id})
+        }
+      },
+      onStockDetailTap (index) {
+        this.curIndex = index
+        const inventoryId = this.dataList[index].id
+        this.$navigate('/pages/stockcheck/stockdetail', {inventoryId})
+      },
+      onDelTap (index) {
+        confirm('确定要删除吗?').then(() => {
+          const inventoryId = this.dataList[index].id
+          this.deleteTask(inventoryId)
+        })
       }
     }
 
@@ -377,7 +429,10 @@
     }
 
     async createTask () {
-      let res = await fetch.get('create/Inventory', {remark: this.remark})
+      if (!this.remark) {
+        return showError('请输入盘点任务名称')
+      }
+      let res = await fetch.get('create/Inventory', {name: this.remark, divisionID: this.divisionID, stockType: this.warehouseType})
       if (res.success) {
         this.remark = ''
         this.hideModal()
@@ -391,7 +446,7 @@
       this.loaded = false
       try {
         let res = await fetch.get('query/Inventory', {limit: 20, page, status})
-        res = res.data.result.docs.map(item => this.formatData(item))
+        res = res.data.docs.map(item => this.formatData(item))
         if (refresh) {
           this.dataList = res
         } else {
@@ -404,11 +459,38 @@
       }
     }
 
+    async queryStockType () {
+      /*let res = await fetch.get('query/stockType')
+      if (res.success && res.data.length > 0) {
+        this.divisions = res.data.map(item => ({name: item.DivisionID, value: item.DivisionID}))
+        this.warehouseTypes = res.data.map(item => ({name: item.item.WarehouseType, value: item.WarehouseType}))
+        this.divisionID = this.divisions[0].value
+        this.warehouseType = this.warehouseTypes[0].value
+        this.$apply()
+      } else {
+        this.createErrMsg = res.message
+      }*/
+      const data = [
+        {
+          "DivisionID": "35", // 产品线
+          "Division": "SH", // 产品线描述
+          "SAPID": "3045", // 经销商code
+          "WarehouseType": "缺省仓库" // 仓库类型
+        }
+      ]
+      this.divisions = data.map(item => ({name: item.DivisionID, value: item.DivisionID}))
+      this.warehouseTypes = data.map(item => ({name: item.WarehouseType, value: item.WarehouseType}))
+      this.divisionID = this.divisions[0].value
+      this.warehouseType = this.warehouseTypes[0].value
+      this.$apply()
+
+    }
+
     async uploadTask (id) {
       this.hideConfirmModal()
       let res = await fetch.get('update/Inventory', {id})
       if (res.success) {
-        this.showGenderModal()
+        this.switchTab(1)
       } else {
         showError(res.message)
       }
@@ -418,6 +500,16 @@
       let res = await fetch.get('create/InventoryQr', {inventoryId, qrCode})
       this.handleQuery()
       if (res.success) {
+        showToast(res.message)
+      } else {
+        showError(res.message)
+      }
+    }
+
+    async deleteTask (inventoryId) {
+      let res = await fetch.get('delete/Inventory', {inventoryId})
+      if (res.success) {
+        this.handleQuery()
         showToast(res.message)
       } else {
         showError(res.message)
@@ -440,6 +532,8 @@
 
     onLoad () {
       this.page = 1
+      this.createErrMsg = null
+      this.queryStockType()
       this.queryTasks(this.page, this.queryType)
     }
   }
