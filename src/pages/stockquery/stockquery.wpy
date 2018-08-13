@@ -138,8 +138,8 @@
       queryChange (e) {
         this.queryStr = e.detail.value
       },
-      pickerChange (e) {
-        this.type = this.typeArray[e.detail.value].value
+      pickerChange (item) {
+        this.type = item.value
       }
     }
 
