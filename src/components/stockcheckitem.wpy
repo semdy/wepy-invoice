@@ -8,7 +8,7 @@
     border:2rpx solid #bbb;
     border-radius: 20rpx;
     padding: 20rpx;
-    margin-top: 10rpx;
+    margin-bottom: 10rpx;
 
     &.disabled {
       background-color: #f0f0f0;

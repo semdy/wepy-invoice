@@ -105,9 +105,7 @@
     height: 100%;
     overflow: hidden;
     box-sizing: border-box;
-    padding-left: 10rpx;
-    padding-right: 10rpx;
-    padding-bottom: 10rpx;
+    padding: 10rpx;
   }
 
   .header-tabs {
