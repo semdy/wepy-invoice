@@ -57,7 +57,7 @@ const uuid = (function () {
 })()
 
 function showError (msg, duration) {
-  duration = duration || 1500;
+  duration = duration || 2000;
   return new Promise((resolve, reject) => {
     setTimeout(function(){
       wx.showToast({
@@ -67,7 +67,7 @@ function showError (msg, duration) {
         duration: duration
       })
       setTimeout(resolve, duration)
-    }, 50)
+    }, 100)
   })
 }
 

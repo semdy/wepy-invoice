@@ -26,6 +26,11 @@
     font-weight: bold;
   }
 
+  .stock-check-item-left-hd .icon-img {
+    width: 48rpx !important;
+    height: 48rpx !important;
+  }
+
   .stock-check-item-right {
     flex:1;
   }
@@ -84,11 +89,11 @@
         <view class="button normal primary {{stock.count === 0 ? 'disabled' : ''}}" wx:if="{{stock.status==='unSubmit'}}" @tap="submitButtonTap">
           提交
         </view>
-        <block wx:if="stock.status!=='expired'">
+        <block wx:if="{{stock.status!=='expired'}}">
           <genButton @tap.user="buttonTap" wx:if="{{stock.status==='submit'}}">报告生成中</genButton>
           <historyButton @tap.user="buttonTap" wx:if="{{stock.status==='reckon'}}">历史记录</historyButton>
         </block>
-        <delIcon name="trash.png" class="delete-icon" @tap.user="onDelTap"></delIcon>
+        <delIcon name="trash.png" class="delete-icon"  wx:if="{{stock.status === 'unSubmit'}}" @tap.user="onDelTap"></delIcon>
       </view>
     </view>
 

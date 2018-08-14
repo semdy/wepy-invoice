@@ -203,7 +203,7 @@
     </view>
   </confirmModal>
 
-  <hintModal wx:if="{{isHintModalShow}}" title="提示" @modalClose.user="closeHintModal">
+  <hintModal wx:if="{{isHintModalShow}}" title="库存盘点须知" @modalClose.user="closeHintModal">
     <view class="stock-modal-hints">
       <view>1. 当日结束全部系统操作后，再进行盘点；</view>
       <view>2. 21：00点前提交盘点单据的，可在第二天上午查询盘点报告；21：00点后提交盘点单据的，可在第三天上午查询盘点报告；</view>
@@ -460,7 +460,7 @@
     }
 
     async queryStockType () {
-      /*let res = await fetch.get('query/stockType')
+      let res = await fetch.get('query/stockType')
       if (res.success && res.data.length > 0) {
         this.divisions = res.data.map(item => ({name: item.DivisionID, value: item.DivisionID}))
         this.warehouseTypes = res.data.map(item => ({name: item.item.WarehouseType, value: item.WarehouseType}))
@@ -469,21 +469,7 @@
         this.$apply()
       } else {
         this.createErrMsg = res.message
-      }*/
-      const data = [
-        {
-          "DivisionID": "35", // 产品线
-          "Division": "SH", // 产品线描述
-          "SAPID": "3045", // 经销商code
-          "WarehouseType": "缺省仓库" // 仓库类型
-        }
-      ]
-      this.divisions = data.map(item => ({name: item.DivisionID, value: item.DivisionID}))
-      this.warehouseTypes = data.map(item => ({name: item.WarehouseType, value: item.WarehouseType}))
-      this.divisionID = this.divisions[0].value
-      this.warehouseType = this.warehouseTypes[0].value
-      this.$apply()
-
+      }
     }
 
     async uploadTask (id) {
@@ -530,11 +516,18 @@
       this.appendQuery()
     }
 
+    onShow () {
+      if (wx.getStorageSync('_STOCK_REFRESH')) {
+        wx.removeStorageSync('_STOCK_REFRESH')
+        this.handleQuery()
+      }
+    }
+
     onLoad () {
       this.page = 1
       this.createErrMsg = null
       this.queryStockType()
-      this.queryTasks(this.page, this.queryType)
+      this.handleQuery()
     }
   }
 </script>

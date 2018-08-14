@@ -20,6 +20,15 @@
       background-color: #f2f2f2;
     }
   }
+
+  .table-cell.opt {
+    flex:none;
+    width:80rpx;
+
+    .icon {
+      padding: 0;
+    }
+  }
 </style>
 <template>
 
@@ -29,14 +38,20 @@
       <view class="table-cell th">二维码</view>
       <view class="table-cell th upn">upn</view>
       <view class="table-cell th lot">lot</view>
+      <view class="table-cell th opt"></view>
     </view>
     <scroll-view scroll-y="true" class="table-body" lower-threshold="0" bindscrolltolower="onEndReached">
       <block wx:for="{{dataList}}" wx:key="index">
-        <view class="table-row" @tap="tablerowTap({{item}})">
+        <view class="table-row">
           <view class="table-cell td order">{{index + 1}}</view>
           <view class="table-cell td">{{item.qrCode}}</view>
           <view class="table-cell td upn">{{item.upn}}</view>
           <view class="table-cell td lot">{{item.lot}}</view>
+          <view class="table-cell td opt">
+            <view class="icon-delete" @tap.stop="delTap({{item}})">
+              <deleteIcon name="delete.svg"></deleteIcon>
+            </view>
+          </view>
         </view>
       </block>
     </scroll-view>
@@ -48,7 +63,7 @@
   import wepy from 'wepy'
   import fetch from '../../service/fetch'
   import Icon from '../../components/icon'
-  import { showError, showToast, formatDate } from '../../utils/util'
+  import { showError, confirm, showToast, formatDate } from '../../utils/util'
 
   export default class Index extends wepy.page {
     config = {
@@ -72,7 +87,12 @@
     watch = {}
 
     methods = {
-
+      delTap (e) {
+        let item = e.currentTarget.dataset.wepyParamsA
+        confirm('确定要删除吗?').then(() => {
+          this.deleteQrcode(item.id)
+        })
+      }
     }
 
     handleQuery () {
@@ -110,6 +130,18 @@
       }).finally(res => {
         this.loaded = true
       })
+    }
+
+    deleteQrcode (qrId) {
+      fetch.get('delete/InventoryQr', {qrId}).then(res => {
+        if (res.success) {
+          showToast(res.message)
+          this.handleQuery()
+          wx.setStorageSync('_STOCK_REFRESH', true)
+        } else {
+          showError(res.message)
+        }
+      }, showError)
     }
 
     onEndReached () {
