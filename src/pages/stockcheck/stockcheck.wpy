@@ -349,7 +349,7 @@
       onStockDetailTap (index) {
         this.curIndex = index
         const inventoryId = this.dataList[index].id
-        this.$navigate('/pages/stockcheck/stockdetail', {inventoryId})
+        this.$navigate('/pages/stockcheck/stockdetail', {inventoryId, tabIndex: this.tabIndex})
       },
       onDelTap (index) {
         confirm('确定要删除吗?').then(() => {
@@ -406,7 +406,13 @@
     launchScaner (id) {
       wepy.scanCode()
         .then(res => {
-          this.uploadTaskQr(id, res.result)
+          this.uploadTaskQr(id, res.result).then(() => {
+            this.launchScaner(id)
+          }).catch(() => {
+            setTimeout(() => {
+              this.launchScaner(id)
+            }, 2000)
+          })
         })
         .catch(() => {
           console.log('scan canceled')
@@ -461,7 +467,7 @@
       let res = await fetch.get('query/stockType')
       if (res.success && res.data.length > 0) {
         this.divisions = res.data.map(item => ({name: item.DivisionID, value: item.DivisionID}))
-        this.warehouseTypes = res.data.map(item => ({name: item.item.WarehouseType, value: item.WarehouseType}))
+        this.warehouseTypes = res.data.map(item => ({name: item.WarehouseType, value: item.WarehouseType}))
         this.divisionID = this.divisions[0].value
         this.warehouseType = this.warehouseTypes[0].value
         this.$apply()
@@ -480,14 +486,18 @@
       }
     }
 
-    async uploadTaskQr (inventoryId, qrCode) {
-      let res = await fetch.get('create/InventoryQr', {inventoryId, qrCode})
-      this.handleQuery()
-      if (res.success) {
-        showToast(res.message)
-      } else {
-        showError(res.message)
-      }
+    uploadTaskQr (inventoryId, qrCode) {
+      return new Promise(async (resolve, reject) => {
+        let res = await fetch.get('create/InventoryQr', {inventoryId, qrCode})
+        this.handleQuery()
+        if (res.success) {
+          showToast(res.message)
+          resolve()
+        } else {
+          showError(res.message)
+          reject(res.message)
+        }
+      })
     }
 
     async deleteTask (inventoryId) {

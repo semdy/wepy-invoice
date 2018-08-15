@@ -91,7 +91,7 @@
         </view>
         <block wx:if="{{stock.status!=='expired'}}">
           <genButton @tap.user="buttonTap" wx:if="{{stock.status==='submit'}}">报告生成中</genButton>
-          <historyButton @tap.user="buttonTap" wx:if="{{stock.status==='reckon'}}">历史记录</historyButton>
+          <historyButton @tap.user="buttonTap" wx:if="{{stock.status==='reckon'}}">查看报告</historyButton>
         </block>
         <delIcon name="trash.png" class="delete-icon"  wx:if="{{stock.status === 'unSubmit'}}" @tap.user="onDelTap"></delIcon>
       </view>
@@ -129,22 +129,34 @@
     }
     methods = {
       tap ($event) {
-        this.$emit('tap', Number(this.$index), $event)
+        setTimeout(() => {
+          this.$emit('tap', Number(this.$index), $event)
+        })
       },
       checkButtonTap ($event) {
-        this.$emit('checkTap', Number(this.$index), $event)
+        setTimeout(() => {
+          this.$emit('checkTap', Number(this.$index), $event)
+        })
       },
       submitButtonTap ($event) {
-        this.$emit('submitTap', Number(this.$index), $event)
+        setTimeout(() => {
+          this.$emit('submitTap', Number(this.$index), $event)
+        })
       },
       stockDetailTap ($event) {
-        this.$emit('stockDetailTap', Number(this.$index), $event)
+        setTimeout(() => {
+          this.$emit('stockDetailTap', Number(this.$index), $event)
+        })
       },
       buttonTap ($event) {
-        this.$emit('buttonTap', Number(this.$index), $event)
+        setTimeout(() => {
+          this.$emit('buttonTap', Number(this.$index), $event)
+        })
       },
       onDelTap ($event) {
-        this.$emit('delTap', Number(this.$index), $event)
+        setTimeout(() => {
+          this.$emit('delTap', Number(this.$index), $event)
+        })
       }
     }
   }

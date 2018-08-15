@@ -25,7 +25,7 @@ function formatDate (source, format) {
   return format
 }
 
-const uuid = (function () {
+const uuid = function () {
   let CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
   return function (len, radix) {
     var chars = CHARS, uuid = [], i
@@ -54,10 +54,10 @@ const uuid = (function () {
 
     return uuid.join('')
   }
-})()
+}()
 
 function showError (msg, duration) {
-  duration = duration || 2000;
+  duration = duration || 2000
   return new Promise((resolve, reject) => {
     setTimeout(function(){
       wx.showToast({

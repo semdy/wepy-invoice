@@ -38,16 +38,16 @@
       <view class="table-cell th">二维码</view>
       <view class="table-cell th upn">upn</view>
       <view class="table-cell th lot">lot</view>
-      <view class="table-cell th opt"></view>
+      <view class="table-cell th opt" wx:if="{{hasDel}}"></view>
     </view>
     <scroll-view scroll-y="true" class="table-body" lower-threshold="0" bindscrolltolower="onEndReached">
       <block wx:for="{{dataList}}" wx:key="index">
         <view class="table-row">
-          <view class="table-cell td order">{{index + 1}}</view>
+          <view class="table-cell td order">{{item.index}}</view>
           <view class="table-cell td">{{item.qrCode}}</view>
           <view class="table-cell td upn">{{item.upn}}</view>
           <view class="table-cell td lot">{{item.lot}}</view>
-          <view class="table-cell td opt">
+          <view class="table-cell td opt" wx:if="{{hasDel}}">
             <view class="icon-delete" @tap.stop="delTap({{item}})">
               <deleteIcon name="delete.svg"></deleteIcon>
             </view>
@@ -79,7 +79,8 @@
     inventoryId = ''
 
     data = {
-      dataList: []
+      dataList: [],
+      hasDel: false
     }
 
     computed = {}
@@ -117,6 +118,8 @@
         fetch.get('query/InventoryQr', params).then(res => {
           if (res.success) {
             this.dataList = this.dataList.concat(res.data.docs)
+            let len = this.dataList.length
+            this.dataList = this.dataList.map(item => Object.assign(item, {index: len--}))
             resolve(res.data.docs)
             this.$apply()
           } else {
@@ -152,6 +155,7 @@
       if (params.inventoryId) {
         this.inventoryId = params.inventoryId
       }
+      this.hasDel = Number(params.tabIndex) === 0
       this.page = 1
       this.handleQuery()
     }

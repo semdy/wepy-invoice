@@ -17,6 +17,7 @@
       text-align: center;
 
       &:last-child {
+        flex: 2;
         color: #ff0000;
       }
     }
@@ -170,10 +171,10 @@
     }
 
     inventoryId = null
-    loaded = false
 
     data = {
       result: {},
+      loaded: false,
       isModalShow: false
     }
 
@@ -239,7 +240,6 @@
       if (params.id) {
         this.inventoryId = params.id
       }
-      this.loaded = false
       this.queryList(this.inventoryId)
     }
   }
