@@ -177,7 +177,7 @@
     </view>
     <view class="history-list">
       <repeat for="{{queryRecords}}">
-        <view class="history-item" data-key="{{item}}" @tap="recordTap">{{item}}</view>
+        <view class="history-item" @tap="recordTap({{item}})">{{item}}</view>
       </repeat>
     </view>
   </view>
@@ -324,9 +324,8 @@
       queryChange (e) {
         this.qrcode = e.detail.value
       },
-      recordTap (e) {
-        let key = e.currentTarget.dataset.key
-        this.queryFlows(key)
+      recordTap (item) {
+        this.queryFlows(item.key)
       },
       clrHistory () {
         this.clearRecords()

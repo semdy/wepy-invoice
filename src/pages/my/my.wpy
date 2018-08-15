@@ -128,7 +128,7 @@
       </listitem>
       <view class="subview" wx:if="{{item.showSubview&&sessions.length>0}}" style="display: {{subviewShown ? 'block': 'none'}}">
         <repeat for="{{sessions}}" item="sub">
-          <view class="subview-item" data-id="{{sub.id}}" @tap="subviewTap">{{sub.name}}</view>
+          <view class="subview-item" @tap="subviewTap({{sub}})">{{sub.name}}</view>
         </repeat>
       </view>
     </repeat>
@@ -264,8 +264,8 @@
       closeModal () {
         this.hideModal()
       },
-      subviewTap (e) {
-        let userId = e.currentTarget.dataset.id
+      subviewTap (item) {
+        let userId = item.id
         /*this.login(userId).then(res => {
           this.changeSession()
           this.hideSubview()

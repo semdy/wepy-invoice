@@ -1,8 +1,10 @@
 const path = require('path');
-var prod = process.env.NODE_ENV === 'production'
+var prod = process.env.NODE_ENV === 'production';
 
 module.exports = {
   wpyExt: '.wpy',
+  eslint: true,
+  cliLogs: !prod,
   build: {
     web: {
       htmlTemplate: path.join('src', 'index.template.html'),
@@ -10,10 +12,17 @@ module.exports = {
       jsOutput: path.join('web', 'index.js')
     }
   },
-  eslint: true,
+  resolve: {
+    alias: {
+      counter: path.join(__dirname, 'src/components/counter'),
+      '@': path.join(__dirname, 'src')
+    },
+    aliasFields: ['wepy', 'weapp'],
+    modules: ['node_modules']
+  },
   compilers: {
     less: {
-      compress: true
+      compress: prod
     },
     /*sass: {
       outputStyle: 'compressed'
@@ -21,28 +30,27 @@ module.exports = {
     babel: {
       sourceMap: true,
       presets: [
-        'es2015',
-        'stage-1'
+        'env'
       ],
       plugins: [
+        'transform-class-properties',
         'transform-decorators-legacy',
+        'transform-object-rest-spread',
         'transform-export-extensions',
-        'syntax-export-extensions'
       ]
     }
   },
   plugins: {
+  },
+  appConfig: {
+    noPromiseAPI: ['createSelectorQuery']
   }
 }
 
 if (prod) {
 
-  delete module.exports.compilers.babel.sourcesMap;
   // 压缩sass
   // module.exports.compilers['sass'] = {outputStyle: 'compressed'}
-
-  // 压缩less
-  module.exports.compilers['less'] = {compress: true}
 
   // 压缩js
   module.exports.plugins = {

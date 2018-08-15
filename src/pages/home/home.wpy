@@ -26,7 +26,7 @@
   <view class="home-swiper-container">
     <swiper class="swiper home-swiper" autoplay="true" interval="5000" duration="300" indicatorDots="true" circular="true">
       <block wx:for="{{swiperList}}" wx:key="index">
-        <swiper-item class="swiper-item" data-index="{{index}}" @tap="gotoweb">
+        <swiper-item class="swiper-item" @tap="gotoweb({{index}})">
           <image src="{{item.source}}" mode="widthFix"></image>
         </swiper-item>
       </block>
@@ -112,8 +112,7 @@
     }
 
     methods = {
-      gotoweb (e) {
-        let index = e.currentTarget.dataset.index
+      gotoweb (index) {
         let item = this.swiperList[index]
         if (item && item.targetUrl !== undefined) {
           if (/^https?:\/\//.test(item.targetUrl)) {

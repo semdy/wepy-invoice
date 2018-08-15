@@ -139,10 +139,10 @@
 <template>
 
   <view class="header-tabs">
-    <view class="header-tab-item" :class="{selected: tabIndex == 0}" data-index="0" @tap="switchTabTap">
+    <view class="header-tab-item" :class="{selected: tabIndex == 0}" @tap="switchTabTap(0)">
       <text>未完成</text>
     </view>
-    <view class="header-tab-item" :class="{selected: tabIndex == 1}" data-index="1" @tap="switchTabTap">
+    <view class="header-tab-item" :class="{selected: tabIndex == 1}" @tap="switchTabTap(1)">
       <text>已完成</text>
     </view>
   </view>
@@ -298,9 +298,8 @@
       startCreate () {
         this.createTask()
       },
-      switchTabTap (e) {
-        let index = Number(e.currentTarget.dataset.index)
-        this.switchTab(index)
+      switchTabTap (index) {
+        this.switchTab(Number(index))
       },
       createTap () {
         if (!this.createErrMsg) {
@@ -487,16 +486,17 @@
     }
 
     uploadTaskQr (inventoryId, qrCode) {
-      return new Promise(async (resolve, reject) => {
-        let res = await fetch.get('create/InventoryQr', {inventoryId, qrCode})
-        this.handleQuery()
-        if (res.success) {
-          showToast(res.message)
-          resolve()
-        } else {
-          showError(res.message)
-          reject(res.message)
-        }
+      return new Promise((resolve, reject) => {
+        fetch.get('create/InventoryQr', {inventoryId, qrCode}).then(res => {
+          this.handleQuery()
+          if (res.success) {
+            showToast(res.message)
+            resolve()
+          } else {
+            showError(res.message)
+            reject(res.message)
+          }
+        })
       })
     }
 

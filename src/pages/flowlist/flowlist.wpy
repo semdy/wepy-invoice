@@ -203,13 +203,11 @@
           this.$back()
         }
       },
-      rowTap (e) {
-        let item = e.currentTarget.dataset.wepyParamsA
+      rowTap (item) {
         this.getPrevPage().queryFlows(item.historyqrcode)
         this.$back()
       },
-      delTap (e) {
-        let item = e.currentTarget.dataset.wepyParamsA
+      delTap (item) {
         confirm('确定要删除吗?').then(() => {
           this.deleteFlow(item.id)
         })

@@ -204,14 +204,12 @@
           this.$back()
         }
       },
-      delTap (e) {
-        let item = e.currentTarget.dataset.wepyParamsA
+      delTap (item) {
         confirm('确定要删除吗?').then(() => {
           this.deleteReceipt(item.id)
         })
       },
-      rowTap (e) {
-        let item = e.currentTarget.dataset.wepyParamsA
+      rowTap (item) {
         this.getPrevPage().showReceipt(item.id)
         this.$back()
       }

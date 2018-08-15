@@ -229,7 +229,7 @@
           <remarkinput placeholder="备注可以为空" border="true" icon="angle-down-black.png" iconRight="true" :value.sync="remark" :disabled.sync="pageDisabled" @focus.user="remarkFocus" @blur.user="remarkBlur" @change.user="remarkChange"></remarkinput>
           <view class="remark-history-dropdown" hidden="{{!showRemarkDropDown}}">
             <block wx:for="{{remarkHistory}}" wx:key="index">
-              <view @tap="onHistoryItemTap" data-remark="{{item}}">{{item}}</view>
+              <view @tap="onHistoryItemTap({{item}})">{{item}}</view>
             </block>
           </view>
         </view>
@@ -414,9 +414,9 @@
       remarkBlur () {
         this.showRemarkDropDown = false
       },
-      onHistoryItemTap (e) {
+      onHistoryItemTap (item) {
         setTimeout(() => {
-          this.remark = e.currentTarget.dataset.remark
+          this.remark = item.remark
           this.$apply()
         }, 80)
       },
@@ -440,8 +440,7 @@
       onHistoryTap () {
         this.$navigate('/pages/dmshistory/dmshistory')
       },
-      delTap (e) {
-        let item = e.currentTarget.dataset.wepyParamsA
+      delTap (item) {
         this.deleteQrcode(item.receiptId, item.productId)
       },
       submitReceipt () {

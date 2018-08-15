@@ -33,7 +33,7 @@
 <template>
   <view class="tabbar-wrap {{className}}" style="{{style}}" wx:if="{{tabBar.list.length>0}}">
     <repeat for="{{tabBar.list}}">
-      <view class="tabbar-item {{tabIndex == index ? 'selected' : ''}}" style="color:{{tabIndex == index ? tabBar.selectedColor : tabBar.color}}" data-index="{{index}}" @tap="tap('{{index}}')">
+      <view class="tabbar-item {{tabIndex == index ? 'selected' : ''}}" style="color:{{tabIndex == index ? tabBar.selectedColor : tabBar.color}}" @tap="tap('{{index}}')">
         <icon wx:if="{{tabIndex != index}}" :name="item.icon"></icon>
         <icon wx:if="{{tabIndex == index}}" :name="item.selectedIcon"></icon>
         <view>{{item.text}}</view>
@@ -88,8 +88,8 @@
       }
     }
     methods = {
-      tap ($event) {
-        var index = Number($event.currentTarget.dataset.index)
+      tap (index, $event) {
+        index = Number(index)
         if (this.tabIndex === index) return
         if (!(this.disabled === true || this.disabled === 'true')) {
           this.tabIndex = index

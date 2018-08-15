@@ -254,8 +254,7 @@
       closeModal() {
         this.hideModal()
       },
-      delTap (e) {
-        let item = e.currentTarget.dataset.wepyParamsA
+      delTap (item) {
         confirm('确定要删除吗?').then(() => {
           this.deleteHistory(item.id)
         })

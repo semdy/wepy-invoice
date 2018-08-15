@@ -106,11 +106,11 @@
                {{item.describe}} {{item.score}}积分
             </view>
             <view class="counter">
-              <view class="counter-action" data-index="{{index}}" @tap="minus">
+              <view class="counter-action" @tap="minus({{index}})">
                 <minusicon name="minus.svg" size="small"></minusicon>
               </view>
-              <input type="number" class="count" data-index="{{index}}" value="{{item.num}}" @input="numChange" @blur="numBlur" />
-              <view class="counter-action" data-index="{{index}}" @tap="plus">
+              <input type="number" class="count" value="{{item.num}}" @input="numChange({{index}})" @blur="numBlur({{index}})" />
+              <view class="counter-action" @tap="plus({{index}})">
                 <plusicon name="plus.svg" size="small"></plusicon>
               </view>
             </view>
@@ -170,16 +170,13 @@
     }
 
     methods = {
-      plus (e) {
-        let index = e.currentTarget.dataset.index
+      plus (index) {
         this.dataList[index].num++
       },
-      minus (e) {
-        let index = e.currentTarget.dataset.index
+      minus (index) {
         this.dataList[index].num = Math.max(0, this.dataList[index].num - 1)
       },
-      numChange (e) {
-        let index = e.currentTarget.dataset.index
+      numChange (index, e) {
         let value = e.detail.value
         if (isNaN(value)) {
           value = 0
@@ -189,8 +186,7 @@
           dataList: this.dataList
         })
       },
-      numBlur (e) {
-        let index = e.currentTarget.dataset.index
+      numBlur (index, e) {
         let value = parseInt(e.detail.value)
         if (isNaN(value)) {
           value = 0

@@ -31,7 +31,7 @@
     <view class="notice-messages">
       <view class="notice-scroller" style="transform: translateY({{y}}%); transition-duration: {{speed}}ms;">
         <repeat for="{{notices}}" key="index">
-          <view class="notice-item" data-msg="{{item.title}}" @tap="noticeTap">{{item.title}}</view>
+          <view class="notice-item" @tap="noticeTap({{item}})">{{item.title}}</view>
         </repeat>
       </view>
     </view>
@@ -80,11 +80,10 @@
     }
 
     methods = {
-      noticeTap (e) {
-        let msg = e.currentTarget.dataset.msg
+      noticeTap (item, e) {
         let index = -1
         for (let i = 0; i < this._notices.length; i++) {
-          if (this._notices[i].title === msg) {
+          if (this._notices[i].title === item.msg) {
             index = i
             break
           }

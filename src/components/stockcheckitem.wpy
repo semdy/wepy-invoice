@@ -129,34 +129,22 @@
     }
     methods = {
       tap ($event) {
-        setTimeout(() => {
-          this.$emit('tap', Number(this.$index), $event)
-        })
+        this.$emit('tap', Number(this.$index), $event)
       },
       checkButtonTap ($event) {
-        setTimeout(() => {
-          this.$emit('checkTap', Number(this.$index), $event)
-        })
+        this.$emit('checkTap', Number(this.$index), $event)
       },
       submitButtonTap ($event) {
-        setTimeout(() => {
-          this.$emit('submitTap', Number(this.$index), $event)
-        })
+        this.$emit('submitTap', Number(this.$index), $event)
       },
       stockDetailTap ($event) {
-        setTimeout(() => {
-          this.$emit('stockDetailTap', Number(this.$index), $event)
-        })
+        this.$emit('stockDetailTap', Number(this.$index), $event)
       },
       buttonTap ($event) {
-        setTimeout(() => {
-          this.$emit('buttonTap', Number(this.$index), $event)
-        })
+        this.$emit('buttonTap', Number(this.$index), $event)
       },
       onDelTap ($event) {
-        setTimeout(() => {
-          this.$emit('delTap', Number(this.$index), $event)
-        })
+        this.$emit('delTap', Number(this.$index), $event)
       }
     }
   }

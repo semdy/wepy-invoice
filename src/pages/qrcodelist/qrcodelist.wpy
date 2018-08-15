@@ -231,12 +231,10 @@
           this.$back()
         }
       },
-      tablerowTap (e) {
-        let params = e.currentTarget.dataset.wepyParamsA
+      tablerowTap (params) {
         this.$navigate('/pages/qrcodedetail/qrcodedetail', {qrimageId: params.id})
       },
-      delTap (e) {
-        let item = e.currentTarget.dataset.wepyParamsA
+      delTap (item) {
         confirm('确定要删除吗?').then(() => {
           this.deleteImage(item.id)
         })
