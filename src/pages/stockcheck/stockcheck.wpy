@@ -220,6 +220,7 @@
     </view>
   </genderModal>
 
+  <toast />
 </template>
 
 <script>
@@ -229,6 +230,7 @@
   import Modal from '../../components/modal'
   import Picker from '../../components/picker'
   import StockChemItem from '../../components/stockcheckitem'
+  import Toast from 'wepy-com-toast'
   import { showError, showToast, confirm, formatDate } from '../../utils/util'
 
   const STOCK_STATUS = {
@@ -251,7 +253,9 @@
       genderModal: Modal,
       storepicker: Picker,
       divisionpicker: Picker,
-      stockChemItem: StockChemItem
+      stockChemItem: StockChemItem,
+      toast: Toast
+
     }
 
     page = 1
@@ -355,6 +359,12 @@
           this.deleteTask(inventoryId)
         })
       }
+    }
+
+    toast (msg) {
+      this.$invoke('toast', 'show', {
+        title: msg
+      })
     }
 
     showModal () {
@@ -492,7 +502,7 @@
             showToast(res.message)
             resolve()
           } else {
-            showError(res.message)
+            this.toast(res.message)
             reject(res.message)
           }
         })

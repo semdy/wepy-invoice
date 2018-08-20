@@ -117,6 +117,19 @@
       margin: -24rpx -10rpx;
     }
   }
+
+  .wetoast__bd {
+    min-height: auto !important;
+    min-width: auto !important;
+    padding: 8px 20px !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  .wetoast__bd__title {
+    margin: 0 !important;
+    font-size: 28rpx !important;
+  }
 </style>
 
 <script>
