@@ -1,0 +1,13 @@
+{
+  "description": "A miniprogram project built with WePY",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram",
+  "appid": "touristappid",
+  "projectname": "wepy-invoice",
+  "miniprogramRoot": "./dist"
+}
