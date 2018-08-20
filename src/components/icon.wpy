@@ -31,7 +31,7 @@
 
 <template>
   <view class="icon {{className}}" style="{{style}}" @tap="tap">
-    <image wx:if="{{name}}" class="icon-img {{size}}" src="../../images/{{name}}" mode="{{mode}}"></image>
+    <image wx:if="{{name}}" class="icon-img {{size}}" src="../images/{{name}}" mode="{{mode}}"></image>
   </view>
 </template>
 

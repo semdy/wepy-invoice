@@ -47,6 +47,10 @@
     font-size: 96rpx;
   }
 
+  .stock-detail {
+    padding: 20rpx 0;
+  }
+
   .stock-check-action {
     .flex();
     justify-content: space-around;
@@ -75,6 +79,7 @@
         <text>{{stock.type}}</text>
       </view>
       <view class="stock-number" @tap="stockDetailTap">{{stock.count}}</view>
+      <view class="stock-detail" @tap="stockDetailTap">盘点详情</view>
     </view>
 
     <view class="stock-check-item-right">

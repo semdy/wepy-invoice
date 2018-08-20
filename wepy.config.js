@@ -4,7 +4,7 @@ var prod = process.env.NODE_ENV === 'production';
 module.exports = {
   wpyExt: '.wpy',
   eslint: true,
-  cliLogs: !prod,
+  cliLogs: false, //!prod,
   build: {
     web: {
       htmlTemplate: path.join('src', 'index.template.html'),
@@ -14,7 +14,6 @@ module.exports = {
   },
   resolve: {
     alias: {
-      counter: path.join(__dirname, 'src/components/counter'),
       '@': path.join(__dirname, 'src')
     },
     aliasFields: ['wepy', 'weapp'],

@@ -46,12 +46,12 @@
 </style>
 <template>
   <view class="list-item {{className}}" style="{{style}}" @tap="tap">
-    <image wx:if="{{icon&&iconLeft&&!iconRight}}" class="list-item-icon {{iconSize}} left" src="../../images/{{icon}}" mode="aspectFit"></image>
+    <image wx:if="{{icon&&iconLeft&&!iconRight}}" class="list-item-icon {{iconSize}} left" src="../images/{{icon}}" mode="aspectFit"></image>
     <view class="list-item-bd">
       <slot></slot>
     </view>
-    <image wx:if="{{icon&&iconRight}}" class="list-item-icon {{iconSize}} right" src="../../images/{{icon}}" mode="aspectFit"></image>
-    <image wx:if="{{hasArrow||hasArrow==='true'}}" class="list-item-arrow" src="../../images/arrow-right-o.svg" mode="aspectFit"></image>
+    <image wx:if="{{icon&&iconRight}}" class="list-item-icon {{iconSize}} right" src="../images/{{icon}}" mode="aspectFit"></image>
+    <image wx:if="{{hasArrow||hasArrow==='true'}}" class="list-item-arrow" src="../images/arrow-right-o.svg" mode="aspectFit"></image>
   </view>
 </template>
 <script>

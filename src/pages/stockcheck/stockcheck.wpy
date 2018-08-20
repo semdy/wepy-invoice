@@ -137,7 +137,6 @@
   }
 </style>
 <template>
-
   <view class="header-tabs">
     <view class="header-tab-item" :class="{selected: tabIndex == 0}" @tap="switchTabTap(0)">
       <text>未完成</text>
