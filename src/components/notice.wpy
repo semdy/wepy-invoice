@@ -83,7 +83,7 @@
       noticeTap (item, e) {
         let index = -1
         for (let i = 0; i < this._notices.length; i++) {
-          if (this._notices[i].title === item.msg) {
+          if (this._notices[i].title === item.title) {
             index = i
             break
           }
