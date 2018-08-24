@@ -261,6 +261,7 @@
     page = 1
     curIndex = 0
     createErrMsg = null
+    divisionName = ''
     divisionID = ''
     warehouseType = ''
 
@@ -336,6 +337,7 @@
       },
       divisionChange (item) {
         this.divisionID = item.value
+        this.divisionName = item.name
       },
       storeChange (item) {
         this.warehouseType = item.value
@@ -444,7 +446,7 @@
       if (!this.remark) {
         return showError('请输入盘点任务名称')
       }
-      let res = await fetch.get('create/Inventory', {name: this.remark, divisionID: this.divisionID, stockType: this.warehouseType})
+      let res = await fetch.get('create/Inventory', {name: this.remark, divisionName: this.divisionName, divisionID: this.divisionID, stockType: this.warehouseType})
       if (res.success) {
         this.remark = ''
         this.hideModal()
@@ -474,9 +476,10 @@
     async queryStockType () {
       let res = await fetch.get('query/stockType')
       if (res.success && res.data.length > 0) {
-        this.divisions = res.data.map(item => ({name: item.DivisionID, value: item.DivisionID}))
+        this.divisions = res.data.map(item => ({name: item.NameCN, value: item.DivisionID}))
         this.warehouseTypes = res.data.map(item => ({name: item.WarehouseType, value: item.WarehouseType}))
         this.divisionID = this.divisions[0].value
+        this.divisionName = this.divisions[0].name
         this.warehouseType = this.warehouseTypes[0].value
         this.$apply()
       } else {

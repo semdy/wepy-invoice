@@ -86,7 +86,7 @@
       <view class="stock-check-info">盘点任务名称：{{stock.name}}</view>
       <view class="stock-check-info">盘点任务状态：{{stock.statusText}}</view>
       <view class="stock-check-info">盘点任务编码：{{stock.code}}</view>
-      <view class="stock-check-info">产品线：{{stock.divisionID}}</view>
+      <view class="stock-check-info">产品线：{{stock.divisionName}}</view>
       <view class="stock-check-info">仓库类型：{{stock.stockType}}</view>
       <view class="stock-check-info">盘点任务创建日期：{{stock.createdAt}}</view>
       <view class="stock-check-action">
