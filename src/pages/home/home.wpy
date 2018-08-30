@@ -84,17 +84,17 @@
           text: '二维码照片上报',
           visible: true
         },
-        {
+       /* {
           icon: 'stock-query.svg',
           text: '库存查询',
           visible: true
-        },
+        },*/
         {
           icon: 'stock-check.svg',
           text: '库存盘点',
           visible: true
         },
-        {
+        /*{
           icon: 'orderquery.png',
           text: '订单查询',
           visible: true
@@ -103,7 +103,7 @@
           icon: 'income-selected.svg',
           text: '收货校验',
           visible: true
-        }
+        }*/
       ]
     }
 
@@ -134,7 +134,8 @@
         } else if (index === 2) {
           this.$navigate('/pages/qrcodeupload/qrcodeupload')
         } else if (index === 3) {
-          this.$navigate('/pages/stockquery/stockquery')
+          //this.$navigate('/pages/stockquery/stockquery')
+          this.$navigate('/pages/stockcheck/stockcheck')
         } else if (index === 4) {
           this.$navigate('/pages/stockcheck/stockcheck')
         } else if (index === 5) {

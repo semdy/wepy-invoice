@@ -21,9 +21,23 @@
     }
   }
 
-  .table-cell.opt {
-    flex:none;
-    width:80rpx;
+  .table-cell {
+    font-size: 26rpx;
+
+    &.upn {
+      flex: none;
+      width: 240rpx;
+    }
+
+    &.lot {
+      flex: none;
+      width: 130rpx;
+    }
+
+    &.opt {
+      flex: none;
+      width: 60rpx;
+    }
 
     .icon {
       padding: 0;
@@ -31,11 +45,10 @@
   }
 </style>
 <template>
-
   <view class="table stockdetail-table">
     <view class="table-row table-header">
       <view class="table-cell th order">序号</view>
-      <view class="table-cell th">二维码</view>
+      <view class="table-cell th qr">二维码</view>
       <view class="table-cell th upn">upn</view>
       <view class="table-cell th lot">lot</view>
       <view class="table-cell th opt" wx:if="{{hasDel}}"></view>
@@ -44,7 +57,7 @@
       <block wx:for="{{dataList}}" wx:key="index">
         <view class="table-row">
           <view class="table-cell td order">{{item.index}}</view>
-          <view class="table-cell td">{{item.qrCode}}</view>
+          <view class="table-cell td qr">{{item.qrCode}}</view>
           <view class="table-cell td upn">{{item.upn}}</view>
           <view class="table-cell td lot">{{item.lot}}</view>
           <view class="table-cell td opt" wx:if="{{hasDel}}">
@@ -64,6 +77,12 @@
   import fetch from '../../service/fetch'
   import Icon from '../../components/icon'
   import { showError, confirm, showToast, formatDate } from '../../utils/util'
+
+  const subSuffix = (str, subLen) => {
+    if (typeof str !== 'string') return ''
+    if (str.length <= subLen || typeof subLen !== 'number') return str
+    return `...${str.substr(str.length - subLen, str.length)}`
+  }
 
   export default class Index extends wepy.page {
     config = {
@@ -106,7 +125,7 @@
       this.queryList(this.inventoryId, ++this.page)
     }
 
-    queryList(inventoryId, page) {
+    queryList (inventoryId, page) {
       let params = {
         inventoryId,
         page,
@@ -116,9 +135,11 @@
       return new Promise((resolve, reject) => {
         fetch.get('query/InventoryQr', params).then(res => {
           if (res.success) {
-            this.dataList = this.dataList.concat(res.data.docs)
+            this.dataList = this.dataList.concat(res.data.docs.map(item =>
+              ({...item, qrCode: subSuffix(item.qrCode, 6)})
+            ))
             let len = this.dataList.length
-            this.dataList = this.dataList.map(item => Object.assign(item, {index: len--}))
+            this.dataList = this.dataList.map(item => ({...item, index: len--}))
             resolve(res.data.docs)
             this.$apply()
           } else {

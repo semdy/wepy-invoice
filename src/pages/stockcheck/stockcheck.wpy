@@ -177,7 +177,7 @@
 
   <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
     <view class="stock-check-form">
-      <view class="stock-check-label">盘点仓库：</view>
+      <view class="stock-check-label">任务名称：</view>
       <textarea value="{{remark}}" @input="remarkChange" placeholder="请输入盘点任务名称(必填)"/>
       <view class="stock-check-label">盘点仓库：</view>
       <storepicker :items.sync="warehouseTypes" @pickerchange.user="storeChange"></storepicker>
