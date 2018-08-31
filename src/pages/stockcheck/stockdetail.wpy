@@ -136,7 +136,7 @@
         fetch.get('query/InventoryQr', params).then(res => {
           if (res.success) {
             this.dataList = this.dataList.concat(res.data.docs.map(item =>
-              ({...item, qrCode: subSuffix(item.qrCode, 6)})
+              ({...item, qrCode: subSuffix(item.qrCode, 8)})
             ))
             let len = this.dataList.length
             this.dataList = this.dataList.map(item => ({...item, index: len--}))
