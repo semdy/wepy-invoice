@@ -100,7 +100,7 @@
       }
       &.status {
         flex: none;
-        width: 130rpx;
+        width: 140rpx;
       }
       &.last {
         flex: none;
