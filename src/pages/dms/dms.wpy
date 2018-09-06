@@ -54,8 +54,6 @@
     .flex();
     justify-content: space-around;
     background-color: #fff;
-    padding-left: 40rpx;
-    padding-right: 40rpx;
     padding-bottom: 20rpx;
 
     .button {
@@ -770,10 +768,12 @@
         rowData.listIndex = ++this.listIndex
         rowData.status = item.status
         rowData.statusText = STATUS_MAP[item.status]
-        rowData.qrcode = subSuffix(item.qrcode, 6)
-        rowData.type = item.type
+        //rowData.qrcode = subSuffix(item.qrcode, 6)
+        rowData.qrcode = item.qrcode
+        rowData.type = item.type || data.type
         rowData.upn = item.upn
-        rowData.lot = subSuffix(item.lot, 4)
+        //rowData.lot = subSuffix(item.lot, 4)
+        rowData.lot = item.lot
         rowData.productId = item.id
         rowData.receiptId = data.id
         this.dataList.unshift(rowData)
