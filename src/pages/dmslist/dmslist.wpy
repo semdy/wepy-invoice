@@ -90,7 +90,7 @@
 <template>
   <view class="query-form-wrap">
     <view class="query-form">
-      <queryinput placeholder="搜索单据号" border="true" icon="find-g.svg" :value.sync="receiptNo" @input.user="queryChange"></queryinput>
+      <queryinput placeholder="搜索二维码" border="true" icon="find-g.svg" :value.sync="receiptNo" @input.user="queryChange"></queryinput>
       <clearIcon name="clear.svg" className="clear-icon" @tap.user="clearTap"></clearIcon>
     </view>
     <querybutton @tap.user="queryTap">查询</querybutton>
@@ -100,7 +100,6 @@
     <view class="table-row table-header">
       <view class="table-cell th order">序号</view>
       <view class="table-cell th">单据编号</view>
-      <view class="table-cell th type">类型</view>
       <view class="table-cell th num">明细数</view>
       <view class="table-cell th status">状态</view>
       <view class="table-cell th opt"></view>
@@ -111,7 +110,6 @@
         <view class="table-row" @tap="rowTap({{item}})">
           <view class="table-cell td order">{{index + 1}}</view>
           <view class="table-cell td">{{item.receiptNo}}</view>
-          <view class="table-cell td type">{{item.type}}</view>
           <view class="table-cell td num">{{item.count}}</view>
           <view class="table-cell td status">{{item.statusText}}</view>
           <view class="table-cell td opt">

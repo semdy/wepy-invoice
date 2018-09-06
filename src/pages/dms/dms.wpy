@@ -100,7 +100,7 @@
       }
       &.status {
         flex: none;
-        width: 100rpx;
+        width: 130rpx;
       }
       &.last {
         flex: none;
@@ -112,7 +112,17 @@
       }
     }
 
+    .table-cell-inner {
+      margin-bottom: 6rpx;
+      text-align: left;
 
+      text:first-child {
+        display: inline-block;
+        margin-right: 12rpx;
+        width: 60rpx;
+        color: #999;
+      }
+    }
   }
 
   .page-actions{
@@ -208,6 +218,21 @@
     }
   }
 
+  .download-url {
+    padding: 16rpx 30rpx;
+    border: 2rpx solid #c5c5c5;
+    background-color: #f0f0f0;
+    color: #01458e;
+    border-radius: 8rpx;
+    margin-top: 10rpx;
+    word-wrap: break-word;
+    word-break: break-all;
+
+    &:active {
+      background-color: #ececec;
+    }
+  }
+
 </style>
 <template>
   <view class="top-actions">
@@ -220,8 +245,9 @@
   <view class="bill-form">
     <view class="bill-form-body">
       <view class="bill-field">
-        <text class="bill-label">单据类型：</text>
-        <switchbutton :buttons="switchButtons" :switchIndex.sync="switchIndex" :disabled.sync="pageDisabled" className="dms-switch-button" @tap.user="switchButton1Tap"></switchbutton>
+        <text class="bill-label">经销商code：</text>
+       <!-- <switchbutton :buttons="switchButtons" :switchIndex.sync="switchIndex" :disabled.sync="pageDisabled" className="dms-switch-button" @tap.user="switchButton1Tap"></switchbutton>-->
+        <text style="margin-left: 10rpx;">{{userCode}}</text>
       </view>
       <view class="bill-field">
         <text class="bill-label">备 注：</text>
@@ -239,28 +265,37 @@
 
   <view class="scan-fields">
     <scanbutton icon="qr-code.svg" :disabled.sync="cantScan" @tap.user="onScanTap">扫 码</scanbutton>
-    <historybutton icon="history.svg" @tap.user="onHistoryTap">扫码历史</historybutton>
+    <historybutton icon="history.svg" @tap.user="onHistoryTap">再次提交</historybutton>
   </view>
 
   <view class="table dms-table">
     <view class="table-row table-header">
       <view class="table-cell th order">序号</view>
-      <view class="table-cell th">二维码</view>
-      <view class="table-cell th upn">upn</view>
-      <view class="table-cell th">lot</view>
-      <view class="table-cell th status">状态</view>
+      <view class="table-cell th">单据信息</view>
+      <view class="table-cell th status">小程序状态</view>
+      <view class="table-cell th status">DMS状态</view>
       <view class="table-cell th last"></view>
     </view>
     <scroll-view scroll-y="true" class="table-body">
       <block wx:for="{{dataList}}" wx:key="index">
         <view class="table-row">
           <view class="table-cell td order">{{item.listIndex}}</view>
-          <view class="table-cell td">{{item.qrcode}}</view>
-          <view class="table-cell td upn">{{item.upn}}</view>
-          <view class="table-cell td">{{item.lot}}</view>
-          <view class="table-cell td status">
-            <text>{{item.statusText}}</text>
+          <view class="table-cell td">
+            <view class="table-cell-inner">
+              <text>QR</text>
+              <text>{{item.qrcode}}</text>
+            </view>
+            <view class="table-cell-inner">
+              <text>UPN</text>
+              <text>{{item.upn}}</text>
+            </view>
+            <view class="table-cell-inner">
+              <text>LOT</text>
+              <text>{{item.lot}}</text>
+            </view>
           </view>
+          <view class="table-cell td status">{{item.statusText}}</view>
+          <view class="table-cell td status">{{item.type}}</view>
           <view class="table-cell td last">
             <view class="icon-delete" @tap="delTap({{item}})" wx:if="{{item.status !== 'submit'}}">
               <deleteIcon name="delete.svg"></deleteIcon>
@@ -273,6 +308,7 @@
 
   <view class="page-actions">
     <submitbutton inline="true" :disabled.sync="submitDisabled" @tap.user="submitReceipt">提 交</submitbutton>
+    <exportbutton inline="true" @tap.user="exportReceipt" style="margin-left: 40rpx;">导出</exportbutton>
   </view>
 
   <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
@@ -285,6 +321,11 @@
       <view class="update-button cancel" @tap="closeModal">取消</view>
       <view class="update-button" @tap="doUploadReceipt">确定</view>
     </view>
+  </modal>
+
+  <modal wx:if="{{isExptModalShow}}" title="提示信息" @modalClose.user="closeExptModal">
+    <view>点击复制下面的链接去浏览器下载</view>
+    <view class="download-url" @tap="onDownloadTap">{{downloadUrl}}</view>
   </modal>
 
   <tabbar :tabBar="tabBar" disabled="true" @tabbarChange.user="tabbarChange"></tabbar>
@@ -301,6 +342,7 @@
   import Tabbar from '../../components/tabbar'
   import Modal from '../../components/modal'
   import {History} from '../../service/history'
+  import {session} from '../../service/auth'
   import {showError, showToast} from '../../utils/util'
 
   const STATUS_MAP = {
@@ -328,6 +370,7 @@
       lotinput: Formitem,
       switchbutton: Switchbutton,
       submitbutton: Button,
+      exportbutton: Button,
       scanbutton: Button,
       historybutton: Button,
       updatebutton: Button,
@@ -348,6 +391,7 @@
       scanDisable: false,
       cantScan: false,
       isModalShow: false,
+      isExptModalShow: false,
       showRemarkDropDown: false,
       failedCount: 0,
       uploadType: '移库',
@@ -357,6 +401,8 @@
       lastQrcode: '',
       upn: '',
       lot: '',
+      userCode: '',
+      downloadUrl: 'http://www.xxx.com',
       dataList: [],
       remarkHistory: [],
       switchIndex: 0,
@@ -452,6 +498,21 @@
           this.uploadReceipt()
         }
       },
+      exportReceipt () {
+        this.showExptModal()
+        /*fetch.get('export/history', {date: date}).then(res => {
+          if (res.success) {
+            if (res.data.filepath) {
+              this.downloadUrl = res.data.filepath
+              this.showModal()
+            } else {
+              showError('导出的数据为空')
+            }
+          } else {
+            showError(res.message)
+          }
+        }, showError)*/
+      },
       doUploadReceipt () {
         this.uploadReceipt()
       },
@@ -460,6 +521,25 @@
       },
       closeModal() {
         this.hideModal()
+      },
+      closeExptModal() {
+        this.hideExptModal()
+      },
+      onDownloadTap () {
+        wx.setClipboardData({
+          data: this.downloadUrl,
+          success: () => {
+            wx.getClipboardData({
+              success: (res) => {
+                if (res.data === this.downloadUrl) {
+                  showToast('复制成功')
+                } else {
+                  showError('复制失败，请手动长按复制')
+                }
+              }
+            })
+          }
+        })
       }
     }
 
@@ -470,6 +550,18 @@
 
     hideModal() {
       this.isModalShow = false
+      this.upn = ''
+      this.lot = ''
+      this.$apply()
+    }
+
+    showExptModal () {
+      this.isExptModalShow = true
+      this.$apply()
+    }
+
+    hideExptModal() {
+      this.isExptModalShow = false
       this.upn = ''
       this.lot = ''
       this.$apply()
@@ -650,10 +742,12 @@
       rowData.listIndex = ++this.listIndex
       rowData.status = data.receipt.status
       rowData.statusText = STATUS_MAP[data.product.status]
-      rowData.qrcode = subSuffix(data.product.qrcode, 6)
-      rowData.type = data.product.type
+      //rowData.qrcode = subSuffix(data.product.qrcode, 6)
+      rowData.qrcode = data.product.qrcode
+      rowData.type = data.receipt.type
       rowData.upn = data.product.upn
-      rowData.lot = subSuffix(data.product.lot, 4)
+      //rowData.lot = subSuffix(data.product.lot, 4)
+      rowData.lot = data.product.lot
       rowData.productId = data.product.id
       rowData.receiptId = data.receipt.id
       /**
@@ -739,6 +833,7 @@
 
     onLoad () {
       this.listIndex = 0
+      this.userCode = session.get().user.code
     }
   }
 </script>
