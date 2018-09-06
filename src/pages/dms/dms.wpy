@@ -32,27 +32,25 @@
     width: 366rpx;
   }
 
-  .bill-field{
+  .bill-field {
     .flex-v-center();
     padding: 6rpx;
 
-    .form-item{
+    .form-item {
       margin-bottom: 0;
     }
     .bill-label {
       width: 30%;
-      text-align: center;
     }
 
     &:nth-child(2) {
       .bill-label{
         letter-spacing: 16rpx;
-        margin-left: 8rpx;
       }
     }
   }
 
-  .scan-fields{
+  .scan-fields {
     .flex();
     justify-content: space-around;
     background-color: #fff;
@@ -92,7 +90,7 @@
       padding-right: 6rpx;
 
       &.order {
-        width: 60rpx;
+        width: 90rpx;
       }
       &.upn {
         flex: none;
@@ -100,7 +98,7 @@
       }
       &.status {
         flex: none;
-        width: 140rpx;
+        width: 130rpx;
       }
       &.last {
         flex: none;
@@ -125,13 +123,15 @@
     }
   }
 
-  .page-actions{
+  .page-actions {
+    .flex();
+    justify-content: space-around;
     margin-top: 20rpx;
     margin-bottom: 20rpx;
     text-align: center;
 
     .button {
-      width: 240rpx;
+      width: 40%;
     }
   }
 
@@ -189,7 +189,8 @@
 
   .remark-container {
     position: relative;
-    display: inline-block;
+    -webkit-flex: 1;
+    flex: 1;
 
     .icon-img {
       width: 24rpx !important;
@@ -308,7 +309,7 @@
 
   <view class="page-actions">
     <submitbutton inline="true" :disabled.sync="submitDisabled" @tap.user="submitReceipt">提 交</submitbutton>
-    <exportbutton inline="true" @tap.user="exportReceipt" style="margin-left: 40rpx;">导出</exportbutton>
+    <exportbutton inline="true" @tap.user="exportReceipt">导出</exportbutton>
   </view>
 
   <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">

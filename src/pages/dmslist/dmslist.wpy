@@ -68,7 +68,7 @@
 
     &.num {
       flex: none;
-      width: 90rpx;
+      width: 120rpx;
     }
 
     &.type {
@@ -78,7 +78,7 @@
 
     &.status {
       flex: none;
-      width: 120rpx;
+      width: 140rpx;
     }
 
     .icon {
