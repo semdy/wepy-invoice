@@ -253,6 +253,7 @@
       },
       closeModal() {
         this.hideModal()
+        this.$back()
       },
       delTap (item) {
         confirm('确定要删除吗?').then(() => {
@@ -303,7 +304,7 @@
       this.tempData = this.tempData.concat(addedData)
       wx.setStorageSync('DMS_HISTORY', this.tempData)
       this.dataList = []
-      this.showModal(`已成功提交${addedData.length}条`)
+      this.showModal(`已成功添加${addedData.length}条`)
     }
 
     deleteHistory (id) {

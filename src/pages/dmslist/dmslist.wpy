@@ -90,7 +90,7 @@
 <template>
   <view class="query-form-wrap">
     <view class="query-form">
-      <queryinput placeholder="搜索二维码" border="true" icon="find-g.svg" :value.sync="receiptNo" @input.user="queryChange"></queryinput>
+      <queryinput placeholder="搜索二维码" border="true" icon="find-g.svg" :value.sync="qrCode" @input.user="queryChange"></queryinput>
       <clearIcon name="clear.svg" className="clear-icon" @tap.user="clearTap"></clearIcon>
     </view>
     <querybutton @tap.user="queryTap">查询</querybutton>
@@ -162,7 +162,7 @@
     data = {
       dataList: [],
       total: 0,
-      receiptNo: '',
+      qrCode: '',
       tabBar: {
         color: '#777',
         selectedColor: '#01458e',
@@ -192,10 +192,10 @@
         this.handleQuery()
       },
       clearTap (e) {
-        this.receiptNo = ''
+        this.qrCode = ''
       },
       queryChange (e) {
-        this.receiptNo = e.detail.value
+        this.qrCode = e.detail.value
       },
       tabbarChange (index) {
         if (index === 0) {
@@ -216,17 +216,17 @@
     handleQuery () {
       this.page = 1
       this.dataList = []
-      this.queryReceipt(this.receiptNo, this.page)
+      this.queryReceipt(this.qrCode, this.page)
     }
 
     appendQuery () {
       if (!this.loaded) return
-      this.queryReceipt(this.receiptNo, ++this.page)
+      this.queryReceipt(this.qrCode, ++this.page)
     }
 
-    queryReceipt(receiptNo, page) {
+    queryReceipt(qrCode, page) {
       let params = {
-        receiptNo: receiptNo,
+        qrCode: qrCode,
         page: page,
         limit: 20
       }
