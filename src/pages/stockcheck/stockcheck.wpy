@@ -264,6 +264,7 @@
     divisionName = ''
     divisionID = ''
     warehouseType = ''
+    divisionPool = []
 
     data = {
       loaded: false,
@@ -339,8 +340,9 @@
         this.divisionID = item.value
         this.divisionName = item.name
       },
-      storeChange (item) {
+      storeChange (item, index) {
         this.warehouseType = item.value
+        this.divisions = [this.divisionPool[index]]
       },
       onButtonTap (index) {
         if (this.dataList[index].status === 'submit') {
@@ -476,8 +478,9 @@
     async queryStockType () {
       let res = await fetch.get('query/stockType')
       if (res.success && res.data.length > 0) {
-        this.divisions = res.data.map(item => ({name: item.NameCN, value: item.DivisionID}))
+        this.divisionPool = res.data.map(item => ({name: item.NameCN, value: item.DivisionID}))
         this.warehouseTypes = res.data.map(item => ({name: item.WarehouseType, value: item.WarehouseType}))
+        this.divisions = [this.divisionPool[0]]
         this.divisionID = this.divisions[0].value
         this.divisionName = this.divisions[0].name
         this.warehouseType = this.warehouseTypes[0].value
