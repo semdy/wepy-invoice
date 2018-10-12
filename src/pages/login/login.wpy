@@ -151,7 +151,9 @@
         this.code = e.detail.value
       },
       onGetuserinfo(e) {
-        this.doLogin(e.detail.userInfo)
+        if (e.detail.userInfo) {
+          this.doLogin(e.detail.userInfo)
+        }
       },
       onGetCode () {
         if (!this.username) {

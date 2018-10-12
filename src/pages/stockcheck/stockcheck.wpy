@@ -95,8 +95,8 @@
   }
 
   .stock-modal-hints view {
-    padding-left: 1em;
-    text-indent: -1em;
+    padding-left: 1.2em;
+    text-indent: -1.2em;
     margin-bottom: 10rpx;
   }
 
@@ -203,8 +203,8 @@
   <hintModal wx:if="{{isHintModalShow}}" title="库存盘点须知" @modalClose.user="closeHintModal">
     <view class="stock-modal-hints">
       <view>1. 当日结束全部系统操作后，再进行盘点；</view>
-      <view>2. 21：00点前提交盘点单据的，可在第二天上午查询盘点报告；21：00点后提交盘点单据的，可在第三天上午查询盘点报告；</view>
-      <view>3. 目前库存盘点的仓库类型仅开放了缺省仓库，即主仓库。</view>
+      <view>2. 提交盘点单据五分钟后可查看盘点报告；</view>
+      <view>3. 目前支持库存盘点的仓库类型为主仓库和医院库。</view>
     </view>
     <view class="modal-footer">
       <view class="update-button" @tap="closeHintModal">知道了</view>

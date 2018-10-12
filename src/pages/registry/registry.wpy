@@ -126,7 +126,8 @@
       <view wx:if="{{isCodeGet}}" class="code-trigger wait">{{secs}}秒后重新获取</view>
     </view>
     <view class="registry-actions">
-      <submitbutton @tap.user="submitButtonTap">提交</submitbutton>
+     <!-- <submitbutton @tap.user="submitButtonTap">提交</submitbutton>-->
+      <button open-type="getUserInfo" class="button primary" @getuserinfo="onGetuserinfo">提交</button>
     </view>
   </view>
   <view class="registry-footer">
@@ -245,58 +246,60 @@
         this.vname = this.compername
         this.hideModal()
       },
-      submitButtonTap () {
-        if (this.isReging) return
-
-        if (!this.vcode) {
-          return showError('请输入公司码')
+      onGetuserinfo(e) {
+        if (e.detail.userInfo) {
+          this.doRegistry(e.detail.userInfo)
         }
-        if (/^[a-zA-Z]+$/.test(this.vcode)) {
-          if (!/^(qt|audiths|auditbt)$/i.test(this.vcode)) {
-            return showError('公司码不合法')
-          }
-        } else if (!/^\d{4,6}$/.test(this.vcode)) {
+      }
+    }
+
+    doRegistry (userInfo) {
+      if (this.isReging) return
+
+      if (!this.vcode) {
+        return showError('请输入公司码')
+      }
+      if (/^[a-zA-Z]+$/.test(this.vcode)) {
+        if (!/^(qt|audiths|auditbt)$/i.test(this.vcode)) {
           return showError('公司码不合法')
         }
-        if (!this.vname) {
-          return showError('请输入公司全称')
-        }
-        if (!this.username) {
-          return showError('请输入用户名')
-        }
-        if (!this.mobile) {
-          return showError('请输入手机号')
-        }
-        if (!/^1[3456789]\d{9}$/.test(this.mobile)) {
-          return showError('请输入正确手机号')
-        }
-        if (!this.code) {
-          return showError('请输入验证码')
-        }
-
-        this.isReging = true
-
-        this.$parent.getUserInfo().then(userInfo => {
-          let params = {code: this.vcode, name: this.vname, username: this.username, phone: this.mobile, validateCode: this.code}
-          registry(params).then((res) => {
-            this.isReging = false
-            let sessionData = Object.assign({}, userInfo, res.data)
-            session.set(sessionData)
-            sessionGroup.add(res.data.user.id, sessionData)
-            this.$switch('/pages/home/home')
-          }, res => {
-            this.isReging = false
-            if (res.message === '公司名错误') {
-              this.compername = res.data.name
-              this.showModal()
-            } else {
-              showError(res.message)
-            }
-          })
-        }, msg => {
-          this.isReging = false
-        })
+      } else if (!/^\d{4,6}$/.test(this.vcode)) {
+        return showError('公司码不合法')
       }
+      if (!this.vname) {
+        return showError('请输入公司全称')
+      }
+      if (!this.username) {
+        return showError('请输入用户名')
+      }
+      if (!this.mobile) {
+        return showError('请输入手机号')
+      }
+      if (!/^1[3456789]\d{9}$/.test(this.mobile)) {
+        return showError('请输入正确手机号')
+      }
+      if (!this.code) {
+        return showError('请输入验证码')
+      }
+
+      this.isReging = true
+
+      let params = {code: this.vcode, name: this.vname, username: this.username, phone: this.mobile, validateCode: this.code}
+      registry(params).then((res) => {
+        this.isReging = false
+        let sessionData = Object.assign({}, userInfo, res.data)
+        session.set(sessionData)
+        sessionGroup.add(res.data.user.id, sessionData)
+        this.$switch('/pages/home/home')
+      }, res => {
+        this.isReging = false
+        if (res.message === '公司名错误') {
+          this.compername = res.data.name
+          this.showModal()
+        } else {
+          showError(res.message)
+        }
+      })
     }
 
     startCountDown() {
