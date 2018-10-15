@@ -202,7 +202,6 @@
       login(params).then((res) => {
         this.isLogining = false
         let sessionData = Object.assign({}, userInfo, res.data)
-        sessionData.user.role = 5
         session.set(sessionData)
         sessionGroup.add(res.data.user.id, sessionData)
         this.$switch('/pages/home/home')
