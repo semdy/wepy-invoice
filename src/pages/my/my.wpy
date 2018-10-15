@@ -247,9 +247,9 @@
           })
         })*/
         checkAndSetSessionByUserId(userId).then(() => {
+          this.buildMenu()
           this.changeSession()
           this.hideSubview()
-          this.buildMenu()
         }, showError)
       },
       emailChange (e) {
@@ -294,6 +294,7 @@
           visible: session.get().user.role !== 5
         }
       ]
+      this.$apply()
     }
 
     showSubview () {
@@ -384,11 +385,15 @@
       return sessions
     }
 
+    getDiffVal (key1, key2) {
+      return key1 === key2 ? key2 + ' ' : key2
+    }
+
     setParams(data) {
-      this.avatar = data.avatarUrl
-      this.copername = data.user.name
-      this.phone = data.user.phone
-      this.email = data.user.email || ''
+      this.avatar = this.getDiffVal(this.avatar, data.avatarUrl)
+      this.copername = this.getDiffVal(this.copername, data.user.name)
+      this.phone = this.getDiffVal(this.phone, data.user.phone)
+      this.email = this.getDiffVal(this.email, data.user.email || '')
     }
 
     onLoad () {

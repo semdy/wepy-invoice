@@ -73,7 +73,7 @@
 
     data = {
       isLoading: false,
-      isDoctor: session.get().user.role === 5,
+      isDoctor: false,
       swiperList: [],
       notices: [],
       listgroup: [
@@ -202,6 +202,7 @@
     onShow () {
       let sessionInfo = session.get()
       if (!sessionInfo) return
+      this.isDoctor = session.get().user.role === 5
       if (sessionInfo.user.role === 3) {
         this.listgroup.forEach((e, i) => {
           if (i !== 1) {
