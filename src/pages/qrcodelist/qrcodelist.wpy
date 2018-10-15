@@ -129,6 +129,7 @@
   import Picker from '../../components/picker'
   import Datetimepicker from '../../components/datetimepicker'
   import Tabbar from '../../components/tabbar'
+  import {session} from '../../service/auth'
   import {showError, showToast, formatDate, confirm} from '../../utils/util'
 
   const STATUS_ARRAY = [
@@ -300,6 +301,11 @@
     onLoad (params) {
       if (params.status) {
         this.status = params.status
+      }
+      if (session.get().user.role === 5) {
+        wx.setNavigationBarTitle({
+          title: '产品信息收集'
+        })
       }
       this.handleQuery()
     }

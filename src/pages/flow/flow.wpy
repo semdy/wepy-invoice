@@ -325,7 +325,7 @@
         this.qrcode = e.detail.value
       },
       recordTap (item) {
-        this.queryFlows(item.key)
+        this.queryFlows(item)
       },
       clrHistory () {
         this.clearRecords()
@@ -425,9 +425,15 @@
     }
 
     onLoad () {
-      if (session.get().user.role === 3) {
+      const role = session.get().user.role
+      if (role === 3) {
         wx.setNavigationBarTitle({
           title: '经销商审计'
+        })
+      }
+      else if (role === 5) {
+        wx.setNavigationBarTitle({
+          title: '产品流向查询'
         })
       }
       this.showRecords()

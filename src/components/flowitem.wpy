@@ -46,7 +46,7 @@
       <slot name="time"></slot>
     </view>
     <view class="flow-item-bd">
-      <image class="flow-item-icon" src="../../images/{{icon}}" mode="aspectFit"></image>
+      <image class="flow-item-icon" src="../images/{{icon}}" mode="aspectFit"></image>
       <view class="flow-item-text">
         <slot></slot>
       </view>

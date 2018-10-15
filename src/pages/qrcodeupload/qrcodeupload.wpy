@@ -107,7 +107,7 @@
       </repeat>
     </view>
 
-    <camerabutton icon="camera.svg" size="large" className="camera-btn" @tap.user="startCamera">拍 照</camerabutton>
+    <camerabutton icon="camera.svg" size="large" className="camera-btn" @tap.user="startCamera">{{isDoctor ? '拍照/上传' : '拍照'}}</camerabutton>
 
   </view>
   <tabbar :tabBar="tabBar" disabled="true" @tabbarChange.user="tabbarChange"></tabbar>
@@ -123,6 +123,7 @@
   import PercentageCircle from '../../components/percentagecircle/'
   import {showError, showToast} from '../../utils/util'
   import {uploadFile} from '../../utils/wechat'
+  import {session} from '../../service/auth'
 
   export default class Index extends wepy.page {
     config = {
@@ -142,6 +143,7 @@
     data = {
       totalNum: 0,
       successNum: 0,
+      isDoctor: session.get().user.role === 5,
       buttongroupitems: ['当天上传', '本月上传', '全部上传'],
       listgroup: [
         {
@@ -329,6 +331,11 @@
     onLoad () {
       this.day = 1
       this.circle = new PercentageCircle('percentage-pie', {percent: 0, radius: 70, borderWidth: 12})
+      if (this.isDoctor) {
+        wx.setNavigationBarTitle({
+          title: '产品信息收集'
+        })
+      }
     }
 
     onPullDownRefresh () {

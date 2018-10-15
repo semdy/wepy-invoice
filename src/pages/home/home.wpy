@@ -11,6 +11,14 @@
       width: 100%;
     }
   }
+  .list-group {
+    .flex();
+    flex-direction: column;
+
+    &.reverse {
+      flex-direction: column-reverse;
+    }
+  }
   .list-item-text{
     flex: 1;
     font-size: 32rpx;
@@ -33,7 +41,7 @@
     </swiper>
   </view>
   <notice :notices.sync="notices" @tap.user="noticeTap"></notice>
-  <view class="list-group">
+  <view class="list-group {{isDoctor ? 'reverse' : ''}}">
     <repeat for="{{listgroup}}" key="index">
       <listitem :icon="item.icon" :iconRight="true" wx:if="{{item.visible}}" @tap.user="listitemTap">
         <view class="list-item-text">{{item.text}}</view>
@@ -65,6 +73,7 @@
 
     data = {
       isLoading: false,
+      isDoctor: session.get().user.role === 5,
       swiperList: [],
       notices: [],
       listgroup: [
