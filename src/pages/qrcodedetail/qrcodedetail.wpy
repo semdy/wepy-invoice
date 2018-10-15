@@ -125,6 +125,7 @@
   import Button from '../../components/button'
   import Formitem from '../../components/formitem'
   import {uploadFile} from '../../utils/wechat'
+  import {session} from '../../service/auth'
   import {showError, showToast, confirm} from '../../utils/util'
 
   const STATUS_MAP = {
@@ -287,6 +288,11 @@
     onLoad (params) {
       this.qrimageId = params.qrimageId
       this.queryImage(this.qrimageId)
+      if (session.get().user.role === 5) {
+        wx.setNavigationBarTitle({
+          title: '产品信息收集'
+        })
+      }
     }
   }
 </script>

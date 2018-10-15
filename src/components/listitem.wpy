@@ -45,7 +45,7 @@
   }
 </style>
 <template>
-  <view class="list-item {{className}}" style="{{style}}" @tap="tap">
+  <view class="list-item {{className}}" style="{{style}}" @tap="tap" hidden="{{!visible}}">
     <image wx:if="{{icon&&iconLeft&&!iconRight}}" class="list-item-icon {{iconSize}} left" src="../images/{{icon}}" mode="aspectFit"></image>
     <view class="list-item-bd">
       <slot></slot>
@@ -82,7 +82,13 @@
       },
       hasArrow: {
         type: [Boolean, String],
-        default: false
+        default: false,
+        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
+      },
+      visible: {
+        type: [Boolean, String],
+        default: true,
+        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
       }
     }
     components = {

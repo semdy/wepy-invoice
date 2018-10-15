@@ -120,7 +120,7 @@
   </view>
   <view class="point-listgroup">
     <repeat for="{{listgroup}}">
-      <listitem :icon="item.icon" :iconSize="item.iconSize" :hasArrow="item.hasArrow" @tap.user="listitemTap">
+      <listitem :visible="item.visible" :icon="item.icon" :iconSize="item.iconSize" :hasArrow="item.hasArrow" @tap.user="listitemTap">
         <view class="list-item-text">
           <text>{{item.label}}</text>
           <text>{{item.content}}</text>
@@ -193,28 +193,32 @@
           content: '',
           type: 'company',
           hasArrow: true,
-          showSubview: true
+          showSubview: true,
+          visible: true
         },
         {
           icon: 'mobile2.svg',
           iconSize: 'small',
           label: '手机号：',
           content: '',
-          type: 'phone'
+          type: 'phone',
+          visible: true
         },
         {
           icon: 'email.svg',
           iconSize: 'small',
           label: '邮箱：',
           content: '',
-          type: 'email'
+          type: 'email',
+          visible: true
         },
         {
           icon: 'gift.svg',
           iconSize: 'small',
           label: '我的积分',
           type: 'point',
-          hasArrow: true
+          hasArrow: true,
+          visible: session.get().user.role !== 5
         }
       ]
     }
