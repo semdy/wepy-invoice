@@ -204,12 +204,12 @@
         })
       } else if (sessionInfo.user.role === 5) {
         this.listgroup.forEach((e, i) => {
-          if (i === 0) {
-            e.visible = true
-            e.text = '产品信息收集'
-          } else if (i === 1) {
+          if (i === 1) {
             e.visible = true
             e.text = '产品流向查询'
+          } else if (i === 2) {
+            e.visible = true
+            e.text = '产品信息收集'
           } else {
             e.visible = false
           }
@@ -217,11 +217,11 @@
       } else {
         this.listgroup.forEach((e, i) => {
           e.visible = true
-          if (i === 0) {
-            e.text = '二维码上传DMS'
-          }
-          else if (i === 1) {
+          if (i === 1) {
             e.text = '二维码流向查询'
+          }
+          else if (i === 2) {
+            e.text = '二维码照片上报'
           }
         })
       }
