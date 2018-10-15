@@ -185,42 +185,7 @@
       phone: '',
       email: '',
       sessions: [],
-      listgroup: [
-        {
-          icon: 'user.svg',
-          iconSize: 'small',
-          label: '公司名：',
-          content: '',
-          type: 'company',
-          hasArrow: true,
-          showSubview: true,
-          visible: true
-        },
-        {
-          icon: 'mobile2.svg',
-          iconSize: 'small',
-          label: '手机号：',
-          content: '',
-          type: 'phone',
-          visible: true
-        },
-        {
-          icon: 'email.svg',
-          iconSize: 'small',
-          label: '邮箱：',
-          content: '',
-          type: 'email',
-          visible: true
-        },
-        {
-          icon: 'gift.svg',
-          iconSize: 'small',
-          label: '我的积分',
-          type: 'point',
-          hasArrow: true,
-          visible: session.get().user.role !== 5
-        }
-      ]
+      listgroup: []
     }
 
     computed = {
@@ -284,11 +249,51 @@
         checkAndSetSessionByUserId(userId).then(() => {
           this.changeSession()
           this.hideSubview()
+          this.buildMenu()
         }, showError)
       },
       emailChange (e) {
         this.tmpEmail = e.detail.value
       }
+    }
+
+    buildMenu () {
+      this.listgroup = [
+        {
+          icon: 'user.svg',
+          iconSize: 'small',
+          label: '公司名：',
+          content: '',
+          type: 'company',
+          hasArrow: true,
+          showSubview: true,
+          visible: true
+        },
+        {
+          icon: 'mobile2.svg',
+          iconSize: 'small',
+          label: '手机号：',
+          content: '',
+          type: 'phone',
+          visible: true
+        },
+        {
+          icon: 'email.svg',
+          iconSize: 'small',
+          label: '邮箱：',
+          content: '',
+          type: 'email',
+          visible: true
+        },
+        {
+          icon: 'gift.svg',
+          iconSize: 'small',
+          label: '我的积分',
+          type: 'point',
+          hasArrow: true,
+          visible: session.get().user.role !== 5
+        }
+      ]
     }
 
     showSubview () {
@@ -387,6 +392,7 @@
     }
 
     onLoad () {
+      this.buildMenu()
       this.sessions = this.getSessions()
       this.setParams(session.get())
     }
