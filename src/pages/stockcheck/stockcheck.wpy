@@ -181,6 +181,7 @@
       <textarea value="{{remark}}" @input="remarkChange" placeholder="请输入盘点任务名称(必填)"/>
       <view class="stock-check-label">盘点仓库：</view>
       <storepicker :items.sync="warehouseTypes" @pickerchange.user="storeChange"></storepicker>
+      <view style="margin-top:6rpx;color:#888;font-size:24rpx;">提示：缺省仓库即主仓库，普通仓库即医院库</view>
       <view class="stock-check-label">产品线：</view>
       <divisionpicker :items.sync="divisions" @pickerchange.user="divisionChange"></divisionpicker>
     </view>
@@ -204,7 +205,7 @@
     <view class="stock-modal-hints">
       <view>1. 当日结束全部系统操作后，再进行盘点；</view>
       <view>2. 提交盘点单据五分钟后可查看盘点报告；</view>
-      <view>3. 目前支持库存盘点的仓库类型为主仓库和医院库。</view>
+      <view>3. 目前支持库存盘点的仓库类型为缺省仓库(即主仓库)和普通仓库(即医院库)。</view>
     </view>
     <view class="modal-footer">
       <view class="update-button" @tap="closeHintModal">知道了</view>
