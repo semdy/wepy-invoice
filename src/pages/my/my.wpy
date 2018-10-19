@@ -288,10 +288,10 @@
         {
           icon: 'gift.svg',
           iconSize: 'small',
-          label: '我的积分',
+          label: session.get().user.role === 5 ? '项目积分' : '我的积分',
           type: 'point',
           hasArrow: true,
-          visible: session.get().user.role !== 5
+          visible: true
         }
       ]
       this.$apply()

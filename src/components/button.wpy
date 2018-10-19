@@ -5,9 +5,9 @@
     .flex-center();
     padding-left: 40rpx;
     padding-right: 40rpx;
-    border-radius: 20rpx;
+    border-radius: 16rpx;
     flex-direction: row;
-    color: #fff;
+    color: #444;
     font-size: 28rpx;
     border: 2rpx solid transparent;
     box-sizing: border-box;
@@ -17,30 +17,35 @@
     }
 
     &.primary {
+      color: #fff;
       background-color: @gcolor;
       &:active{
         background-color: darken(@gcolor, 10%);
       }
     }
     &.success {
+      color: #fff;
       background-color: #5cb85c;
       &:active{
         background-color: darken(#5cb85c, 10%);
       }
     }
     &.info {
+      color: #fff;
       background-color: #5bc0de;
       &:active{
         background-color: darken(#5bc0de, 10%);
       }
     }
     &.warning {
+      color: #fff;
       background-color: #f0ad4e;
       &:active{
         background-color: darken(#f0ad4e, 10%);
       }
     }
     &.danger {
+      color: #fff;
       background-color: #d9534f;
       &:active{
         background-color: darken(#d9534f, 10%);
@@ -52,6 +57,14 @@
         background-color: darken(#e5e5e5, 10%);
       }
     }
+    &.plain {
+      background-color: #fff;
+      border-color: #ccc;
+
+      &:active{
+        border-color: #aaa;
+      }
+    }
     &.disabled {
       background-color: #ccc;
       pointer-events: none;
@@ -60,9 +73,9 @@
     &.large {
       height: @large;
       font-size: 36rpx;
-     /* > .icon {
-        margin-left: -48rpx;
-      }*/
+      /* > .icon {
+         margin-left: -48rpx;
+       }*/
     }
     &.normal {
       height: @normal;
@@ -81,7 +94,7 @@
 </style>
 
 <template>
-  <view class="button {{inline === 'true' ? 'inline' : ''}} {{disabled ? 'disabled' : ''}} {{size}} {{type}} {{className}}" style="{{style}}" @tap="tap">
+  <view class="button {{inline ? 'inline' : ''}} {{disabled ? 'disabled' : ''}} {{size}} {{type}} {{className}}" style="{{style}}" @tap="tap">
     <icon wx:if="{{icon}}" :name="icon" :size="size"></icon>
     <slot></slot>
     {{text}}
@@ -115,12 +128,14 @@
         default: 'primary'
       },
       inline: {
-        type: String,
-        default: 'false'
+        type: [Boolean, String],
+        default: false,
+        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
       },
       disabled: {
         type: [Boolean, String],
-        default: false
+        default: false,
+        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
       },
       text: {
         type: String,

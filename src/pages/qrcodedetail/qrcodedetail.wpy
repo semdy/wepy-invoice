@@ -3,6 +3,8 @@
 
   page {
     background-color: #fff;
+    display: block;
+    height: auto;
   }
 
   .imgView-container {
@@ -32,6 +34,10 @@
     justify-content: space-between;
     padding: 16rpx 30rpx;
     border-bottom: 2rpx solid #eee;
+
+    .detail-label {
+      white-space: nowrap;
+    }
   }
 
   .r {
@@ -41,7 +47,8 @@
   .detail-actions {
     .flex();
     justify-content: space-around;
-    margin-top: 60rpx;
+    padding-top: 60rpx;
+    padding-bottom: 30rpx;
 
     .button {
       width: 20%;
@@ -112,6 +119,12 @@
         <numinput :value.sync="lot" @change.user="lotChange"></numinput>
       </view>
     </view>
+    <view class="detail-item" wx:if="{{isDoctor}}">
+      <text class="detail-label">所属医院</text>
+      <view class="detail-value">
+        <hospitalinput :value.sync="hospital" @change.user="hospitalChange"></hospitalinput>
+      </view>
+    </view>
   </view>
   <view class="detail-actions">
     <delbutton type="danger" :disabled.sync="delDisabled" @tap.user="delTap">删除</delbutton>
@@ -146,10 +159,12 @@
       statusinput: Formitem,
       qrinput: Formitem,
       typeinput: Formitem,
-      numinput: Formitem
+      numinput: Formitem,
+      hospitalinput: Formitem
     }
     imageFile = null
     data = {
+      isDoctor: false,
       filePath: '',
       qrcode: '',
       status: '',
@@ -160,6 +175,7 @@
       scanId: '',
       lot: '',
       upn: '',
+      hospital: '上海瑞金第一人民医院',
       imgHeight: wx.getSystemInfoSync().windowWidth,
       isPortrait: false
     }
@@ -196,6 +212,9 @@
       },
       lotChange (e) {
         this.lot = e.detail.value
+      },
+      hospitalChange (e) {
+        this.hospital = e.detail.value
       },
       startCamera () {
         this.launchCamera()
@@ -287,6 +306,7 @@
     }
     onLoad (params) {
       this.qrimageId = params.qrimageId
+      this.isDoctor = session.get().user.role === 5
       this.queryImage(this.qrimageId)
       if (session.get().user.role === 5) {
         wx.setNavigationBarTitle({

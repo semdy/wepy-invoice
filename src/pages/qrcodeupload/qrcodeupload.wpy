@@ -108,8 +108,19 @@
     </view>
 
     <camerabutton icon="camera.svg" size="large" className="camera-btn" @tap.user="startCamera">{{isDoctor ? '拍照/上传' : '拍照'}}</camerabutton>
-
   </view>
+
+  <modal title="提示">
+    <view class="flex v-center">
+      <text>医院：</text>
+      <picker :items="pickerItems" @pickerchange.user="pickerChange"></picker>
+    </view>
+    <view class="modal-footer" slot="footer">
+      <cancelButton type="plain" @tap.user="hideModal">取消</cancelButton>
+      <confirmButton @tap.user="modalConfirm">确定</confirmButton>
+    </view>
+  </modal>
+
   <tabbar :tabBar="tabBar" disabled="true" @tabbarChange.user="tabbarChange"></tabbar>
 </template>
 
@@ -119,11 +130,28 @@
   import Button from '../../components/button'
   import Buttongroup from '../../components/buttongroup'
   import Listitem from '../../components/listitem'
+  import Modal from '../../components/modal'
+  import Picker from '../../components/picker'
   import Tabbar from '../../components/tabbar'
   import PercentageCircle from '../../components/percentagecircle/'
   import {showError, showToast} from '../../utils/util'
   import {uploadFile} from '../../utils/wechat'
   import {session} from '../../service/auth'
+
+  const PICKER_ITEMS = [
+    {
+      value: '',
+      name: '请选择'
+    },
+    {
+      value: '上海瑞金第一人民医院',
+      name: '上海瑞金第一人民医院'
+    },
+    {
+      value: '-',
+      name: '其它'
+    }
+  ]
 
   export default class Index extends wepy.page {
     config = {
@@ -132,6 +160,10 @@
     }
 
     components = {
+      modal: Modal,
+      picker: Picker,
+      cancelButton: Button,
+      confirmButton: Button,
       camerabutton: Button,
       buttongroup: Buttongroup,
       listitem: Listitem,
@@ -144,6 +176,8 @@
       totalNum: 0,
       successNum: 0,
       isDoctor: false,
+      pickerItems: PICKER_ITEMS,
+      selectedHospital: null,
       buttongroupitems: ['当天上传', '本月上传', '全部上传'],
       listgroup: [
         {
@@ -235,8 +269,32 @@
         }
       },
       startCamera () {
-        this.launchCamera()
+        if (this.isDoctor) {
+          this.showModal()
+        } else {
+          this.launchCamera()
+        }
+      },
+      hideModal () {
+        this.closeModal()
+      },
+      modalConfirm () {
+        if (!this.selectedHospital) {
+          showError('请先选择一个医院')
+        } else {
+          this.closeModal()
+          this.launchCamera()
+        }
+      },
+      pickerChange (item) {
+        this.selectedHospital = item.value
       }
+    }
+    showModal () {
+      this.$invoke('modal', 'open')
+    }
+    closeModal () {
+      this.$invoke('modal', 'close')
     }
     fillCount (data) {
       let datas = data.qrImgCount

@@ -46,7 +46,7 @@
 <template>
   <view class="point-listgroup">
     <repeat for="{{listgroup}}">
-      <listitem :icon="item.icon" :hasArrow="item.hasArrow" @tap.user="listitemTap">
+      <listitem :visible="item.visible" :icon="item.icon" :hasArrow="item.hasArrow" @tap.user="listitemTap">
         <view class="list-item-text">{{item.text}}</view>
       </listitem>
     </repeat>
@@ -65,6 +65,7 @@
   import wepy from 'wepy'
   import fetch from '../../service/fetch'
   import Listitem from '../../components/listitem'
+  import {session} from '../../service/auth'
   import {showError, showToast, formatDate} from '../../utils/util'
 
   export default class Index extends wepy.page {
@@ -80,25 +81,7 @@
 
     data = {
       dataList: [],
-      listgroup: [
-        {
-          icon: 'point.svg',
-          text: '剩余积分：0积分',
-          hasArrow: true,
-          key: 'pointValue'
-        },
-        {
-          icon: 'gift.svg',
-          text: '积分兑换',
-          hasArrow: true,
-          key: 'exchange'
-        },
-        {
-          icon: 'point-record.svg',
-          text: '兑换记录',
-          key: 'excRecords'
-        }
-      ]
+      listgroup: []
     }
 
     computed = {
@@ -116,8 +99,33 @@
       }
     }
 
+    buildMenu () {
+      this.listgroup = [
+        {
+          icon: 'point.svg',
+          text: this.isDoctor ? '积分总数：0积分' : '剩余积分：0积分',
+          hasArrow: true,
+          key: 'pointValue',
+          visible: true
+        },
+        {
+          icon: 'gift.svg',
+          text: '积分兑换',
+          hasArrow: true,
+          key: 'exchange',
+          visible: !this.isDoctor
+        },
+        {
+          icon: 'point-record.svg',
+          text: '兑换记录',
+          key: 'excRecords',
+          visible: !this.isDoctor
+        }
+      ]
+    }
+
     setPointValue (value) {
-      this.listgroup[0].text = `剩余积分：${value}积分`
+      this.listgroup[0].text = this.isDoctor ? `积分总数：${value}积分` : `剩余积分：${value}积分`
       this.$apply()
     }
 
@@ -155,11 +163,18 @@
       this.queryExcRecords()
     }
 
-    onShow () {
+    onLoad () {
       this.dataList = []
       this.page = 1
+      this.isDoctor = session.get().user.role === 5
+      this.buildMenu()
       this.queryUserPoint()
       this.queryExcRecords()
+      if (this.isDoctor) {
+        wx.setNavigationBarTitle({
+          title: '项目积分'
+        })
+      }
     }
   }
 </script>

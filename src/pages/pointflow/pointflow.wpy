@@ -71,27 +71,27 @@
   import {showError, showToast, formatDate} from '../../utils/util'
 
   const SCORE_TYPES = {
-    "scan": {
+    scan: {
       name: '扫码',
       symbol: '+'
     },
-    "20reward50": {
+    '20reward50': {
       name: '奖励',
       symbol: '+'
     },
-    "50reward50": {
+    '50reward50': {
       name: '奖励',
       symbol: '+'
     },
-    "reward": {
+    reward: {
       name: '奖励',
       symbol: '+'
     },
-    "exchange": {
+    exchange: {
       name: '兑换',
       symbol: '-'
     }
-  };
+  }
 
   export default class Index extends wepy.page {
     config = {
@@ -106,21 +106,25 @@
 
     data = {
       dataList: [],
-      listgroup: [
-        {
-          icon: 'point.svg',
-          text: '剩余积分：0积分',
-          key: 'pointValue'
-        }
-      ]
+      listgroup: []
     }
 
     computed = {
 
     }
 
+    buildMenu () {
+      this.listgroup = [
+        {
+          icon: 'point.svg',
+          text: this.isDoctor ? '积分总数：0积分' : '剩余积分：0积分',
+          key: 'pointValue'
+        }
+      ]
+    }
+
     setPointValue (value) {
-      this.listgroup[0].text = `剩余积分：${value}积分`
+      this.listgroup[0].text = this.isDoctor ? `积分总数：${value}积分` : `剩余积分：${value}积分`
       this.$apply()
     }
 
@@ -164,9 +168,11 @@
       this.queryExcRecords()
     }
 
-    onShow () {
+    onLoad () {
       this.dataList = []
       this.page = 1
+      this.isDoctor = session.get().user.role === 5
+      this.buildMenu()
       this.queryUserPoint()
       this.queryExcRecords()
     }

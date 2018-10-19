@@ -32,6 +32,14 @@
     color: #03468f;
   }
 
+  .flex {
+    .flex()
+  }
+
+  .v-center {
+    .flex-v-center()
+  }
+
   /*=====picker=====*/
   picker {
     flex: 1;

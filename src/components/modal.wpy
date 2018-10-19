@@ -35,7 +35,7 @@
   .modal-header {
     .flex-v-center();
     justify-content: space-between;
-    background-color: #457199;
+    background-color: @gcolor;
     color: #fff;
     padding-left: 30rpx;
     padding-right: 20rpx;
@@ -51,10 +51,21 @@
     box-sizing: border-box;
   }
 
+  .modal-footer {
+    padding-top: 40rpx;
+    .flex();
+    .flex-h-center();
+
+    .button {
+      margin-left: 20rpx;
+      margin-right: 20rpx;
+    }
+  }
+
 </style>
 
 <template>
-  <view class="modal {{className}}" style="{{style}}">
+  <view class="modal" style="{{style}}" wx:if="{{show}}">
     <view class="modal-dialog {{title !== '' ? 'hasTitle' : ''}}">
       <view class="modal-header" wx:if="{{title !== ''}}">
         <text>{{title}}</text>
@@ -63,6 +74,7 @@
       <view class="modal-content">
         <slot name="title"></slot>
         <slot></slot>
+        <slot name="footer"></slot>
       </view>
     </view>
   </view>
@@ -78,13 +90,10 @@
         type: String,
         default: ''
       },
-      className: {
-        type: String,
-        default: ''
-      },
       show: {
-        type: Boolean,
-        default: false
+        type: [Boolean, String],
+        default: false,
+        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
       },
       title: {
         type: String,
@@ -96,16 +105,17 @@
       closeIcon: Icon
     }
 
-    data = {
-    }
+    data = {}
 
     open (e) {
       this.show = true
+      this.$apply()
       this.$emit('modalOpen', e)
     }
 
     close (e) {
       this.show = false
+      this.$apply()
       this.$emit('modalClose', e)
     }
 
