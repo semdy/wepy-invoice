@@ -371,6 +371,7 @@
       if (curSession) {
         this.setParams(curSession)
         this.sessions = this.getSessions()
+        wx.removeStorageSync('needRefresh.home')
       }
     }
 

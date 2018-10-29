@@ -32,7 +32,7 @@
 </style>
 <template>
   <view class="home-swiper-container">
-    <swiper class="swiper home-swiper" autoplay="true" interval="5000" duration="300" indicatorDots="true" circular="true">
+    <swiper class="swiper home-swiper" autoplay="true" interval="5000" duration="300" indicatorDots="true" circular="true" wx:if="{{swiperList.length>0}}">
       <block wx:for="{{swiperList}}" wx:key="index">
         <swiper-item class="swiper-item" @tap="gotoweb({{index}})">
           <image src="{{item.source}}" mode="widthFix"></image>
@@ -40,7 +40,7 @@
       </block>
     </swiper>
   </view>
-  <notice :notices.sync="notices" @tap.user="noticeTap"></notice>
+  <notice :notices.sync="notices" @tap.user="noticeTap" wx:if="{{notices.length>0}}"></notice>
   <view class="list-group {{isDoctor ? 'reverse' : ''}}">
     <repeat for="{{listgroup}}" key="index">
       <listitem :icon="item.icon" :iconRight="true" wx:if="{{item.visible}}" @tap.user="listitemTap">
@@ -157,7 +157,7 @@
     fetchSwiper () {
       return fetch.get('find/slide').then(res => {
         if (res.success) {
-          this.swiperList = res.data
+          this.swiperList = res.data || []
           this.$apply()
         } else {
           showError(res.message)
@@ -173,7 +173,7 @@
       return new Promise((resolve, reject) => {
         fetch.get('find/notice', params).then(res => {
           if (res.success) {
-            this.notices = res.data.docs
+            this.notices = res.data.docs || []
             resolve(res.data)
             this.$apply()
             this.$invoke('notice', 'init')
