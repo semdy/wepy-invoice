@@ -11,8 +11,6 @@
 
   .form-item-inner {
     .flex-v-center();
-    padding-top: 10rpx;
-    padding-bottom: 10rpx;
 
     &.underline {
       border-bottom: 1rpx solid @color-underline;
