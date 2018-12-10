@@ -201,6 +201,15 @@
     }
   }
 
+  .remark-input {
+    .icon-left {
+      position: absolute;
+      right: 10rpx;
+      top: 16rpx;
+      margin: 0;
+    }
+  }
+
   .remark-history-dropdown {
     position: absolute;
     left: 0;
@@ -249,13 +258,13 @@
     <view class="bill-form-body">
       <view class="bill-field">
         <text class="bill-label">经销商code：</text>
-       <!-- <switchbutton :buttons="switchButtons" :switchIndex.sync="switchIndex" :disabled.sync="pageDisabled" className="dms-switch-button" @tap.user="switchButton1Tap"></switchbutton>-->
+       <!-- <switchbutton :buttons="switchButtons" :switchIndex.sync="switchIndex" :disabled.sync="pageDisabled" class="dms-switch-button" @tap.user="switchButton1Tap"></switchbutton>-->
         <text style="margin-left: 10rpx;">{{userCode}}</text>
       </view>
       <view class="bill-field">
         <text class="bill-label">备 注：</text>
         <view class="remark-container">
-          <remarkinput placeholder="备注可以为空" border="true" icon="angle-down-black.png" iconRight="true" :value.sync="remark" :disabled.sync="pageDisabled" @focus.user="remarkFocus" @blur.user="remarkBlur" @change.user="remarkChange"></remarkinput>
+          <remarkinput class="remark-input" placeholder="备注可以为空" icon="angle-down-black.png" :value.sync="remark" :disabled.sync="pageDisabled" @focus.user="remarkFocus" @blur.user="remarkBlur" @change.user="remarkChange"></remarkinput>
           <view class="remark-history-dropdown" hidden="{{!showRemarkDropDown}}">
             <block wx:for="{{remarkHistory}}" wx:key="index">
               <view @tap="onHistoryItemTap({{item}})">{{item}}</view>
@@ -314,7 +323,7 @@
     <exportbutton inline="true" :disabled.sync="exportDisabled" @tap.user="exportReceipt">导出</exportbutton>
   </view>
 
-  <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
+  <modal1 :show.sync="isModalShow" title="提示">
     <view class="modal-confirm">
       <view>信息完整的<text class="h">{{dataList.length-failedCount}}</text>条</view>
       <view>缺少信息的<text class="h">{{failedCount}}</text>条</view>
@@ -324,12 +333,12 @@
       <view class="update-button cancel" @tap="closeModal">取消</view>
       <view class="update-button" @tap="doUploadReceipt">确定</view>
     </view>
-  </modal>
+  </modal1>
 
-  <modal wx:if="{{isExptModalShow}}" title="提示信息" @modalClose.user="closeExptModal">
+  <modal2 :show.sync="isExptModalShow" title="提示信息">
     <view>点击复制下面的链接去浏览器下载</view>
     <view class="download-url" @tap="onDownloadTap">{{downloadUrl}}</view>
-  </modal>
+  </modal2>
 
   <tabbar :tabBar="tabBar" disabled="true" @tabbarChange.user="tabbarChange"></tabbar>
 
@@ -355,6 +364,7 @@
     'error': '提交失败'
   }
 
+  // eslint-disable-next-line
   const subSuffix = (str, subLen) => {
     if (typeof str !== 'string') return ''
     if (str.length <= subLen || typeof subLen !== 'number') return str
@@ -380,7 +390,8 @@
       deleteIcon: Icon,
       cauthIcon: Icon,
       tabbar: Tabbar,
-      modal: Modal
+      modal1: Modal,
+      modal2: Modal
     }
 
     listIndex = 0
@@ -676,7 +687,7 @@
       }
       fetch.post('update/receipt', params).then(res => {
         if (res.success) {
-          //showToast(res.message)
+          // showToast(res.message)
         } else {
           showError(res.message)
         }
@@ -749,11 +760,11 @@
       rowData.status = data.receipt.status
       rowData.statusText = STATUS_MAP[data.product.status]
       rowData.dmsStatus = data.product.dmsStatus
-      //rowData.qrcode = subSuffix(data.product.qrcode, 6)
+      // rowData.qrcode = subSuffix(data.product.qrcode, 6)
       rowData.qrcode = data.product.qrcode
       rowData.type = data.receipt.type
       rowData.upn = data.product.upn
-      //rowData.lot = subSuffix(data.product.lot, 4)
+      // rowData.lot = subSuffix(data.product.lot, 4)
       rowData.lot = data.product.lot
       rowData.productId = data.product.id
       rowData.receiptId = data.receipt.id
@@ -777,11 +788,11 @@
         rowData.status = item.status
         rowData.statusText = STATUS_MAP[item.status]
         rowData.dmsStatus = item.dmsStatus
-        //rowData.qrcode = subSuffix(item.qrcode, 6)
+        // rowData.qrcode = subSuffix(item.qrcode, 6)
         rowData.qrcode = item.qrcode
         rowData.type = item.type || data.type
         rowData.upn = item.upn
-        //rowData.lot = subSuffix(item.lot, 4)
+        // rowData.lot = subSuffix(item.lot, 4)
         rowData.lot = item.lot
         rowData.productId = item.id
         rowData.receiptId = data.id

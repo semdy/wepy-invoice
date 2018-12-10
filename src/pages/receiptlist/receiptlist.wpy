@@ -65,7 +65,7 @@
   <view class="query-form">
     <view class="query-field">
       <queryinput placeholder="二维码/单据编号" border="true" icon="find-g.svg" :value.sync="queryStr" @input.user="queryChange"></queryinput>
-      <clearIcon name="clear.svg" className="opt-icon" @tap.user="clearTap"></clearIcon>
+      <clearIcon name="clear.svg" class="opt-icon" @tap.user="clearTap"></clearIcon>
     </view>
     <queryButton class="query-button" @tap.user="queryTap">查询</queryButton>
   </view>
@@ -98,7 +98,6 @@
   import Icon from '../../components/icon'
   import Button from '../../components/button'
   import Tabbar from '../../components/tabbar'
-  import {showError, showToast} from '../../utils/util'
 
   export default class Index extends wepy.page {
     config = {
@@ -113,7 +112,7 @@
     }
 
     data = {
-      dataList: [1,2,3,4],
+      dataList: [1, 2, 3, 4],
       tabBar: {
         color: '#777',
         selectedColor: '#01458e',

@@ -72,7 +72,7 @@
   }
 </style>
 <template>
-  <view class="stock-check-item {{stock.status === 'expired' ? 'disabled' : '' }} {{className}}" style="{{style}}" @tap="tap">
+  <view class="stock-check-item {{stock.status === 'expired' ? 'disabled' : '' }}" style="{{style}}" @tap="tap">
     <view class="stock-check-item-left">
       <view class="stock-check-item-left-hd">
         <geoIcon name="stock.png"></geoIcon>
@@ -90,10 +90,9 @@
       <view class="stock-check-info">仓库类型：{{stock.stockType}}</view>
       <view class="stock-check-info">盘点任务创建日期：{{stock.createdAt}}</view>
       <view class="stock-check-action">
+        <cancelButton bordered="true" @tap.user="cancelButtonTap" wx:if="{{stock.status==='reserve'}}">取消预约</cancelButton>
         <checkButton @tap.user="checkButtonTap" wx:if="{{stock.status==='unSubmit'}}">盘点</checkButton>
-        <view class="button normal primary {{stock.count === 0 ? 'disabled' : ''}}" wx:if="{{stock.status==='unSubmit'}}" @tap="submitButtonTap">
-          提交
-        </view>
+        <view class="button normal primary {{stock.count === 0 ? 'disabled' : ''}}" wx:if="{{stock.status==='unSubmit'}}" @tap="submitButtonTap">提交</view>
         <block wx:if="{{stock.status!=='expired'}}">
           <genButton @tap.user="buttonTap" wx:if="{{stock.status==='submit'}}">报告生成中</genButton>
           <historyButton @tap.user="buttonTap" wx:if="{{stock.status==='reckon'}}">查看报告</historyButton>
@@ -109,13 +108,9 @@
   import Icon from './icon'
   import Button from './button'
 
-  export default class StockItem extends wepy.component {
+  export default class Index extends wepy.component {
     props = {
       style: {
-        type: String,
-        default: ''
-      },
-      className: {
         type: String,
         default: ''
       },
@@ -130,38 +125,41 @@
       checkButton: Button,
       submitButton: Button,
       genButton: Button,
-      historyButton: Button
+      historyButton: Button,
+      cancelButton: Button
     }
     methods = {
-      tap ($event) {
+      tap (e) {
         setTimeout(() => {
-          this.$emit('tap', Number(this.$index), $event)
+          this.$emit('tap', Number(this.$index), e)
         })
       },
-      checkButtonTap ($event) {
+      cancelButtonTap (e) {
+
+      },
+      checkButtonTap (e) {
         setTimeout(() => {
-          this.$emit('checkTap', Number(this.$index), $event)
+          this.$emit('checkTap', Number(this.$index), e)
         })
       },
-      submitButtonTap ($event) {
+      submitButtonTap (e) {
         setTimeout(() => {
-          this.$emit('submitTap', Number(this.$index), $event)
+          this.$emit('submitTap', Number(this.$index), e)
         })
       },
-      stockDetailTap ($event) {
+      stockDetailTap (e) {
         setTimeout(() => {
-          this.$emit('stockDetailTap', Number(this.$index), $event)
+          this.$emit('stockDetailTap', Number(this.$index), e)
         })
       },
-      buttonTap ($event) {
+      buttonTap (e) {
         setTimeout(() => {
-          console.log(this.$index)
-          this.$emit('buttonTap', Number(this.$index), $event)
+          this.$emit('buttonTap', Number(this.$index), e)
         })
       },
-      onDelTap ($event) {
+      onDelTap (e) {
         setTimeout(() => {
-          this.$emit('delTap', Number(this.$index), $event)
+          this.$emit('delTap', Number(this.$index), e)
         })
       }
     }

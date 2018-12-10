@@ -119,7 +119,7 @@
     </view>
   </view>
   <view class="point-listgroup">
-    <repeat for="{{listgroup}}">
+    <repeat key="index" for="{{listgroup}}">
       <listitem :visible="item.visible" :icon="item.icon" :iconSize="item.iconSize" :hasArrow="item.hasArrow" @tap.user="listitemTap">
         <view class="list-item-text">
           <text>{{item.label}}</text>
@@ -127,7 +127,7 @@
         </view>
       </listitem>
       <view class="subview" wx:if="{{item.showSubview&&sessions.length>0}}" style="display: {{subviewShown ? 'block': 'none'}}">
-        <repeat for="{{sessions}}" item="sub">
+        <repeat key="index" for="{{sessions}}" item="sub">
           <view class="subview-item" @tap="subviewTap({{sub}})">{{sub.name}}</view>
         </repeat>
       </view>
@@ -138,7 +138,7 @@
     <logoutbutton @tap.user="logoutTap">退出登录</logoutbutton>
   </view>
 
-  <modal wx:if="{{isModalShow}}" title="修改邮箱" @modalClose.user="closeModal">
+  <modal :show.sync="isModalShow" title="修改邮箱">
     <view>
       <view class="form-item bordered">
         <input type="text" value="{{email}}" class="input normal" @input="emailChange"/>
@@ -235,7 +235,7 @@
       },
       subviewTap (item) {
         let userId = item.id
-        /*this.login(userId).then(res => {
+        /* this.login(userId).then(res => {
           this.changeSession()
           this.hideSubview()
           wx.removeStorageSync('needRefresh.home')
@@ -245,7 +245,7 @@
             content: msg,
             showCancel: false
           })
-        })*/
+        }) */
         checkAndSetSessionByUserId(userId).then(() => {
           this.buildMenu()
           this.changeSession()
@@ -357,11 +357,11 @@
               sessionGroup.add(res.data.user.id, sessionData)
               resolve(sessionData)
             }, () => {
-              reject('公司码或手机号错误，请重试或联系管理人员')
+              reject('公司码或手机号错误，请重试或联系管理人员') // eslint-disable-line
             })
           }, reject)
         } else {
-          reject('未找到当前用户信息')
+          reject('未找到当前用户信息') // eslint-disable-line
         }
       })
     }

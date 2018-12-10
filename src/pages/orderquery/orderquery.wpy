@@ -36,13 +36,13 @@
 <template>
   <view class="query-form">
     <view class="query-field">
-      <datetimepicker :value.sync="date" @datetimechange.user="datetimechange"></datetimepicker>
+      <datetimepicker :value.sync="date" @change.user="datetimechange"></datetimepicker>
     </view>
     <queryButton class="query-button" @tap.user="queryTap">查询</queryButton>
   </view>
 
   <scroll-view scroll-y="true" class="scrollview-container" lower-threshold="0" bindscrolltolower="onEndReached">
-    <repeat for="{{orders}}" key="index">
+    <repeat key="index" for="{{orders}}">
       <orderItem @tap.user="onItemTap"></orderItem>
     </repeat>
   </scroll-view>
@@ -51,12 +51,10 @@
 
 <script>
   import wepy from 'wepy'
-  import fetch from '../../service/fetch'
-  import Icon from '../../components/icon'
   import Button from '../../components/button'
   import Datetimepicker from '../../components/datetimepicker'
   import OrderItem from '../../components/orderitem'
-  import {showError, showToast, formatDate} from '../../utils/util'
+  import {formatDate} from '../../utils/util'
 
   export default class Index extends wepy.page {
     config = {
@@ -70,8 +68,8 @@
     }
 
     data = {
-      orders: [1,2,3],
-      date: formatDate(new Date, 'yyyy-MM-dd')
+      orders: [1, 2, 3],
+      date: formatDate(new Date(), 'yyyy-MM-dd')
     }
 
     computed = {

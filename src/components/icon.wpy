@@ -1,50 +1,47 @@
 <style lang="less">
-  .icon{
+  .icon {
     display: inline-block;
     padding: 10rpx;
+    line-height: 1;
     vertical-align: middle;
 
-    .icon-img{
-      &.x-large {
-        width: 100rpx;
-        height: 100rpx;
-      }
-      &.large {
-        width: 72rpx;
-        height: 72rpx;
-      }
-      &.normal{
-        width: 40rpx;
-        height: 40rpx;
-      }
-      &.small{
-        width: 32rpx;
-        height: 32rpx;
-      }
-      &.x-small{
-        width: 24rpx;
-        height: 24rpx;
-      }
+    .iconfont {
+      font-size: inherit;
+      line-height: inherit;
+    }
+
+    .icon-img {
+      display: block;
+      width: 1em;
+      height: 1em;
     }
   }
 </style>
 
 <template>
-  <view class="icon {{className}}" style="{{style}}" @tap="tap">
-    <image wx:if="{{name}}" class="icon-img {{size}}" src="../images/{{name}}" mode="{{mode}}"></image>
+  <view class="icon" style="{{iconSize}}{{style}}" @tap="onClick">
+    <block wx:if="{{name}}">
+      <text wx:if="{{type==='iconfont'}}" class="iconfont icon-{{name}}" style="{{iconColor}}"></text>
+      <image wx:if="{{type!=='iconfont'}}" class="icon-img" src="../images/{{name}}"></image>
+    </block>
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
 
-  export default class Icon extends wepy.component {
+  const SIZE_MAP = {
+    'x-large': '100rpx',
+    'large': '72rpx',
+    'middle': '44rpx',
+    'normal': '40rpx',
+    'small': '32rpx',
+    'x-small': '24rpx'
+  }
+
+  export default class Index extends wepy.component {
     props = {
       style: {
-        type: String,
-        default: ''
-      },
-      className: {
         type: String,
         default: ''
       },
@@ -56,15 +53,29 @@
         type: String,
         default: ''
       },
-      mode: {
+      type: {
         type: String,
-        default: 'aspectFit'
+        default: 'svg'
+      },
+      color: String
+    }
+
+    data = {
+      isCustomSize: false
+    }
+
+    computed = {
+      iconColor () {
+        return this.color ? `color: ${this.color}` : ''
+      },
+      iconSize () {
+        return `font-size: ${SIZE_MAP[this.size] || this.size};`
       }
     }
 
     methods = {
-      tap ($event) {
-        this.$emit('tap', $event)
+      onClick (e) {
+        this.$emit('tap', e)
       }
     }
   }

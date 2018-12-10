@@ -45,8 +45,7 @@
 
 <script>
   import wepy from 'wepy'
-  import fetch from '../../service/fetch'
-  import {showError, showToast, formatDate} from '../../utils/util'
+  import {formatDate} from '../../utils/util'
 
   export default class Index extends wepy.page {
     config = {

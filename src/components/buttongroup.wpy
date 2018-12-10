@@ -57,7 +57,7 @@
 </style>
 
 <template>
-  <view class="button-group {{(inline === true || inline === 'true') ? 'inline' : ''}} {{className}}" style="{{style}}">
+  <view class="button-group {{(inline === true || inline === 'true') ? 'inline' : ''}}" style="{{style}}">
     <repeat for="{{items}}" key="index" index="index">
       <view class="button-group-item {{size}} {{activeIndex === index ? 'actived' : ''}}" @tap="tap({{index}})">{{item}}</view>
     </repeat>
@@ -67,13 +67,9 @@
 <script>
   import wepy from 'wepy'
 
-  export default class Buttongroup extends wepy.component {
+  export default class Index extends wepy.component {
     props = {
       style: {
-        type: String,
-        default: ''
-      },
-      className: {
         type: String,
         default: ''
       },

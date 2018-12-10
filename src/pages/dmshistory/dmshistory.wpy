@@ -126,7 +126,7 @@
   <view class="query-form-wrap">
     <view class="query-form">
       <queryinput placeholder="搜索二维码" border="true" icon="find-g.svg" :value.sync="qrcode" @input.user="queryChange"></queryinput>
-      <clearIcon name="clear.svg" className="clear-icon" @tap.user="clearTap"></clearIcon>
+      <clearIcon name="clear.svg" class="clear-icon" @tap.user="clearTap"></clearIcon>
     </view>
     <querybutton @tap.user="queryTap">查询</querybutton>
   </view>
@@ -163,7 +163,7 @@
   </view>
 
 
-  <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
+  <modal :show.sync="isModalShow" title="提示">
     <view class="modal-confirm">
       <view>{{queryMsg}}</view>
     </view>
@@ -182,7 +182,7 @@
   import Icon from '../../components/icon'
   import Modal from '../../components/modal'
   import Tabbar from '../../components/tabbar'
-  import {showError, showToast, confirm} from '../../utils/util'
+  import {showError, confirm} from '../../utils/util'
 
   export default class Index extends wepy.page {
     config = {

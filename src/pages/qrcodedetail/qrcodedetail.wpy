@@ -193,7 +193,7 @@
     methods = {
       thumbTap() {
         wx.previewImage({
-          urls:[this.filePath]
+          urls: [this.filePath]
         })
       },
       delTap (e) {
@@ -220,7 +220,7 @@
         this.launchCamera()
       }
     }
-    launchCamera(){
+    launchCamera() {
       wx.chooseImage({
         count: 1, // 默认9
         sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
@@ -233,7 +233,7 @@
           this.$apply()
         },
         fail: () => {
-          //showError("拍照调用失败");
+          // showError("拍照调用失败")
         }
       })
     }

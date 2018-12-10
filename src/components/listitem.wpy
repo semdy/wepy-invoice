@@ -1,7 +1,7 @@
 <style type="less">
   @import "../less/mixin";
 
-  .list-item{
+  .list-item {
     .flex-v-center();
     padding: 20rpx 40rpx;
     background-color: #fff;
@@ -9,7 +9,7 @@
     border-top:2rpx solid #e5e5e5;
     border-bottom:2rpx solid #e5e5e5;
 
-    .list-item-bd{
+    .list-item-bd {
       .flex-v-center();
       flex: 1;
     }
@@ -39,13 +39,13 @@
       margin-right: -20rpx;
     }
 
-    &:active{
+    &:active {
       background-color: rgba(255,255,255,.7);
     }
   }
 </style>
 <template>
-  <view class="list-item {{className}}" style="{{style}}" @tap="tap" hidden="{{!visible}}">
+  <view class="list-item" style="{{style}}" @tap="tap" hidden="{{!visible}}">
     <image wx:if="{{icon&&iconLeft&&!iconRight}}" class="list-item-icon {{iconSize}} left" src="../images/{{icon}}" mode="aspectFit"></image>
     <view class="list-item-bd">
       <slot></slot>
@@ -57,7 +57,7 @@
 <script>
   import wepy from 'wepy'
 
-  export default class Listitem extends wepy.component {
+  export default class Index extends wepy.component {
     props = {
       icon: String,
       iconLeft: {
@@ -73,10 +73,6 @@
         default: 'large'
       },
       style: {
-        type: String,
-        default: ''
-      },
-      className: {
         type: String,
         default: ''
       },

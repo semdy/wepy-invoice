@@ -44,7 +44,7 @@
 </style>
 <template>
   <view class="point-listgroup">
-    <repeat for="{{listgroup}}">
+    <repeat key="index" for="{{listgroup}}">
       <listitem :icon="item.icon">
         <view class="list-item-text">{{item.text}}</view>
       </listitem>
@@ -53,7 +53,7 @@
 
   <scroll-view scroll-y="true" class="records-scrollview" lower-threshold="0" bindscrolltolower="onEndReached">
     <view class="point-records" wx:if="{{dataList.length>0}}">
-      <repeat for="{{dataList}}">
+      <repeat key="index" for="{{dataList}}">
         <view class="record-item">
           <text class="record-desc">{{item.dateString}}{{item.typeString}}</text>
           <text class="record-score">{{item.scoreString}}</text>
@@ -68,7 +68,7 @@
   import fetch from '../../service/fetch'
   import Listitem from '../../components/listitem'
   import {session} from '../../service/auth'
-  import {showError, showToast, formatDate} from '../../utils/util'
+  import {showError, formatDate} from '../../utils/util'
 
   const SCORE_TYPES = {
     scan: {
@@ -130,7 +130,7 @@
 
     setRecords (list) {
       list.forEach(e => {
-        e.dateString = formatDate(new Date(e.date.replace(/\-/g, '/')), 'yyyy年MM月dd日')
+        e.dateString = formatDate(new Date(e.date.replace(/-/g, '/')), 'yyyy年MM月dd日')
         e.typeString = SCORE_TYPES[e.type] ? SCORE_TYPES[e.type].name : e.type
         e.scoreString = SCORE_TYPES[e.type] ? SCORE_TYPES[e.type].symbol + e.score : e.score
       })

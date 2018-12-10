@@ -65,7 +65,7 @@
   }
 </style>
 <template>
-  <view class="stock-item {{className}}" style="{{style}}" @tap="tap">
+  <view class="stock-item" style="{{style}}" @tap="tap">
     <view class="stock-item-bd">
       <view class="stock-summary-item">
         <text class="stock-summay-label">产品型号：</text>
@@ -79,14 +79,14 @@
         <text class="stock-summay-label">合计数量：</text>
         <text class="stock-summay-content">1500</text>
       </view>
-      <sumArrow className="sum-arrow" name="arrow-down-o.svg" size="small"></sumArrow>
+      <sumArrow class="sum-arrow" name="arrow-down-o.svg" size="small"></sumArrow>
     </view>
 
     <view class="stock-subpanel">
       <view class="stock-subpanel-hd">
         <text class="stock-copername">仓库：上海什么有限公司 - 主仓库</text>
         <text>合计：300</text>
-        <subArrow className="sub-arrow" name="arrow-down-o.svg" size="small"></subArrow>
+        <subArrow class="sub-arrow" name="arrow-down-o.svg" size="small"></subArrow>
       </view>
       <view class="stock-subtable">
         <view class="stock-subtable-row">
@@ -116,13 +116,9 @@
   import wepy from 'wepy'
   import Icon from './icon'
 
-  export default class StockItem extends wepy.component {
+  export default class Index extends wepy.component {
     props = {
       style: {
-        type: String,
-        default: ''
-      },
-      className: {
         type: String,
         default: ''
       }

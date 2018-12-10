@@ -138,7 +138,7 @@
     <submitbutton inline="true" :disabled.sync="submitDisabled" @tap.user="submitReceipt">提 交</submitbutton>
   </view>
 
-  <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
+  <modal :show.sync="isModalShow" title="提示">
     <view class="modal-confirm">
       <view>信息完整的<text class="h">{{dataList.length-failedCount}}</text>条</view>
       <view>缺少信息的<text class="h">{{failedCount}}</text>条</view>
@@ -231,13 +231,13 @@
       },
       submitReceipt () {
         return this.$navigate('/pages/receiptlist/receiptlist')
-        const failed = this.dataList.filter(item => !item.upn && !item.lot)
+        /* const failed = this.dataList.filter(item => !item.upn && !item.lot)
         this.failedCount = failed.length
         if (this.failedCount > 0) {
           this.showModal()
         } else {
           this.uploadReceipt()
-        }
+        } */
       },
       closeModal() {
         this.hideModal()

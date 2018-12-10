@@ -25,7 +25,7 @@
   </view>
 
   <scroll-view scroll-y="true" class="scrollview-container" lower-threshold="0" bindscrolltolower="onEndReached">
-    <repeat for="{{orders}}" key="index">
+    <repeat key="index" for="{{orders}}">
       <orderdetail></orderdetail>
     </repeat>
   </scroll-view>
@@ -34,10 +34,7 @@
 
 <script>
   import wepy from 'wepy'
-  import fetch from '../../service/fetch'
-  import Icon from '../../components/icon'
   import Orderdetail from '../../components/orderdetail'
-  import {showError, showToast, formatDate} from '../../utils/util'
 
   export default class Index extends wepy.page {
     config = {
@@ -49,7 +46,7 @@
     }
 
     data = {
-      orders: [1,2,3,4,5,6]
+      orders: [1, 2, 3, 4, 5, 6]
     }
 
     computed = {

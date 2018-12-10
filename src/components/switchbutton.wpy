@@ -84,7 +84,7 @@
 </style>
 
 <template>
-  <view class="switch-button-wrap {{size}} {{className}} {{disabled ? 'disabled' : ''}}" style="{{style}}" @tap="tap" wx:if="{{buttons.length>0}}">
+  <view class="switch-button-wrap {{size}} {{disabled ? 'disabled' : ''}}" style="{{style}}" @tap="tap" wx:if="{{buttons.length>0}}">
     <view class="switch-indicator" style="transform:translateX({{x}});">
       <view class="switch-dot {{size}}" style="width:{{indWidth}};"></view>
     </view>
@@ -99,13 +99,9 @@
 <script>
   import wepy from 'wepy'
 
-  export default class Switchbutton extends wepy.component {
+  export default class Index extends wepy.component {
     props = {
       style: {
-        type: String,
-        default: ''
-      },
-      className: {
         type: String,
         default: ''
       },

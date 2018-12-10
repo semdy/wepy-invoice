@@ -90,7 +90,7 @@
 <template>
   <view class="query-form-wrap">
     <veiw class="query-label">时间</veiw>
-    <datetimepicker :value.sync="date" @datetimechange.user="datetimeChange"></datetimepicker>
+    <datetimepicker :value.sync="date" @change.user="datetimeChange"></datetimepicker>
     <querybutton @tap.user="queryTap">查询</querybutton>
   </view>
 
@@ -123,7 +123,7 @@
 
   </view>
 
-  <modal wx:if="{{isModalShow}}" title="提示信息" @modalClose.user="closeModal">
+  <modal :show.sync="isModalShow" title="提示信息">
     <view>点击复制下面的链接去浏览器下载</view>
     <view class="download-url" @tap="onDownloadTap">{{downloadUrl}}</view>
   </modal>
@@ -161,7 +161,7 @@
     loaded = false
 
     data = {
-      date: formatDate(new Date, 'yyyy-MM-dd'),
+      date: formatDate(new Date(), 'yyyy-MM-dd'),
       dataList: [],
       total: 0,
       isModalShow: false,

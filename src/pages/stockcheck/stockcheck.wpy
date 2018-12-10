@@ -42,11 +42,44 @@
     white-space: nowrap;
   }
 
+  .stock-tabs {
+    .flex();
+    margin-top: -20rpx;
+    padding-bottom: 10rpx;
+
+
+    > view {
+      flex: 1;
+      .flex-center();
+      height: 60rpx;
+      border-style: solid;
+      border-width: 2rpx 2rpx 2rpx 0;
+      border-color: #ddd;
+
+      &:last-child {
+        border-top-right-radius: 60rpx;
+        border-bottom-right-radius: 60rpx;
+      }
+
+      &:first-child {
+        border-left: 2rpx solid #ddd;
+        border-top-left-radius: 60rpx;
+        border-bottom-left-radius: 60rpx;
+      }
+
+      &.selected {
+        color: #f0f0f0;
+        background-color: lighten(@gcolor, 20%);
+        border-color: lighten(@gcolor, 20%);
+      }
+    }
+  }
+
   .stock-check-form {
     textarea {
       width: 100%;
       height: 120rpx;
-      border: 2rpx solid #aaa;
+      border: 2rpx solid #ddd;
       padding: 10rpx;
       box-sizing: border-box;
     }
@@ -138,16 +171,19 @@
 </style>
 <template>
   <view class="header-tabs">
-    <view class="header-tab-item" :class="{selected: tabIndex == 0}" @tap="switchTabTap(0)">
-      <text>未完成</text>
+    <view class="header-tab-item" :class="{selected: tabIndex === 0}" @tap="switchTabTap(0)">
+      <text>预约中</text>
     </view>
-    <view class="header-tab-item" :class="{selected: tabIndex == 1}" @tap="switchTabTap(1)">
+    <view class="header-tab-item" :class="{selected: tabIndex === 1}" @tap="switchTabTap(1)">
+      <text>进行中</text>
+    </view>
+    <view class="header-tab-item" :class="{selected: tabIndex === 2}" @tap="switchTabTap(2)">
       <text>已完成</text>
     </view>
   </view>
 
   <view class="stock-check-empty" wx:if="{{dataList.length===0&&loaded===true}}">
-    <newStockIcon className="stock-new-icon" name="stock-new.svg"/>
+    <newStockIcon class="stock-new-icon" name="stock-new.svg"/>
     <view class="stock-new-hint">点击新建任务开始盘点吧！</view>
   </view>
 
@@ -158,7 +194,7 @@
     lower-threshold="0"
     bindscrolltolower="onEndReached"
   >
-    <repeat for="{{dataList}}" key="index">
+    <repeat key="index" for="{{dataList}}">
       <stockChemItem
         :stock="item"
         @tap.user="onItemTap"
@@ -175,15 +211,27 @@
     <plusIcon name="plus_white.svg" size="large"/>
   </view>
 
-  <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
+  <modal :show.sync="isModalShow" title="提示">
+    <view class="stock-tabs">
+      <view class="{{createType === 0 ? 'selected' : ''}}" @tap="changeCreateType(0)">立即盘点</view>
+      <view class="{{createType === 1 ? 'selected' : ''}}" @tap="changeCreateType(1)">预约盘点</view>
+    </view>
     <view class="stock-check-form">
+      <block wx:if="{{createType === 1}}">
+        <view class="stock-check-label">盘点开始时间：</view>
+        <datetimepickerStart @change.user="stockStartChange"></datetimepickerStart>
+        <view class="stock-check-label">盘点结束时间：</view>
+        <datetimepickerEnd @change.user="stockEndChange"></datetimepickerEnd>
+      </block>
       <view class="stock-check-label">任务名称：</view>
       <textarea value="{{remark}}" @input="remarkChange" placeholder="请输入盘点任务名称(必填)"/>
       <view class="stock-check-label">盘点仓库：</view>
-      <storepicker :items.sync="warehouseTypes" @pickerchange.user="storeChange"></storepicker>
+      <storepicker :items.sync="warehouseTypes" @change.user="storeChange"></storepicker>
       <view style="margin-top:6rpx;color:#888;font-size:24rpx;">提示：缺省仓库即主仓库，普通仓库即医院库</view>
       <view class="stock-check-label">产品线：</view>
-      <divisionpicker :items.sync="divisions" @pickerchange.user="divisionChange"></divisionpicker>
+      <divisionpicker :items.sync="divisions" @change.user="divisionChange"></divisionpicker>
+      <view class="stock-check-label">报告生成时间：</view>
+      <reportpicker :items.sync="reportTimes" @change.user="divisionChange"></reportpicker>
     </view>
     <view class="modal-footer">
       <view class="update-button cancel" @tap="closeModal">取消</view>
@@ -191,7 +239,7 @@
     </view>
   </modal>
 
-  <confirmModal wx:if="{{isConfirmModalShow}}" title="提示" @modalClose.user="closeConfirmModal">
+  <confirmModal :show.sync="isConfirmModalShow" title="提示">
     <view class="stock-modal-inner">
       确定点击提交，结束本次盘点任务吗?
     </view>
@@ -201,18 +249,18 @@
     </view>
   </confirmModal>
 
-  <hintModal wx:if="{{isHintModalShow}}" title="库存盘点须知" @modalClose.user="closeHintModal">
+  <hintModal :show.sync="isHintModalShow" title="库存盘点须知">
     <view class="stock-modal-hints">
-      <view>1. 当日结束全部系统操作后，再进行盘点；</view>
-      <view>2. 提交盘点单据五分钟后可查看盘点报告；</view>
-      <view>3. 目前支持库存盘点的仓库类型为缺省仓库(即主仓库)和普通仓库(即医院库)。</view>
+      <view>1. 目前创建盘点任务支持立即盘点和预约盘点两种创建方式；</view>
+      <view>2. 创建盘点任务时可选择查看报告的时间：对比昨天库存（10分钟），对比今天库存（隔天）；</view>
+      <view>3. 目前支持库存盘点的产品线为所有产品线，仓库类型为所有仓库。</view>
     </view>
     <view class="modal-footer">
       <view class="update-button" @tap="closeHintModal">知道了</view>
     </view>
   </hintModal>
 
-  <genderModal wx:if="{{isGenderModalShow}}" title="提示" @modalClose.user="closeGenderModal">
+  <genderModal :show.sync="isGenderModalShow" title="提示">
     <view class="stock-modal-hints">
       报告生成中，21:00点前提交盘点单据的，可在第二天上午查询盘点报告；21:00点后提交盘点单据的，可在第三天上午查询盘点报告；
     </view>
@@ -230,6 +278,7 @@
   import Icon from '../../components/icon'
   import Modal from '../../components/modal'
   import Picker from '../../components/picker'
+  import DatetimePicker from '../../components/datetimepicker'
   import StockChemItem from '../../components/stockcheckitem'
   import Toast from 'wepy-com-toast'
   import { showError, showToast, confirm, formatDate } from '../../utils/util'
@@ -238,6 +287,15 @@
     'submit': '已提交',
     'unSubmit': '未提交',
     'expired': '过期未完成'
+  }
+
+  const formatData = item => {
+    return {
+      ...item,
+      statusText: STOCK_STATUS[item.status] || '',
+      createdAt: formatDate(new Date(item.createdAt), 'yyyy-MM-dd'),
+      endDate: formatDate(new Date(item.endDate.replace(/-/g, '/')), 'yyyy-MM-dd')
+    }
   }
 
   export default class Index extends wepy.page {
@@ -254,26 +312,28 @@
       genderModal: Modal,
       storepicker: Picker,
       divisionpicker: Picker,
+      reportpicker: Picker,
+      datetimepickerStart: DatetimePicker,
+      datetimepickerEnd: DatetimePicker,
       stockChemItem: StockChemItem,
       toast: Toast
 
     }
 
-    page = 1
-    curIndex = 0
-    createErrMsg = null
-    divisionName = ''
-    divisionID = ''
-    warehouseType = ''
-    divisionPool = []
-
     data = {
       loaded: false,
       tabIndex: 0,
-      queryType: 'unSubmit',
+      createType: 0,
+      queryType: 'reserve',
+      stockStartTime: '',
+      stockEndTime: '',
       dataList: [],
       divisions: [],
       warehouseTypes: [],
+      reportTimes: [
+        {name: '对比昨天库存（10分钟）', value: 0},
+        {name: '对比今天库存（隔天）', value: 1}
+      ],
       remark: '',
       isModalShow: false,
       isConfirmModalShow: false,
@@ -298,6 +358,9 @@
       closeGenderModal () {
         this.hideGenderModal()
       },
+      changeCreateType (type) {
+        this.createType = +type
+      },
       remarkChange (e) {
         this.remark = e.detail.value
       },
@@ -305,7 +368,13 @@
         this.createTask()
       },
       switchTabTap (index) {
-        this.switchTab(Number(index))
+        this.switchTab(+index)
+      },
+      stockStartChange (e) {
+        this.stockStartTime = e.detail.value
+      },
+      stockEndChange (e) {
+        this.stockEndTime = e.detail.value
       },
       createTap () {
         if (!this.createErrMsg) {
@@ -407,15 +476,6 @@
       this.$apply()
     }
 
-    formatData (item) {
-      return {
-        ...item,
-        statusText: STOCK_STATUS[item.status] || '',
-        createdAt: formatDate(new Date(item.createdAt), 'yyyy-MM-dd'),
-        endDate: formatDate(new Date(item.endDate.replace(/-/g, '/')), 'yyyy-MM-dd')
-      }
-    }
-
     launchScaner (id) {
       wepy.scanCode()
         .then(res => {
@@ -436,9 +496,12 @@
       this.tabIndex = index
       switch (index) {
         case 0:
-          this.queryType = 'unSubmit'
+          this.queryType = 'reserve'
           break
         case 1:
+          this.queryType = 'unSubmit'
+          break
+        case 2:
           this.queryType = 'submit'
           break
       }
@@ -463,7 +526,7 @@
       this.loaded = false
       try {
         let res = await fetch.get('query/Inventory', {limit: 20, page, status})
-        res = res.data.docs.map(item => this.formatData(item))
+        res = res.data.docs.map(item => formatData(item))
         if (refresh) {
           this.dataList = res
         } else {
@@ -549,7 +612,12 @@
 
     onLoad () {
       this.page = 1
+      this.curIndex = 0
       this.createErrMsg = null
+      this.divisionName = ''
+      this.divisionID = ''
+      this.warehouseType = ''
+      this.divisionPool = []
       this.queryStockType()
       this.handleQuery()
     }

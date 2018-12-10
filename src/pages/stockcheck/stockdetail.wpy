@@ -76,7 +76,7 @@
   import wepy from 'wepy'
   import fetch from '../../service/fetch'
   import Icon from '../../components/icon'
-  import { showError, confirm, showToast, formatDate } from '../../utils/util'
+  import { showError, confirm, showToast } from '../../utils/util'
 
   const subSuffix = (str, subLen) => {
     if (typeof str !== 'string') return ''

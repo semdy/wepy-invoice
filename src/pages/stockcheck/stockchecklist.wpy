@@ -146,7 +146,7 @@
       <exportButton inline="true" class="export-button" @tap.user="onExportTap">导出</exportButton>
     </view>
 
-    <modal wx:if="{{isModalShow}}" title="提示信息" @modalClose.user="closeModal">
+    <modal :show.sync="isModalShow" title="提示信息">
       <view>点击复制下面的链接去浏览器下载</view>
       <view class="download-url" @tap="onDownloadTap">{{result.fileName}}</view>
     </modal>
@@ -195,11 +195,11 @@
       },
       onDownloadTap () {
         wx.setClipboardData({
-          data:  this.result.fileName,
+          data: this.result.fileName,
           success: () => {
             wx.getClipboardData({
               success: (res) => {
-                if (res.data ===  this.result.fileName) {
+                if (res.data === this.result.fileName) {
                   showToast('复制成功')
                 } else {
                   showError('复制失败，请手动长按复制')

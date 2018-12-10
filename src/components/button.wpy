@@ -5,12 +5,15 @@
     .flex-center();
     padding-left: 40rpx;
     padding-right: 40rpx;
-    border-radius: 16rpx;
     flex-direction: row;
+    border-radius: 16rpx;
     color: #444;
     font-size: 28rpx;
-    border: 2rpx solid transparent;
     box-sizing: border-box;
+
+    &.circled {
+      border-radius: @large;
+    }
 
     &.inline {
       display: inline-flex;
@@ -18,86 +21,157 @@
 
     &.primary {
       color: #fff;
-      background-color: @gcolor;
-      &:active{
-        background-color: darken(@gcolor, 10%);
+
+      &:not(.bordered) {
+        background-color: @gcolor;
+
+        &:active {
+          background-color: darken(@gcolor, 10%);
+        }
+      }
+
+      &.bordered {
+        color: @gcolor;
+        border: 1rpx solid @gcolor;
+
+        &:active {
+          color: darken(@gcolor, 10%);
+          border-color: darken(@gcolor, 10%);
+        }
       }
     }
+
     &.success {
       color: #fff;
-      background-color: #5cb85c;
-      &:active{
-        background-color: darken(#5cb85c, 10%);
+
+      &:not(.bordered) {
+        background-color: @color-success;
+
+        &:active {
+          background-color: darken(@color-success, 10%);
+        }
+      }
+
+      &.bordered {
+        color: @color-success;
+        border: 1rpx solid @color-success;
+
+        &:active {
+          color: darken(@color-success, 10%);
+          border-color: darken(@color-success, 10%);
+        }
       }
     }
+
     &.info {
       color: #fff;
-      background-color: #5bc0de;
-      &:active{
-        background-color: darken(#5bc0de, 10%);
+
+      &:not(.bordered) {
+        background-color: @color-info;
+
+        &:active {
+          background-color: darken(@color-info, 10%);
+        }
+      }
+
+      &.bordered {
+        color: @color-info;
+        border: 1rpx solid @color-info;
+
+        &:active {
+          color: darken(@color-info, 10%);
+          border-color: darken(@color-info, 10%);
+        }
       }
     }
+
     &.warning {
       color: #fff;
-      background-color: #f0ad4e;
-      &:active{
-        background-color: darken(#f0ad4e, 10%);
+
+      &:not(.bordered) {
+        background-color: @color-warning;
+
+        &:active {
+          background-color: darken(@color-warning, 10%);
+        }
+      }
+
+      &.bordered {
+        color: @color-warning;
+        border: 1rpx solid @color-warning;
+
+        &:active {
+          color: darken(@color-warning, 10%);
+          border-color: darken(@color-warning, 10%);
+        }
       }
     }
+
     &.danger {
       color: #fff;
-      background-color: #d9534f;
-      &:active{
-        background-color: darken(#d9534f, 10%);
-      }
-    }
-    &.default {
-      background-color: #e5e5e5;
-      &:active{
-        background-color: darken(#e5e5e5, 10%);
-      }
-    }
-    &.plain {
-      background-color: #fff;
-      border-color: #ccc;
 
-      &:active{
-        border-color: #aaa;
+      &:not(.bordered) {
+        background-color: @color-danger;
+
+        &:active {
+          background-color: darken(@color-danger, 10%);
+        }
+      }
+
+      &.bordered {
+        color: @color-danger;
+        border: 1rpx solid @color-danger;
+
+        &:active {
+          color: darken(@color-danger, 10%);
+          border-color: darken(@color-danger, 10%);
+        }
       }
     }
+
+    &.default {
+      background-color: @color-default;
+      &:active {
+        background-color: darken(@color-default, 10%);
+      }
+    }
+
+    &.plain {
+      background-color: transparent;
+      border: 1rpx solid @color-border;
+
+      &:active {
+        border-color: darken(@color-border, 10%);
+      }
+    }
+
     &.disabled {
-      background-color: #ccc;
+      background: @color-disabled !important;
       pointer-events: none;
     }
 
     &.large {
       height: @large;
-      font-size: 36rpx;
-      /* > .icon {
-         margin-left: -48rpx;
-       }*/
+      font-size: 32rpx;
     }
+
     &.normal {
       height: @normal;
-      /*> .icon {
-        margin-left: -72rpx;
-      }*/
     }
+
     &.small {
       height: @small;
-      /*> .icon {
-        margin-left: -64rpx;
-      }*/
+      padding-left: 30rpx;
+      padding-right: 30rpx;
     }
 
   }
 </style>
 
 <template>
-  <view class="button {{inline ? 'inline' : ''}} {{disabled ? 'disabled' : ''}} {{size}} {{type}} {{className}}" style="{{style}}" @tap="tap">
-    <icon wx:if="{{icon}}" :name="icon" :size="size"></icon>
+  <view class="button {{inline ? 'inline' : ''}} {{circled ? 'circled' : ''}} {{bordered ? 'bordered' : ''}} {{size}} {{type}} {{disabled ? 'disabled' : ''}}" style="{{style}}" @tap="tap">
+    <icon wx:if="{{icon}}" :type="iconType" :name="icon" :size="size"></icon>
     <slot></slot>
-    {{text}}
   </view>
 </template>
 
@@ -105,20 +179,16 @@
   import wepy from 'wepy'
   import Icon from './icon'
 
-  export default class Button extends wepy.component {
+  const coerce = t =>
+    typeof t === 'string' ? JSON.parse(t) : t
+
+  export default class Index extends wepy.component {
     props = {
       style: {
         type: String,
         default: ''
       },
-      className: {
-        type: String,
-        default: ''
-      },
-      icon: {
-        type: String,
-        default: ''
-      },
+      icon: String,
       size: {
         type: String,
         default: 'normal'
@@ -130,16 +200,26 @@
       inline: {
         type: [Boolean, String],
         default: false,
-        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
+        coerce: coerce
       },
       disabled: {
         type: [Boolean, String],
         default: false,
-        coerce: (t) => typeof t === 'string' ? JSON.parse(t) : t
+        coerce: coerce
       },
-      text: {
+      bordered: {
+        type: [Boolean, String],
+        default: false,
+        coerce: coerce
+      },
+      circled: {
+        type: [Boolean, String],
+        default: false,
+        coerce: coerce
+      },
+      iconType: {
         type: String,
-        default: ''
+        default: 'svg'
       }
     }
 
@@ -147,13 +227,11 @@
       icon: Icon
     }
 
-    data = {
-
-    }
+    data = {}
 
     methods = {
-      tap ($event) {
-        this.$emit('tap', $event)
+      tap(e) {
+        this.$emit('tap', e)
       }
     }
   }

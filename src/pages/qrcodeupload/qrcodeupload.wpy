@@ -99,7 +99,7 @@
     </view>
 
     <view class="index-entrace">
-      <repeat for="{{listgroup}}">
+      <repeat key="index" for="{{listgroup}}">
         <listitem :icon="item.icon" :iconSize="item.iconSize" :hasArrow="item.hasArrow" @tap.user="listitemTap">
           <text>{{item.text}}</text>
           <text>{{item.subtext}}</text>
@@ -107,13 +107,13 @@
       </repeat>
     </view>
 
-    <camerabutton icon="camera.svg" size="large" className="camera-btn" @tap.user="startCamera">{{isDoctor ? '拍照/上传' : '拍照'}}</camerabutton>
+    <camerabutton icon="camera.svg" size="large" class="camera-btn" @tap.user="startCamera">{{isDoctor ? '拍照/上传' : '拍照'}}</camerabutton>
   </view>
 
   <modal title="提示">
     <view class="flex v-center">
       <text>医院：</text>
-      <picker :items="pickerItems" @pickerchange.user="pickerChange"></picker>
+      <picker :items="pickerItems" @change.user="pickerChange"></picker>
     </view>
     <view class="modal-footer" slot="footer">
       <cancelButton type="plain" @tap.user="hideModal">取消</cancelButton>
@@ -247,15 +247,13 @@
 
     methods = {
       buttonitemTap (index) {
-        if(index === 0) {
+        if (index === 0) {
           this.day = 1
           this.queryCount(1)
-        }
-        else if(index === 1) {
+        } else if (index === 1) {
           this.day = 30
           this.queryCount(30)
-        }
-        else if(index === 2) {
+        } else if (index === 2) {
           this.day = 0
           this.queryCount(0)
         }
@@ -309,7 +307,9 @@
       })
 
       this.totalNum = 0
-      datas.forEach(e => this.totalNum += Number(e.total))
+      datas.forEach(e => {
+        this.totalNum += Number(e.total)
+      })
       this.successNum = (datas.find(item => item.status === 'checkPass') || {}).total || 0
       this.$apply()
     }
@@ -335,7 +335,7 @@
       this.queryCount(this.day)
     }
 
-    launchCamera(){
+    launchCamera() {
       wx.chooseImage({
         count: 9, // 默认9
         sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有

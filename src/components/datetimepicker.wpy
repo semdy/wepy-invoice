@@ -23,7 +23,7 @@
   import wepy from 'wepy'
   import Icon from './icon'
 
-  export default class Button extends wepy.component {
+  export default class Index extends wepy.component {
     props = {
       style: {
         type: String,
@@ -73,7 +73,7 @@
     methods = {
       change ($event) {
         this.value = $event.detail.value
-        this.$emit('datetimechange', $event)
+        this.$emit('change', $event)
       }
     }
   }

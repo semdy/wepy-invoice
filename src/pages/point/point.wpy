@@ -45,7 +45,7 @@
 </style>
 <template>
   <view class="point-listgroup">
-    <repeat for="{{listgroup}}">
+    <repeat key="index" for="{{listgroup}}">
       <listitem :visible="item.visible" :icon="item.icon" :hasArrow="item.hasArrow" @tap.user="listitemTap">
         <view class="list-item-text">{{item.text}}</view>
       </listitem>
@@ -54,7 +54,7 @@
 
   <scroll-view scroll-y="true" class="records-scrollview" lower-threshold="0" bindscrolltolower="onEndReached">
     <view class="point-records" wx:if="{{dataList.length>0}}">
-      <repeat for="{{dataList}}">
+      <repeat key="index" for="{{dataList}}">
         <view class="record-item">{{item.dateString}} {{item.scoregoods.describe}} {{item.status}}</view>
       </repeat>
     </view>
@@ -66,7 +66,7 @@
   import fetch from '../../service/fetch'
   import Listitem from '../../components/listitem'
   import {session} from '../../service/auth'
-  import {showError, showToast, formatDate} from '../../utils/util'
+  import {showError, formatDate} from '../../utils/util'
 
   export default class Index extends wepy.page {
     config = {
@@ -92,8 +92,7 @@
       listitemTap (index, e) {
         if (index === 0) {
           this.$navigate('/pages/pointflow/pointflow')
-        }
-        else if (index === 1) {
+        } else if (index === 1) {
           this.$navigate('/pages/exchange/exchange')
         }
       }

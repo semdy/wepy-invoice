@@ -44,7 +44,7 @@
   picker {
     flex: 1;
     width: 100%;
-    border: 2rpx solid #ccc;
+    border: 2rpx solid #ddd;
     background-color: #fff;
     border-radius: 8rpx;
 
@@ -54,7 +54,7 @@
     }
   }
 
-  .picker{
+  .picker {
     padding: 12rpx 24rpx;
     font-size: 28rpx;
     box-sizing: border-box;
@@ -284,7 +284,7 @@
      * 当小程序初始化完成时，会触发 onLaunch（全局只触发一次）
      */
     onLaunch () {
-      //this.getUserInfo()
+      // this.getUserInfo()
       if (!session.get()) {
         redirectToLogin()
       }

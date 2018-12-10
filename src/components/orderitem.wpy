@@ -37,7 +37,7 @@
   }
 </style>
 <template>
-  <view class="order-item {{className}}" style="{{style}}" @tap="tap">
+  <view class="order-item" style="{{style}}" @tap="tap">
     <view class="order-item-main">
       <view class="order-info-item">订单号：231011705001</view>
       <view class="order-info-item">订单类型：普通订单</view>
@@ -62,13 +62,9 @@
   import wepy from 'wepy'
   import Icon from './icon'
 
-  export default class StockItem extends wepy.component {
+  export default class Index extends wepy.component {
     props = {
       style: {
-        type: String,
-        default: ''
-      },
-      className: {
         type: String,
         default: ''
       }

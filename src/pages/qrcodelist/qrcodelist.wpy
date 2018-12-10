@@ -82,11 +82,11 @@
     <view class="query-form-main">
       <view class="query-item">
         <veiw class="query-label">时间</veiw>
-        <datetimepicker :value.sync="date" fields="month" @datetimechange.user="datetimechange"></datetimepicker>
+        <datetimepicker :value.sync="date" fields="month" @change.user="datetimechange"></datetimepicker>
       </view>
       <view class="query-item">
         <veiw class="query-label">状态</veiw>
-        <statuspicker :items="statusArray" :selectIndex.sync="statusIndex" @pickerchange.user="pickerChange"></statuspicker>
+        <statuspicker :items="statusArray" :selectIndex.sync="statusIndex" @change.user="pickerChange"></statuspicker>
       </view>
     </view>
     <view class="query-form-aside">
@@ -207,18 +207,12 @@
 
     watch = {
       status (value) {
-        let index = 0
-        this.statusArray.forEach((item, i) => {
-          if (item.value === value) {
-            index = i
-          }
-        })
-        this.statusIndex = index
+        this.statusIndex = this.statusArray.findIndex(item => item.value === value)
       }
     }
 
     methods = {
-      queryTap (e) {
+      queryTap () {
         this.handleQuery()
       },
       datetimechange (e) {
@@ -255,7 +249,7 @@
 
     queryList(date = '', status = '', page) {
       let params = {
-        date: date.replace(/\-/g, ''),
+        date: date.replace(/-/g, ''),
         status,
         page,
         limit: 20

@@ -3,15 +3,39 @@
 
   .form-item {
     background-color: #fff;
-    margin-bottom: 30rpx;
+
+    &:not(.nomargin) {
+      margin-bottom: 20rpx;
+    }
+  }
+
+  .form-item-inner {
+    .flex-v-center();
+    padding-top: 10rpx;
+    padding-bottom: 10rpx;
+
+    &.underline {
+      border-bottom: 1rpx solid @color-underline;
+    }
+  }
+
+  .form-item-label {
+    display: inline-block;
+    white-space: nowrap;
+    margin-right: 16rpx;
+    color: #888;
+  }
+
+  .form-item-bd {
+    position: relative;
     border-radius: 8rpx;
+    flex: 1;
     .flex-v-center();
 
-    > .input{
+    > .input {
+      width: 100%;
       padding: 12rpx 24rpx;
       font-size: 28rpx;
-     /* color: @gcolor;*/
-      display: block;
       box-sizing: border-box;
       flex: 1;
 
@@ -22,58 +46,95 @@
       &.normal {
         height: @normal;
       }
+      &.medium {
+        height: @medium;
+      }
       &.small {
         height: @small;
       }
     }
 
-    > .icon {
-      &.left {
-        margin-right: -24rpx;
-      }
-      &.right {
-        margin-left: -24rpx;
-      }
+    > .icon-left {
+      margin-left: 12rpx;
+      margin-right: -18rpx;
     }
 
-    &.bordered{
-      border: 2rpx solid #ccc;
+    > .icon-right {
+      display: flex;
+      align-items: center;
+      margin-left: -24rpx;
+      margin-right: 6rpx;
+    }
+
+    .ctrl-icon {
+      padding: 6rpx;
+      margin-left: 4rpx;
+      color: #8a8a8a;
+    }
+
+    .pwd-ctrl {
+      font-size: 36rpx;
+    }
+
+    &.bordered {
+      border: 1rpx solid @color-border;
     }
   }
 </style>
 <template>
-  <view class="form-item {{className}} {{border ==='true' ? 'bordered' : ''}}" style="{{style}}">
-    <iconleft wx:if="{{icon&&iconLeft==='true'}}" className="left" :name="icon" :size="size" @tap.user="iconTap"></iconleft>
-    <input wx:if="{{!password}}" type="{{type}}" class="input {{size}}" disabled="{{disabled}}" placeholder="{{placeholder}}" value="{{value}}" @focus="focus" @blur="blur" @change="change" @input="input"/>
-    <input wx:if="{{password}}" password class="input {{size}}" placeholder="{{placeholder}}" value="{{value}}" @focus="focus" @blur="blur" @change="change" @input="input"/>
-    <iconright wx:if="{{icon&&iconRight==='true'}}" className="right" :name="icon" :size="size" @tap.user="iconTap"></iconright>
+  <view class="form-item {{nomargin ? 'nomargin' : ''}}" style="{{style}}">
+    <view class="form-item-inner {{underline ? 'hairline--bottom' : ''}}">
+      <text wx:if="{{label}}" class="form-item-label" style="width:{{labelWidth}};">{{label}}</text>
+      <view class="form-item-bd {{bordered ? 'bordered' : ''}}">
+        <icon wx:if="{{icon}}" class="icon-left" :type="iconType" color="#999" :name="icon" :size="size"/>
+        <input password="{{password}}" type="{{type}}" class="input {{size}}" focus="{{focus}}" disabled="{{disabled}}"
+               placeholder="{{placeholder}}" placeholder-class="{{placeholderClass}}" confirm-type="{{confirmType}}" value="{{value}}" maxlength="{{maxlength}}" @tap="tap" @input="input"
+               @focus="focus" @blur="blur" @confirm="confirm" style="text-align:{{textAlign}}"/>
+        <view class="icon-right" wx:if="{{showClear || showEye}}">
+          <view class="ctrl-icon iconfont icon-close-circle" wx:if="{{showClear}}" @tap="clearField"
+                style="display: {{shouldClearShow ? '' : 'none'}}">
+          </view>
+          <view class="ctrl-icon pwd-ctrl iconfont icon-{{eyeName}}" wx:if="{{showEye}}" @tap="togglePwdVisible">
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 <script>
   import wepy from 'wepy'
   import Icon from './icon'
 
-  export default class Formitem extends wepy.component {
+  const coerce = t =>
+    typeof t === 'string' ? JSON.parse(t) : t
+
+  export default class Index extends wepy.component {
     props = {
       style: {
         type: String,
         default: ''
       },
-      className: {
+      placeholderClass: {
+        type: String,
+        default: 'input-placeholder'
+      },
+      type: {
+        type: String,
+        default: 'text'
+      },
+      confirmType: {
+        type: String,
+        default: 'done'
+      },
+      label: String,
+      icon: String,
+      iconType: {
+        type: String,
+        default: 'svg'
+      },
+      labelWidth: {
         type: String,
         default: ''
-      },
-      icon: {
-        type: String,
-        default: ''
-      },
-      iconLeft: {
-        type: String,
-        default: 'true'
-      },
-      iconRight: {
-        type: String,
-        default: 'false'
       },
       size: {
         type: String,
@@ -81,61 +142,103 @@
       },
       value: {
         type: [String, Number],
-        default: ''
+        default: '',
+        twoWay: true
+      },
+      maxlength: {
+        type: [String, Number],
+        default: -1,
+        coerce: v => +v
       },
       placeholder: {
         type: String,
         default: ''
       },
-      border: {
+      textAlign: {
         type: String,
-        default: 'false'
+        default: 'left'
       },
-      type: {
-        type: String,
-        default: 'text'
+      bordered: {
+        type: [Boolean, String],
+        default: true,
+        coerce
+      },
+      showClear: {
+        type: [Boolean, String],
+        default: false,
+        coerce
+      },
+      showEye: {
+        type: [Boolean, String],
+        default: false,
+        coerce
+      },
+      nomargin: {
+        type: [Boolean, String],
+        default: false,
+        coerce
+      },
+      underline: {
+        type: [Boolean, String],
+        default: false,
+        coerce
       },
       password: {
+        type: String,
+        default: false,
+        coerce
+      },
+      focus: {
         type: [Boolean, String],
-        default: false
+        default: false,
+        coerce
       },
       disabled: {
         type: [Boolean, String],
-        default: false
+        default: false,
+        coerce
       }
     }
 
     components = {
-      iconleft: Icon,
-      iconright: Icon
+      icon: Icon,
+      iconclear: Icon,
+      iconeye: Icon
     }
 
     data = {
 
     }
     computed = {
-      iconLeft () {
-        if (this.iconRight === 'true') {
-          return this.iconLeft = 'false'
-        }
-        return this.iconLeft
+      shouldClearShow() {
+        return this.showClear ? this.value !== '' : false
+      },
+      eyeName() {
+        return this.password ? 'eye-closed' : 'eye-opened'
       }
     }
     methods = {
-      focus ($event) {
-        this.$emit('focus', $event)
+      clearField() {
+        this.value = ''
       },
-      blur ($event) {
-        this.$emit('blur', $event)
+      togglePwdVisible() {
+        this.password = !this.password
       },
-      change ($event) {
-        this.$emit('change', $event)
+      tap(e) {
+        this.$emit('tap', e)
       },
-      input ($event) {
-        this.$emit('input', $event)
+      input(e) {
+        this.value = e.detail.value
+        this.$emit('input', e)
       },
-      iconTap ($event) {
-        this.$emit('iconTap', $event)
+      focus(e) {
+        this.$emit('focus', e)
+      },
+      blur(e) {
+        this.$emit('blur', e)
+      },
+      confirm(e) {
+        this.$emit('confirm', e)
       }
     }
   }

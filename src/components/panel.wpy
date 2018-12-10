@@ -38,6 +38,6 @@
 <script>
   import wepy from 'wepy'
 
-  export default class Panel extends wepy.component {
+  export default class Index extends wepy.component {
   }
 </script>

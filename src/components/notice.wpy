@@ -26,7 +26,7 @@
 </style>
 
 <template>
-  <view class="notice {{className}}" style="{{style}}">
+  <view class="notice" style="{{style}}">
     <icon name="notice.svg"></icon>
     <view class="notice-messages">
       <view class="notice-scroller" style="transform: translateY({{y}}%); transition-duration: {{speed}}ms;">
@@ -42,13 +42,9 @@
   import wepy from 'wepy'
   import Icon from './icon'
 
-  export default class Notice extends wepy.component {
+  export default class Index extends wepy.component {
     props = {
       style: {
-        type: String,
-        default: ''
-      },
-      className: {
         type: String,
         default: ''
       },

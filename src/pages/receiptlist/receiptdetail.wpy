@@ -6,20 +6,20 @@
   }
 
   .receipt-detail-item {
-    border-left:2rpx solid #bbb;
-    border-right:2rpx solid #bbb;
+    border-left: 2rpx solid #bbb;
+    border-right: 2rpx solid #bbb;
     border-bottom: 2rpx dashed #bbb;
     background-color: #fff;
     overflow: hidden;
 
     &:first-child {
-      border-top:2rpx solid #bbb;
+      border-top: 2rpx solid #bbb;
       border-top-left-radius: 16rpx;
       border-top-right-radius: 16rpx;
     }
 
     &:last-child {
-      border-bottom:2rpx solid #bbb;
+      border-bottom: 2rpx solid #bbb;
       border-bottom-left-radius: 16rpx;
       border-bottom-right-radius: 16rpx;
     }
@@ -131,7 +131,7 @@
     <transformButton @tap.user="onTransformTap">转移库</transformButton>
   </view>
 
-  <modal wx:if="{{isModalShow}}" title="提示信息" @modalClose.user="closeModal">
+  <modal :show.sync="isModalShow" title="提示信息">
     <view>点击复制下面的链接去浏览器下载</view>
     <view class="download-url" @tap="onDownloadTap">{{downloadUrl}}</view>
   </modal>

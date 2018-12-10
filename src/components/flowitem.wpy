@@ -41,7 +41,7 @@
 
 </style>
 <template>
-  <view class="flow-item {{className}}" style="{{style}}" @tap="tap({{index}})">
+  <view class="flow-item" style="{{style}}" @tap="tap({{index}})">
     <view class="flow-item-date">
       <slot name="time"></slot>
     </view>
@@ -56,14 +56,10 @@
 <script>
   import wepy from 'wepy'
 
-  export default class Flowitem extends wepy.component {
+  export default class Index extends wepy.component {
     props = {
       icon: String,
       style: {
-        type: String,
-        default: ''
-      },
-      className: {
         type: String,
         default: ''
       }

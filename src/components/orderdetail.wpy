@@ -36,7 +36,7 @@
   }
 </style>
 <template>
-  <view class="order-detail-item {{className}}" style="{{style}}" @tap="tap">
+  <view class="order-detail-item" style="{{style}}" @tap="tap">
     <view class="order-detail-item-main">
       <view class="order-info-item">型号：H7412378912347</view>
       <view class="order-info-item">名称：依维莫司洗脱冠状动脉支架系统</view>
@@ -61,13 +61,9 @@
   import wepy from 'wepy'
   import Icon from './icon'
 
-  export default class StockItem extends wepy.component {
+  export default class Index extends wepy.component {
     props = {
       style: {
-        type: String,
-        default: ''
-      },
-      className: {
         type: String,
         default: ''
       }

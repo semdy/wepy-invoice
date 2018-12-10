@@ -31,7 +31,7 @@
 </style>
 
 <template>
-  <view class="tabbar-wrap {{className}}" style="{{style}}" wx:if="{{tabBar.list.length>0}}">
+  <view class="tabbar-wrap" style="{{style}}" wx:if="{{tabBar.list.length>0}}">
     <repeat for="{{tabBar.list}}">
       <view class="tabbar-item {{tabIndex == index ? 'selected' : ''}}" style="color:{{tabIndex == index ? tabBar.selectedColor : tabBar.color}}" @tap="tap('{{index}}')">
         <icon wx:if="{{tabIndex != index}}" :name="item.icon"></icon>
@@ -46,13 +46,9 @@
   import wepy from 'wepy'
   import Icon from './icon'
 
-  export default class Tabbar extends wepy.component {
+  export default class Index extends wepy.component {
     props = {
       style: {
-        type: String,
-        default: ''
-      },
-      className: {
         type: String,
         default: ''
       },

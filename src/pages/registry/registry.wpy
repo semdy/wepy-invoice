@@ -135,7 +135,7 @@
     <view>服务热线：021-33563567</view>
   </view>
 
-  <modal wx:if="{{isModalShow}}" title="提示" @modalClose.user="closeModal">
+  <modal :show.sync="isModalShow" title="提示">
     <view class="modal-confirm">
       <view>该公司在迪乐助手历史记录中的公司名称为“{{compername}}”，点击确认按钮更新至输入框，如有疑问请拨打服务热线。</view>
     </view>
