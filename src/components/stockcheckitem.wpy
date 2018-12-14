@@ -45,6 +45,10 @@
     border-radius: 50%;
     color: #10458e;
     font-size: 96rpx;
+
+    &.count-down {
+      font-size: 40rpx;
+    }
   }
 
   .stock-detail {
@@ -78,19 +82,20 @@
         <geoIcon name="stock.png"></geoIcon>
         <text>{{stock.type}}</text>
       </view>
-      <view class="stock-number" @tap="stockDetailTap">{{stock.count}}</view>
-      <view class="stock-detail" @tap="stockDetailTap">盘点详情</view>
+      <view class="stock-number {{stock.status==='unStart' ? 'count-down' : ''}}" @tap="stockDetailTap">{{stock.status==='unStart' ? stock.time : stock.count}}</view>
+      <view class="stock-detail" wx:if="{{stock.status==='unStart'}}" @tap="stockDetailTap">盘点倒计时</view>
+      <view class="stock-detail" wx:else @tap="stockDetailTap">盘点详情</view>
     </view>
 
     <view class="stock-check-item-right">
       <view class="stock-check-info">盘点任务名称：{{stock.name}}</view>
       <view class="stock-check-info">盘点任务状态：{{stock.statusText}}</view>
-      <view class="stock-check-info">盘点任务编码：{{stock.code}}</view>
+      <view class="stock-check-info">盘点任务编码：{{stock.number}}</view>
       <view class="stock-check-info">产品线：{{stock.divisionName}}</view>
       <view class="stock-check-info">仓库类型：{{stock.stockType}}</view>
       <view class="stock-check-info">盘点任务创建日期：{{stock.createdAt}}</view>
       <view class="stock-check-action">
-        <cancelButton bordered="true" @tap.user="cancelButtonTap" wx:if="{{stock.status==='unStart'}}">取消预约</cancelButton>
+        <cancelButton bordered="true" @tap.user="onDelTap" wx:if="{{stock.status==='unStart'}}">取消预约</cancelButton>
         <checkButton @tap.user="checkButtonTap" wx:if="{{stock.status==='start'}}">盘点</checkButton>
         <view class="button normal primary {{stock.count === 0 ? 'disabled' : ''}}" wx:if="{{stock.status==='start'}}" @tap="submitButtonTap">提交</view>
         <block wx:if="{{stock.status!=='expired'}}">

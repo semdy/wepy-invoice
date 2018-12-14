@@ -125,9 +125,9 @@
       this.queryList(this.inventoryId, ++this.page)
     }
 
-    queryList (inventoryId, page) {
+    queryList (id, page) {
       let params = {
-        inventoryId,
+        id,
         page,
         limit: 20
       }

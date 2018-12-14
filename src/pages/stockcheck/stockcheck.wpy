@@ -436,8 +436,8 @@
       },
       onDelTap (index) {
         confirm('确定要删除吗?').then(() => {
-          const inventoryId = this.dataList[index].id
-          this.deleteTask(inventoryId)
+          const id = this.dataList[index].id
+          this.deleteTask(id)
         })
       }
     }
@@ -590,7 +590,7 @@
 
     async uploadTask (id) {
       this.hideConfirmModal()
-      let res = await fetch.get('update/Inventory', {id})
+      let res = await fetch.get('submit/Inventory', {id})
       if (res.success) {
         this.switchTab(1)
       } else {
@@ -598,9 +598,9 @@
       }
     }
 
-    uploadTaskQr (inventoryId, qrCode) {
+    uploadTaskQr (id, qrCode) {
       return new Promise((resolve, reject) => {
-        fetch.get('create/InventoryQr', {inventoryId, qrCode}).then(res => {
+        fetch.get('create/InventoryQr', {id, qrCode}).then(res => {
           this.handleQuery()
           if (res.success) {
             showToast(res.message)
@@ -613,8 +613,8 @@
       })
     }
 
-    async deleteTask (inventoryId) {
-      let res = await fetch.get('delete/Inventory', {inventoryId})
+    async deleteTask (id) {
+      let res = await fetch.get('delete/Inventory', { id })
       if (res.success) {
         this.handleQuery()
         showToast(res.message)
