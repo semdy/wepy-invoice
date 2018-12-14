@@ -3,7 +3,8 @@ import {showError, uuid, redirectToLogin} from '../utils/util'
 import {version, ref} from '../config'
 import {session} from '../service/auth'
 
-export const serverUrl = 'https://bscqr.qtdatas.com/'
+// export const serverUrl = 'https://bscqr.qtdatas.com/'
+export const serverUrl = 'http://bscqrdev.kurite.cn/'
 
 const logout = () => {
   session.clear()

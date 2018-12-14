@@ -213,15 +213,15 @@
 
   <modal :show.sync="isModalShow" title="提示">
     <view class="stock-tabs">
-      <view class="{{createType === 0 ? 'selected' : ''}}" @tap="changeCreateType(0)">立即盘点</view>
-      <view class="{{createType === 1 ? 'selected' : ''}}" @tap="changeCreateType(1)">预约盘点</view>
+      <view class="{{createType === 1 ? 'selected' : ''}}" @tap="changeCreateType(1)">立即盘点</view>
+      <view class="{{createType === 0 ? 'selected' : ''}}" @tap="changeCreateType(0)">预约盘点</view>
     </view>
     <view class="stock-check-form">
-      <block wx:if="{{createType === 1}}">
+      <block wx:if="{{createType === 0}}">
         <view class="stock-check-label">盘点开始时间：</view>
-        <datetimepickerStart @change.user="stockStartChange"></datetimepickerStart>
+        <datetimepickerStart :value.sync="stockStartTime" @change.user="stockStartChange"></datetimepickerStart>
         <view class="stock-check-label">盘点结束时间：</view>
-        <datetimepickerEnd @change.user="stockEndChange"></datetimepickerEnd>
+        <datetimepickerEnd :value.sync="stockEndTime" @change.user="stockEndChange"></datetimepickerEnd>
       </block>
       <view class="stock-check-label">任务名称：</view>
       <textarea value="{{remark}}" @input="remarkChange" placeholder="请输入盘点任务名称(必填)"/>
@@ -231,7 +231,7 @@
       <view class="stock-check-label">产品线：</view>
       <divisionpicker :items.sync="divisions" @change.user="divisionChange"></divisionpicker>
       <view class="stock-check-label">报告生成时间：</view>
-      <reportpicker :items.sync="reportTimes" @change.user="divisionChange"></reportpicker>
+      <reportpicker :value.sync="reportValue" :items.sync="reportTimes" @change.user="reportChange"></reportpicker>
     </view>
     <view class="modal-footer">
       <view class="update-button cancel" @tap="closeModal">取消</view>
@@ -285,7 +285,8 @@
 
   const STOCK_STATUS = {
     'submit': '已提交',
-    'unSubmit': '未提交',
+    'start': '进行中',
+    'unStart': '预约中',
     'expired': '过期未完成'
   }
 
@@ -323,16 +324,18 @@
     data = {
       loaded: false,
       tabIndex: 0,
-      createType: 0,
-      queryType: 'reserve',
+      createType: 1,
+      reportType: 'now',
+      queryType: 'unStart',
       stockStartTime: '',
       stockEndTime: '',
       dataList: [],
       divisions: [],
       warehouseTypes: [],
+      reportValue: 0,
       reportTimes: [
-        {name: '对比昨天库存（10分钟）', value: 0},
-        {name: '对比今天库存（隔天）', value: 1}
+        {name: '对比昨天库存（10分钟）', value: 'now'},
+        {name: '对比今天库存（隔天）', value: 'night'}
       ],
       remark: '',
       isModalShow: false,
@@ -409,6 +412,10 @@
       divisionChange (item) {
         this.divisionID = item.value
         this.divisionName = item.name
+      },
+      reportChange (item, selectIndex) {
+        this.reportType = item.value
+        this.reportValue = selectIndex
       },
       storeChange (item, index) {
         this.warehouseType = item.value
@@ -496,10 +503,10 @@
       this.tabIndex = index
       switch (index) {
         case 0:
-          this.queryType = 'reserve'
+          this.queryType = 'unStart'
           break
         case 1:
-          this.queryType = 'unSubmit'
+          this.queryType = 'start'
           break
         case 2:
           this.queryType = 'submit'
@@ -509,14 +516,41 @@
     }
 
     async createTask () {
+      if (this.createType === 0) {
+        if (this.stockStartTime === '') {
+          return showError('请输入预约盘点开始时间')
+        }
+
+        if (this.stockEndTime === '') {
+          return showError('请输入预约盘点结束时间')
+        }
+      }
+
       if (!this.remark) {
         return showError('请输入盘点任务名称')
       }
-      let res = await fetch.get('create/Inventory', {name: this.remark, divisionName: this.divisionName, divisionID: this.divisionID, stockType: this.warehouseType})
+
+      let params = {
+        name: this.remark,
+        divisionName: this.divisionName,
+        divisionID: this.divisionID,
+        stockType: this.warehouseType,
+        type: '内部盘点',
+        order: this.createType === 0,
+        report: this.reportType,
+        strDate: this.stockStartTime,
+        endDate: this.stockEndTime
+      }
+
+      let res = await fetch.post('create/Inventory', params)
+
       if (res.success) {
         this.remark = ''
+        this.stockStartTime = ''
+        this.stockEndTime = ''
+        this.reportValue = 0
         this.hideModal()
-        this.switchTab(0)
+        this.switchTab(this.createType)
       } else {
         showError(res.message)
       }

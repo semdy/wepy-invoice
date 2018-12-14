@@ -7,12 +7,12 @@
           @change="change"
           @columnchange="columnchange"
           class="{{disabled ? 'disabled' : ''}}"
-          value="{{selectIndex}}"
+          value="{{value}}"
           range="{{names}}"
           disabled="{{disabled}}"
   >
     <view class="picker {{size}} {{className}}" style="{{style}}">
-      <text>{{names[selectIndex]}}</text>
+      <text>{{names[value]}}</text>
       <icon name="angle-down-black.png"></icon>
     </view>
   </picker>
@@ -40,7 +40,7 @@
         type: Array,
         default: []
       },
-      selectIndex: {
+      value: {
         type: [Number, String],
         coerce: function (v) {
           return +v
@@ -65,12 +65,12 @@
     }
     methods = {
       change ($event) {
-        this.selectIndex = $event.detail.value
-        this.$emit('change', this.items[this.selectIndex], this.selectIndex, $event)
+        this.value = $event.detail.value
+        this.$emit('change', this.items[this.value], this.value, $event)
       },
       columnchange ($event) {
-        this.selectIndex = $event.detail.value
-        this.$emit('columnchange', this.selectIndex, $event)
+        this.value = $event.detail.value
+        this.$emit('columnchange', this.value, $event)
       }
     }
   }

@@ -86,7 +86,7 @@
       </view>
       <view class="query-item">
         <veiw class="query-label">状态</veiw>
-        <statuspicker :items="statusArray" :selectIndex.sync="statusIndex" @change.user="pickerChange"></statuspicker>
+        <statuspicker :items="statusArray" :value.sync="statusIndex" @change.user="pickerChange"></statuspicker>
       </view>
     </view>
     <view class="query-form-aside">

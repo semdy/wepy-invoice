@@ -234,7 +234,7 @@
       },
       // Debug log to console
       // https://mp.weixin.qq.com/debug/wxadoc/dev/framework/config.html#debug
-      debug: true
+      debug: false
     }
 
     constructor () {
