@@ -83,7 +83,7 @@
         <text>{{stock.type}}</text>
       </view>
       <view class="stock-number {{stock.status==='unStart' ? 'count-down' : ''}}" @tap="stockDetailTap">{{stock.status==='unStart' ? stock.time : stock.count}}</view>
-      <view class="stock-detail" wx:if="{{stock.status==='unStart'}}" @tap="stockDetailTap">盘点倒计时</view>
+      <view class="stock-detail" wx:if="{{stock.status==='unStart'}}">盘点倒计时</view>
       <view class="stock-detail" wx:else @tap="stockDetailTap">盘点详情</view>
     </view>
 
@@ -98,10 +98,8 @@
         <cancelButton bordered="true" @tap.user="onDelTap" wx:if="{{stock.status==='unStart'}}">取消预约</cancelButton>
         <checkButton @tap.user="checkButtonTap" wx:if="{{stock.status==='start'}}">盘点</checkButton>
         <view class="button normal primary {{stock.count === 0 ? 'disabled' : ''}}" wx:if="{{stock.status==='start'}}" @tap="submitButtonTap">提交</view>
-        <block wx:if="{{stock.status!=='expired'}}">
-          <genButton @tap.user="buttonTap" wx:if="{{stock.status==='submit'}}">报告生成中</genButton>
-          <historyButton @tap.user="buttonTap" wx:if="{{stock.status==='reckon'}}">查看报告</historyButton>
-        </block>
+        <genButton @tap.user="buttonTap" wx:if="{{stock.status==='submit'}}">报告生成中</genButton>
+        <historyButton @tap.user="buttonTap" wx:if="{{stock.status==='finish'}}">查看报告</historyButton>
         <delIcon name="trash.png" class="delete-icon"  wx:if="{{stock.status === 'start'}}" @tap.user="onDelTap"></delIcon>
       </view>
     </view>

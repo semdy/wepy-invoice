@@ -53,7 +53,6 @@
       color: #01458e;
       font-size: 24rpx;
       line-height: 72rpx;
-      background-color: #fff;
       text-decoration: underline;
       z-index: 50;
 

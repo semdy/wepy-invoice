@@ -109,7 +109,7 @@
     methods = {
       delTap (item) {
         confirm('确定要删除吗?').then(() => {
-          this.deleteQrcode(item.id)
+          this.deleteQrcode(item.id, item.inventory)
         })
       }
     }
@@ -155,8 +155,8 @@
       })
     }
 
-    deleteQrcode (qrId) {
-      fetch.get('delete/InventoryQr', {qrId}).then(res => {
+    deleteQrcode (id, inventoryId) {
+      fetch.get('delete/InventoryQr', {id, inventoryId}).then(res => {
         if (res.success) {
           showToast(res.message)
           this.handleQuery()

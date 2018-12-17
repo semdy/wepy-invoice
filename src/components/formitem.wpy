@@ -2,8 +2,6 @@
   @import "../less/mixin";
 
   .form-item {
-    background-color: #fff;
-
     &:not(.nomargin) {
       margin-bottom: 20rpx;
     }
@@ -26,6 +24,7 @@
 
   .form-item-bd {
     position: relative;
+    background-color: #fff;
     border-radius: 8rpx;
     flex: 1;
     .flex-v-center();

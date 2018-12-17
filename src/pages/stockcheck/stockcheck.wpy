@@ -426,18 +426,22 @@
           this.showGenderModal()
         } else {
           const id = this.dataList[index].id
-          this.$navigate('/pages/stockcheck/stockchecklist', {id})
+          this.$navigate('/pages/stockcheck/stockchecklist', { id })
         }
       },
       onStockDetailTap (index) {
         this.curIndex = index
-        const inventoryId = this.dataList[index].id
-        this.$navigate('/pages/stockcheck/stockdetail', {inventoryId, tabIndex: this.tabIndex})
+        const item = this.dataList[index]
+        const inventoryId = item.id
+        if ((item.status === 'start' && item.count > 0) || item.status === 'submit') {
+          this.$navigate('/pages/stockcheck/stockdetail', {inventoryId, tabIndex: this.tabIndex})
+        }
       },
       onDelTap (index) {
-        confirm('确定要删除吗?').then(() => {
-          const id = this.dataList[index].id
-          this.deleteTask(id)
+        const item = this.dataList[index]
+        const msg = item.status === 'unStart' ? '确定要取消吗?' : '确定要删除吗?'
+        confirm(msg).then(() => {
+          this.deleteTask(item.id)
         })
       }
     }
@@ -590,7 +594,7 @@
 
     async uploadTask (id) {
       this.hideConfirmModal()
-      let res = await fetch.get('submit/Inventory', {id})
+      let res = await fetch.post('submit/Inventory', {id})
       if (res.success) {
         this.switchTab(1)
       } else {
@@ -600,7 +604,7 @@
 
     uploadTaskQr (id, qrCode) {
       return new Promise((resolve, reject) => {
-        fetch.get('create/InventoryQr', {id, qrCode}).then(res => {
+        fetch.post('create/InventoryQr', {id, qrCode}).then(res => {
           this.handleQuery()
           if (res.success) {
             showToast(res.message)

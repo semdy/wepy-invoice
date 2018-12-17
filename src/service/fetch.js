@@ -3,8 +3,8 @@ import {showError, uuid, redirectToLogin} from '../utils/util'
 import {version, ref} from '../config'
 import {session} from '../service/auth'
 
-// export const serverUrl = 'https://bscqr.qtdatas.com/'
-export const serverUrl = 'http://bscqrdev.kurite.cn/'
+export const serverUrl = 'https://bscqr.qtdatas.com/'
+// export const serverUrl = 'http://bscqrdev.kurite.cn/'
 
 const logout = () => {
   session.clear()
@@ -48,7 +48,7 @@ let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
     }
 
     wepy.request({
-      url: `${serverUrl}api/${url}?version=${version}`,
+      url: `${serverUrl}dev/${url}?version=${version}`,
       data: Object.assign({}, params.data, params.method === 'POST' && {ref}),
       method: params.method || 'GET',
       header: Object.assign(defHeaders, params.header)

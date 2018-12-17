@@ -2,61 +2,84 @@
   @import "../../less/mixin";
 
   page {
-    padding-left: 10rpx;
-    padding-right: 10rpx;
+    padding: 12rpx 12rpx 120rpx;
   }
 
-  .stock-topbar {
+  .stock-item {
+    background-color: #fff;
+    border-radius: 20rpx;
+    padding: 20rpx 30rpx;
+    margin-bottom: 12rpx;
+  }
+
+  .stock-body {
     .flex();
+  }
+
+  .stock-legend {
+    .flex-v-center();
+    font-size: 32rpx;
+    width: 180rpx;
+    border-right: 2rpx solid #ccc;
+  }
+
+  .stock-main {
+    flex: 1;
+    .flex();
+  }
+
+  .stock-diff-item {
+    flex: 1;
+    text-align: center;
+
+    .title {
+      font-size: 32rpx;
+      margin-bottom: 30rpx;
+    }
+
+    .text {
+      color: #888;
+      font-size: 26rpx;
+    }
+  }
+
+  .stock-sublist {
     margin-top: 20rpx;
-    margin-bottom: 20rpx;
+    padding-top: 12rpx;
+    border-top: 2rpx solid #ccc;
+  }
 
-    > view {
+  .stock-subview {
+    .flex();
+    margin-top: 6rpx;
+    margin-bottom: 6rpx;
+
+    .stock-subitem {
       flex: 1;
-      font-size: 30rpx;
-      text-align: center;
+      color: #888;
+      font-size: 26rpx;
 
-      &:last-child {
-        flex: 2;
-        color: #ff0000;
+      &:first-child {
+        flex: none;
+        width: 180rpx;
+      }
+
+      &:not(:first-child) {
+        text-align: center;
+      }
+
+      &.hd {
+        font-size: 28rpx;
+        color: #444;
       }
     }
   }
-  .scrollview {
-    flex: 1;
-    height: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
-  }
 
-  .stock-info-item {
-    background-color: #fff;
-    border-radius: 20rpx;
-    margin-bottom: 40rpx;
-    padding: 10rpx;
-  }
-
-  .stock-info-hd {
-    padding: 20rpx 0;
-    text-align: center;
-    font-size: 36rpx;
-    border-bottom: 2rpx solid #bbb;
-  }
-
-  .stock-info-details {
-    .flex();
-    padding-top: 20rpx;
-    padding-bottom: 20rpx;
-  }
-
-  .stock-info-detail {
-    flex: 1;
-    text-align: center;
-  }
-
-  .stocks-action {
-    padding-top: 20rpx;
-    padding-bottom: 20rpx;
+  .stock-action {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 20rpx;
     text-align: center;
 
     .export-button {
@@ -82,67 +105,65 @@
 </style>
 <template>
   <block wx:if="{{loaded}}">
-    <view class="stock-topbar">
-      <view>实盘：{{result.realNum}}</view>
-      <view>系统：{{result.sysNum}}</view>
-      <view>QR差异率：{{result.qrDiffRate}}%</view>
+    <view class="stock-item">
+      <view class="stock-body">
+        <view class="stock-legend">整体差异率</view>
+        <view class="stock-main">
+          <view class="stock-diff-item">
+            <view class="title">UPN</view>
+            <view class="text">{{result.upn}}%</view>
+          </view>
+          <view class="stock-diff-item">
+            <view class="title">LOT</view>
+            <view class="text">{{result.lot}}%</view>
+          </view>
+          <view class="stock-diff-item">
+            <view class="title">QR</view>
+            <view class="text">{{result.qr}}%</view>
+          </view>
+        </view>
+      </view>
     </view>
 
-    <scroll-view scroll-y="true" class="scrollview" lower-threshold="0" bindscrolltolower="onEndReached">
-      <view class="stock-info-item">
-        <view class="stock-info-hd">UPN差异率：{{result.upnDiffRate}}%</view>
-        <view class="stock-info-details">
-          <view class="stock-info-detail">
-            <view>无差异数量</view>
-            <view>{{result.upn.sameNum}}</view>
-          </view>
-          <view class="stock-info-detail">
-            <view>实物有，系统没有</view>
-            <view>{{result.upn.realLackNum}}</view>
-          </view>
-          <view class="stock-info-detail">
-            <view>实物没有，系统有</view>
-            <view>{{result.upn.sysLackNum}}</view>
-          </view>
-        </view>
-      </view>
-      <view class="stock-info-item">
-        <view class="stock-info-hd">LOT差异率：{{result.lotDiffRate}}%</view>
-        <view class="stock-info-details">
-          <view class="stock-info-detail">
-            <view>无差异数量</view>
-            <view>{{result.lot.sameNum}}</view>
-          </view>
-          <view class="stock-info-detail">
-            <view>实物有，系统没有</view>
-            <view>{{result.lot.realLackNum}}</view>
-          </view>
-          <view class="stock-info-detail">
-            <view>实物没有，系统有</view>
-            <view>{{result.lot.sysLackNum}}</view>
+    <repeat for="{{result.detail}}" index="index">
+      <view class="stock-item">
+        <view class="stock-body">
+          <view class="stock-legend">{{item.name}}</view>
+          <view class="stock-main">
+            <view class="stock-diff-item">
+              <view class="title">UPN</view>
+              <view class="text">{{item.diff.upn}}%</view>
+            </view>
+            <view class="stock-diff-item">
+              <view class="title">LOT</view>
+              <view class="text">{{item.diff.lot}}%</view>
+            </view>
+            <view class="stock-diff-item">
+              <view class="title">QR</view>
+              <view class="text">{{item.diff.qr}}%</view>
+            </view>
           </view>
         </view>
-      </view>
-      <view class="stock-info-item">
-        <view class="stock-info-hd">QR差异率：{{result.qrDiffRate}}%</view>
-        <view class="stock-info-details">
-          <view class="stock-info-detail">
-            <view>无差异数量</view>
-            <view>{{result.qrcode.sameNum}}</view>
+        <view class="stock-sublist" wx:if="{{item.stocks.length > 0}}">
+          <view class="stock-subview">
+            <view class="stock-subitem hd">仓库类型</view>
+            <view class="stock-subitem hd">UPN</view>
+            <view class="stock-subitem hd">LOT</view>
+            <view class="stock-subitem hd">QR</view>
           </view>
-          <view class="stock-info-detail">
-            <view>实物有，系统没有</view>
-            <view>{{result.qrcode.realLackNum}}</view>
-          </view>
-          <view class="stock-info-detail">
-            <view>实物没有，系统有</view>
-            <view>{{result.qrcode.sysLackNum}}</view>
-          </view>
+          <repeat for="{{item.stocks}}">
+            <view class="stock-subview">
+              <view class="stock-subitem">{{item.name}}</view>
+              <view class="stock-subitem">{{item.diff.upn}}%</view>
+              <view class="stock-subitem">{{item.diff.lot}}%</view>
+              <view class="stock-subitem">{{item.diff.qr}}%</view>
+            </view>
+          </repeat>
         </view>
       </view>
-    </scroll-view>
+    </repeat>
 
-    <view class="stocks-action">
+    <view class="stock-action">
       <exportButton inline="true" class="export-button" @tap.user="onExportTap">导出</exportButton>
     </view>
 
@@ -193,21 +214,15 @@
       onExportTap () {
         this.showModal()
       },
-      onDownloadTap () {
-        wx.setClipboardData({
-          data: this.result.fileName,
-          success: () => {
-            wx.getClipboardData({
-              success: (res) => {
-                if (res.data === this.result.fileName) {
-                  showToast('复制成功')
-                } else {
-                  showError('复制失败，请手动长按复制')
-                }
-              }
-            })
-          }
-        })
+      async onDownloadTap () {
+        const data = this.result.fileName
+        await wepy.setClipboardData({ data })
+        const res = await wepy.getClipboardData()
+        if (res.data === data) {
+          showToast('复制成功')
+        } else {
+          showError('复制失败，请手动长按复制')
+        }
       }
     }
 
@@ -221,11 +236,11 @@
       this.$apply()
     }
 
-    queryList(id) {
-      fetch.get('query/inventoryResult', {id}).then(res => {
+    queryList(inventoryId) {
+      fetch.get('query/inventoryResult', { inventoryId }).then(res => {
         if (res.success) {
           this.result = res.data.result
-          this.result.fileName = serverUrl + 'export/inventory/' + this.result.fileName
+          this.result.fileName = serverUrl + 'inventory/' + this.result.fileName
           this.loaded = true
           this.$apply()
         } else {

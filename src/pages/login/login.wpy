@@ -1,17 +1,17 @@
 <style lang="less">
   @import "../../less/mixin";
 
-  .login-logo{
+  .login-logo {
     margin: 10% 30%;
 
-    > image{
+    > image {
       display: block;
       width: 500rpx;
       height: 300rpx;
     }
   }
 
-  .login-form{
+  .login-form {
     width: 60%;
     max-width: 1000rpx;
     .marign-auto();
@@ -21,7 +21,7 @@
     }
   }
 
-  .login-footer{
+  .login-footer {
     position: absolute;
     left: 0;
     right: 0;
@@ -53,7 +53,6 @@
       color: #01458e;
       font-size: 24rpx;
       line-height: 72rpx;
-      background-color: #fff;
       text-decoration: underline;
       z-index: 50;
 
