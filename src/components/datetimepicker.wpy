@@ -1,5 +1,9 @@
 <style lang="less">
-
+  .picker {
+    .placeholder {
+      color: #999;
+    }
+  }
 </style>
 
 <template>
@@ -13,6 +17,7 @@
           disabled="{{disabled}}"
   >
     <view class="picker {{size}} {{className}}" style="{{style}}">
+      <text class="placeholder" wx:if="{{placeholder && value === ''}}">{{placeholder}}</text>
       <text>{{value}}</text>
       <icon name="angle-down-black.png"></icon>
     </view>
@@ -60,7 +65,8 @@
       disabled: {
         type: Boolean,
         default: false
-      }
+      },
+      placeholder: String
     }
 
     components = {

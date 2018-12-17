@@ -224,10 +224,10 @@
     </view>
     <scroll-view scroll-y="true" class="stock-check-form">
       <block wx:if="{{createType === 0}}">
-        <view class="stock-check-label">盘点开始时间(选填)：</view>
-        <datetimepickerStart :value.sync="stockStartTime" @change.user="stockStartChange"></datetimepickerStart>
-        <view class="stock-check-label">盘点结束时间(选填)：</view>
-        <datetimepickerEnd :value.sync="stockEndTime" @change.user="stockEndChange"></datetimepickerEnd>
+        <view class="stock-check-label">盘点开始时间：</view>
+        <datetimepickerStart :value.sync="stockStartTime" placeholder="选填" @change.user="stockStartChange"></datetimepickerStart>
+        <view class="stock-check-label">盘点结束时间：</view>
+        <datetimepickerEnd :value.sync="stockEndTime" placeholder="选填" @change.user="stockEndChange"></datetimepickerEnd>
       </block>
       <view class="stock-check-label">任务名称：</view>
       <input class="textarea" value="{{remark}}" @input="remarkChange" placeholder="请输入盘点任务名称(必填)"/>
@@ -284,7 +284,7 @@
   import DatetimePicker from '../../components/datetimepicker'
   import StockChemItem from '../../components/stockcheckitem'
   import Toast from 'wepy-com-toast'
-  import { showError, showToast, confirm, formatDate } from '../../utils/util'
+  import { showError, showToast, confirm, formatDate, parseDate } from '../../utils/util'
 
   const STOCK_STATUS = {
     'submit': '已提交',
@@ -524,9 +524,15 @@
 
     async createTask () {
       if (this.createType === 0) {
+        if (this.stockStartTime !== '') {
+          let now = new Date()
+          if (parseDate(this.stockStartTime).getTime() <= new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()) {
+            return showError('预约盘点开始时间不能选今天或过去的时间')
+          }
+        }
         if (this.stockStartTime !== '' && this.stockEndTime !== '') {
-          const diffTime = new Date(this.stockEndTime).getTime() - new Date(this.stockStartTime).getTime()
-          if (diffTime / (60 * 60 * 24 * 1000) < 15) {
+          const diffTime = parseDate(this.stockEndTime).getTime() - parseDate(this.stockStartTime).getTime()
+          if (diffTime / (60 * 60 * 24 * 1000) > 15) {
             return showError('预约盘点结束时间超过从开始时间累计的15天限制')
           }
         }

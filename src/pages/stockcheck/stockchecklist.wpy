@@ -239,7 +239,7 @@
     queryList(inventoryId) {
       fetch.get('query/inventoryResult', { inventoryId }).then(res => {
         if (res.success) {
-          this.result = res.data.result
+          this.result = res.data
           this.result.fileName = serverUrl + 'inventory/' + this.result.fileName
           this.loaded = true
           this.$apply()
