@@ -16,6 +16,7 @@
   }
 
   .stock-check-item-left {
+    width: 210rpx;
     margin-right: 40rpx;
     text-align: center;
   }
@@ -33,6 +34,11 @@
 
   .stock-check-item-right {
     flex:1;
+  }
+
+  .stock-check-info {
+    font-size: 26rpx;
+    margin-bottom: 4rpx;
   }
 
   .stock-number {
@@ -83,7 +89,7 @@
         <text>{{stock.type}}</text>
       </view>
       <view class="stock-number {{stock.status==='unStart' ? 'count-down' : ''}}" @tap="stockDetailTap">{{stock.status==='unStart' ? stock.time : stock.count}}</view>
-      <view class="stock-detail" wx:if="{{stock.status==='unStart'}}">盘点倒计时</view>
+      <view class="stock-detail" wx:if="{{stock.status==='unStart'}}">盘点开始倒计时</view>
       <view class="stock-detail" wx:else @tap="stockDetailTap">盘点详情</view>
     </view>
 
@@ -93,7 +99,7 @@
       <view class="stock-check-info">盘点任务编码：{{stock.number}}</view>
       <view class="stock-check-info">产品线：{{stock.divisionName}}</view>
       <view class="stock-check-info">仓库类型：{{stock.stockType}}</view>
-      <view class="stock-check-info">盘点任务创建日期：{{stock.createdAt}}</view>
+      <view class="stock-check-info">任务有效期：{{stock.strDate}} - {{stock.endDate}}</view>
       <view class="stock-check-action">
         <cancelButton bordered="true" @tap.user="onDelTap" wx:if="{{stock.status==='unStart'}}">取消预约</cancelButton>
         <checkButton @tap.user="checkButtonTap" wx:if="{{stock.status==='start'}}">盘点</checkButton>

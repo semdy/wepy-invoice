@@ -47,6 +47,7 @@
     border: 2rpx solid #ddd;
     background-color: #fff;
     border-radius: 8rpx;
+    box-sizing: border-box;
 
     &.disabled {
       opacity: 0.7;

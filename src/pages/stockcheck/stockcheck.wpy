@@ -45,7 +45,6 @@
   .stock-tabs {
     .flex();
     margin-top: -20rpx;
-    padding-bottom: 10rpx;
 
 
     > view {
@@ -76,17 +75,22 @@
   }
 
   .stock-check-form {
-    textarea {
+    height: 554rpx;
+    overflow: hidden;
+
+    .textarea {
       width: 100%;
-      height: 120rpx;
+      height: 70rpx;
       border: 2rpx solid #ddd;
+      border-radius: 8rpx;
       padding: 10rpx;
       box-sizing: border-box;
     }
   }
 
   .stock-check-label {
-    margin-top: 10rpx;
+    color: #777;
+    margin-top: 20rpx;
     margin-bottom: 10rpx;
   }
 
@@ -127,10 +131,12 @@
     text-align: center;
   }
 
-  .stock-modal-hints view {
-    padding-left: 1.2em;
-    text-indent: -1.2em;
-    margin-bottom: 10rpx;
+  .stock-modal-hints {
+    view {
+      padding-left: 1.2em;
+      text-indent: -1.2em;
+      margin-bottom: 10rpx;
+    }
   }
 
   .scrollview {
@@ -216,23 +222,22 @@
       <view class="{{createType === 1 ? 'selected' : ''}}" @tap="changeCreateType(1)">立即盘点</view>
       <view class="{{createType === 0 ? 'selected' : ''}}" @tap="changeCreateType(0)">预约盘点</view>
     </view>
-    <view class="stock-check-form">
+    <scroll-view scroll-y="true" class="stock-check-form">
       <block wx:if="{{createType === 0}}">
-        <view class="stock-check-label">盘点开始时间：</view>
+        <view class="stock-check-label">盘点开始时间(选填)：</view>
         <datetimepickerStart :value.sync="stockStartTime" @change.user="stockStartChange"></datetimepickerStart>
-        <view class="stock-check-label">盘点结束时间：</view>
+        <view class="stock-check-label">盘点结束时间(选填)：</view>
         <datetimepickerEnd :value.sync="stockEndTime" @change.user="stockEndChange"></datetimepickerEnd>
       </block>
       <view class="stock-check-label">任务名称：</view>
-      <textarea value="{{remark}}" @input="remarkChange" placeholder="请输入盘点任务名称(必填)"/>
+      <input class="textarea" value="{{remark}}" @input="remarkChange" placeholder="请输入盘点任务名称(必填)"/>
       <view class="stock-check-label">盘点仓库：</view>
       <storepicker :items.sync="warehouseTypes" @change.user="storeChange"></storepicker>
-      <view style="margin-top:6rpx;color:#888;font-size:24rpx;">提示：缺省仓库即主仓库，普通仓库即医院库</view>
       <view class="stock-check-label">产品线：</view>
       <divisionpicker :items.sync="divisions" @change.user="divisionChange"></divisionpicker>
       <view class="stock-check-label">报告生成时间：</view>
       <reportpicker :value.sync="reportValue" :items.sync="reportTimes" @change.user="reportChange"></reportpicker>
-    </view>
+    </scroll-view>
     <view class="modal-footer">
       <view class="update-button cancel" @tap="closeModal">取消</view>
       <view class="update-button" @tap="startCreate">确定</view>
@@ -261,9 +266,7 @@
   </hintModal>
 
   <genderModal :show.sync="isGenderModalShow" title="提示">
-    <view class="stock-modal-hints">
-      报告生成中，21:00点前提交盘点单据的，可在第二天上午查询盘点报告；21:00点后提交盘点单据的，可在第三天上午查询盘点报告；
-    </view>
+    <view style="text-align: center; margin-bottom: 20rpx;">报告生成中</view>
     <view class="modal-footer">
       <view class="update-button" @tap="showSubmitTask">知道了</view>
     </view>
@@ -294,8 +297,8 @@
     return {
       ...item,
       statusText: STOCK_STATUS[item.status] || '',
-      createdAt: formatDate(new Date(item.createdAt), 'yyyy-MM-dd'),
-      endDate: formatDate(new Date(item.endDate.replace(/-/g, '/')), 'yyyy-MM-dd')
+      strDate: formatDate(item.strDate, 'yyyy-MM-dd'),
+      endDate: formatDate(item.endDate, 'yyyy-MM-dd')
     }
   }
 
@@ -433,7 +436,7 @@
         this.curIndex = index
         const item = this.dataList[index]
         const inventoryId = item.id
-        if ((item.status === 'start' && item.count > 0) || item.status === 'submit') {
+        if ((item.status === 'start' && item.count > 0) || item.status === 'submit' || item.status === 'finish') {
           this.$navigate('/pages/stockcheck/stockdetail', {inventoryId, tabIndex: this.tabIndex})
         }
       },
@@ -521,12 +524,11 @@
 
     async createTask () {
       if (this.createType === 0) {
-        if (this.stockStartTime === '') {
-          return showError('请输入预约盘点开始时间')
-        }
-
-        if (this.stockEndTime === '') {
-          return showError('请输入预约盘点结束时间')
+        if (this.stockStartTime !== '' && this.stockEndTime !== '') {
+          const diffTime = new Date(this.stockEndTime).getTime() - new Date(this.stockStartTime).getTime()
+          if (diffTime / (60 * 60 * 24 * 1000) < 15) {
+            return showError('预约盘点结束时间超过从开始时间累计的15天限制')
+          }
         }
       }
 
@@ -540,7 +542,7 @@
         divisionID: this.divisionID,
         stockType: this.warehouseType,
         type: '内部盘点',
-        order: this.createType === 0,
+        order: this.stockStartTime !== '',
         report: this.reportType,
         strDate: this.stockStartTime,
         endDate: this.stockEndTime
@@ -549,12 +551,13 @@
       let res = await fetch.post('create/Inventory', params)
 
       if (res.success) {
+        const tabIndex = this.stockStartTime !== '' ? 0 : 1
         this.remark = ''
         this.stockStartTime = ''
         this.stockEndTime = ''
         this.reportValue = 0
         this.hideModal()
-        this.switchTab(this.createType)
+        this.switchTab(tabIndex)
       } else {
         showError(res.message)
       }
@@ -618,7 +621,7 @@
     }
 
     async deleteTask (id) {
-      let res = await fetch.get('delete/Inventory', { id })
+      let res = await fetch.post('delete/Inventory', { id })
       if (res.success) {
         this.handleQuery()
         showToast(res.message)
@@ -639,13 +642,6 @@
 
     onEndReached () {
       this.appendQuery()
-    }
-
-    onShow () {
-      if (wx.getStorageSync('_STOCK_REFRESH')) {
-        wx.removeStorageSync('_STOCK_REFRESH')
-        this.handleQuery()
-      }
     }
 
     onLoad () {

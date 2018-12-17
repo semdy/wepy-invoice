@@ -5,6 +5,10 @@
  * @return {String}        格式化过后的时间
  */
 function formatDate (source, format) {
+  if (!source) return ''
+  source = !(source instanceof Date)
+    ? new Date(source.replace(/-/g, '/'))
+    : source
   const o = {
     'M+': source.getMonth() + 1, // 月份
     'd+': source.getDate(), // 日
@@ -98,6 +102,50 @@ function confirm (msg) {
   })
 }
 
+function parseDate(dateStr) {
+  if (typeof dateStr === 'string') {
+    dateStr = dateStr.replace(/-/g, '/')
+  }
+  return new Date(dateStr)
+}
+
+function dayAfter(target, offset = 0) {
+  let now = parseDate(target)
+  now.setDate(now.getDate() + offset)
+  return now
+}
+
+function getNodeRect(selector, scope, all) {
+  return new Promise(resolve => {
+    let query = wx.createSelectorQuery()
+    if (scope) {
+      query = query.in(scope)
+    }
+    query[all ? 'selectAll' : 'select'](selector)
+      .boundingClientRect(rect => {
+        if (all && Array.isArray(rect) && rect.length) {
+          resolve(rect)
+        }
+        if (!all) {
+          resolve(rect)
+        }
+      })
+      .exec()
+  })
+}
+
+function getPrevPage () {
+  // eslint-disable-next-line
+  const pages = getCurrentPages()
+  return pages[pages.length - 2]
+}
+
+function getCurrentPage () {
+  // eslint-disable-next-line
+  const pages = getCurrentPages()
+  return pages[pages.length - 1]
+}
+
 let isLogouted = false
 
 function redirectToLogin () {
@@ -111,4 +159,17 @@ function setLogout (status) {
   isLogouted = status
 }
 
-module.exports = {formatDate, uuid, showError, showToast, confirm, redirectToLogin, setLogout}
+module.exports = {
+  formatDate,
+  uuid,
+  showError,
+  showToast,
+  confirm,
+  parseDate,
+  dayAfter,
+  getNodeRect,
+  getPrevPage,
+  getCurrentPage,
+  redirectToLogin,
+  setLogout
+}

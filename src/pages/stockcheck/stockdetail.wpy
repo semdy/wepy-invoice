@@ -76,7 +76,7 @@
   import wepy from 'wepy'
   import fetch from '../../service/fetch'
   import Icon from '../../components/icon'
-  import { showError, confirm, showToast } from '../../utils/util'
+  import { showError, confirm, showToast, getPrevPage } from '../../utils/util'
 
   const subSuffix = (str, subLen) => {
     if (typeof str !== 'string') return ''
@@ -156,11 +156,11 @@
     }
 
     deleteQrcode (id, inventoryId) {
-      fetch.get('delete/InventoryQr', {id, inventoryId}).then(res => {
+      fetch.post('delete/InventoryQr', {id, inventoryId}).then(res => {
         if (res.success) {
           showToast(res.message)
           this.handleQuery()
-          wx.setStorageSync('_STOCK_REFRESH', true)
+          getPrevPage().handleQuery()
         } else {
           showError(res.message)
         }
@@ -175,7 +175,7 @@
       if (params.inventoryId) {
         this.inventoryId = params.inventoryId
       }
-      this.hasDel = Number(params.tabIndex) === 0
+      this.hasDel = Number(params.tabIndex) === 1
       this.page = 1
       this.handleQuery()
     }
