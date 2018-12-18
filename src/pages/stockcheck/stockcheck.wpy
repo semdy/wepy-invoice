@@ -225,9 +225,9 @@
     <scroll-view scroll-y="true" class="stock-check-form">
       <block wx:if="{{createType === 0}}">
         <view class="stock-check-label">盘点开始时间：</view>
-        <datetimepickerStart :value.sync="stockStartTime" placeholder="选填" @change.user="stockStartChange"></datetimepickerStart>
+        <datetimepickerStart :value.sync="stockStartTime" showClear="true" placeholder="选填" @change.user="stockStartChange"></datetimepickerStart>
         <view class="stock-check-label">盘点结束时间：</view>
-        <datetimepickerEnd :value.sync="stockEndTime" placeholder="选填" @change.user="stockEndChange"></datetimepickerEnd>
+        <datetimepickerEnd :value.sync="stockEndTime" showClear="true" placeholder="选填" @change.user="stockEndChange"></datetimepickerEnd>
       </block>
       <view class="stock-check-label">任务名称：</view>
       <input class="textarea" value="{{remark}}" @input="remarkChange" placeholder="请输入盘点任务名称(必填)"/>
@@ -235,7 +235,7 @@
       <storepicker :items.sync="warehouseTypes" @change.user="storeChange"></storepicker>
       <view class="stock-check-label">产品线：</view>
       <divisionpicker :items.sync="divisions" @change.user="divisionChange"></divisionpicker>
-      <view class="stock-check-label">报告生成时间：</view>
+      <view class="stock-check-label">对比类型(报告生成时间)：</view>
       <reportpicker :value.sync="reportValue" :items.sync="reportTimes" @change.user="reportChange"></reportpicker>
     </scroll-view>
     <view class="modal-footer">
@@ -256,7 +256,7 @@
 
   <hintModal :show.sync="isHintModalShow" title="库存盘点须知">
     <view class="stock-modal-hints">
-      <view>1. 目前创建盘点任务支持立即盘点和预约盘点两种创建方式；</view>
+      <view>1. 目前创建盘点任务支持立即盘点和预约盘点；</view>
       <view>2. 创建盘点任务时可选择查看报告的时间：对比昨天库存（10分钟），对比今天库存（隔天）；</view>
       <view>3. 目前支持库存盘点的产品线为所有产品线，仓库类型为所有仓库。</view>
     </view>
@@ -289,6 +289,7 @@
   const STOCK_STATUS = {
     'submit': '已提交',
     'start': '进行中',
+    'finish': '已完成',
     'unStart': '预约中',
     'expired': '过期未完成'
   }
@@ -523,16 +524,28 @@
     }
 
     async createTask () {
+      let start = this.stockStartTime
+      let end = this.stockEndTime
+
       if (this.createType === 0) {
-        if (this.stockStartTime !== '') {
+        if (start === '') {
+          start = formatDate(new Date(), 'yyyy-MM-dd')
+        } else {
           let now = new Date()
-          if (parseDate(this.stockStartTime).getTime() <= new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()) {
+          if (
+            parseDate(start).getTime() <= new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+          ) {
             return showError('预约盘点开始时间不能选今天或过去的时间')
           }
         }
-        if (this.stockStartTime !== '' && this.stockEndTime !== '') {
-          const diffTime = parseDate(this.stockEndTime).getTime() - parseDate(this.stockStartTime).getTime()
-          if (diffTime / (60 * 60 * 24 * 1000) > 15) {
+
+        if (start !== '' && end !== '') {
+          const diffTime = parseDate(end).getTime() - parseDate(start).getTime()
+          const days = diffTime / (60 * 60 * 24 * 1000)
+          if (days <= 0) {
+            return showError('预约盘点结束时间必须大于开始时间')
+          }
+          if (days > 15) {
             return showError('预约盘点结束时间超过从开始时间累计的15天限制')
           }
         }
@@ -550,8 +563,8 @@
         type: '内部盘点',
         order: this.stockStartTime !== '',
         report: this.reportType,
-        strDate: this.stockStartTime,
-        endDate: this.stockEndTime
+        strDate: start,
+        endDate: end
       }
 
       let res = await fetch.post('create/Inventory', params)

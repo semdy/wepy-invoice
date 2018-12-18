@@ -3,6 +3,12 @@
     .placeholder {
       color: #999;
     }
+
+    .icon-clear {
+      width: 32rpx;
+      height: 32rpx;
+      margin-right: 10rpx;
+    }
   }
 </style>
 
@@ -19,7 +25,10 @@
     <view class="picker {{size}} {{className}}" style="{{style}}">
       <text class="placeholder" wx:if="{{placeholder && value === ''}}">{{placeholder}}</text>
       <text>{{value}}</text>
-      <icon name="angle-down-black.png"></icon>
+      <view>
+        <image class="icon-clear" wx:if="{{showClear && value !== ''}}" src="../images/close-gray.svg" @tap.stop="reset"></image>
+        <icon name="angle-down-black.png"></icon>
+      </view>
     </view>
   </picker>
 </template>
@@ -27,6 +36,11 @@
 <script>
   import wepy from 'wepy'
   import Icon from './icon'
+
+  const coerce = (v) =>
+    typeof v === 'string'
+      ? JSON.parse(v)
+      : v
 
   export default class Index extends wepy.component {
     props = {
@@ -66,20 +80,31 @@
         type: Boolean,
         default: false
       },
+      showClear: {
+        type: [Boolean, String],
+        default: false,
+        coerce
+      },
       placeholder: String
     }
 
     components = {
-      icon: Icon
+      icon: Icon,
+      iconclear: Icon
     }
 
     data = {
     }
 
     methods = {
-      change ($event) {
-        this.value = $event.detail.value
-        this.$emit('change', $event)
+      change (e) {
+        this.value = e.detail.value
+        this.$emit('change', e)
+      },
+      reset () {
+        console.log(11111)
+        this.value = ''
+        this.$emit('change', {detail: {value: this.value}})
       }
     }
   }
