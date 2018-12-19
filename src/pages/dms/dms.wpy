@@ -610,9 +610,6 @@
         .then(res => {
           this.addQrcode(res.result, this.scanContinue)
         })
-        .catch(() => {
-          console.log('scan canceled')
-        })
     }
 
     addQrcode (qrcode, scanContinue) {

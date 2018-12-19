@@ -502,9 +502,6 @@
             }, 2000)
           })
         })
-        .catch(() => {
-          console.log('scan canceled')
-        })
     }
 
     switchTab (index) {

@@ -296,9 +296,6 @@
             }
           })
         })
-        .catch(() => {
-          console.log('scan canceled')
-        })
     }
 
     queryQrCode(data) {

@@ -343,9 +343,6 @@
         success: (res) => {
           // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
           this.uploadQrImages(res.tempFilePaths).then(this.launchCamera.bind(this))
-        },
-        fail: () => {
-          console.info('取消拍照')
         }
       })
     }

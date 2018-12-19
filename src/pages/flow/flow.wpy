@@ -347,9 +347,6 @@
           this.queryFlows(res.result)
           this.$apply()
         })
-        .catch(() => {
-          console.log('scan canceled')
-        })
     }
 
     formatTransflow (dataList) {
