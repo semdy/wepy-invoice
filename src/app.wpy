@@ -40,14 +40,11 @@
     .flex-v-center()
   }
 
-  /*=====picker=====*/
+
+  /*======picker======*/
   picker {
     flex: 1;
     width: 100%;
-    border: 2rpx solid #ddd;
-    background-color: #fff;
-    border-radius: 8rpx;
-    box-sizing: border-box;
 
     &.disabled {
       opacity: 0.7;
@@ -56,6 +53,9 @@
   }
 
   .picker {
+    border: 2rpx solid #ddd;
+    background-color: #fff;
+    border-radius: 8rpx;
     padding: 12rpx 24rpx;
     font-size: 28rpx;
     box-sizing: border-box;

@@ -19,14 +19,15 @@
 </style>
 
 <template>
-  <picker mode="{{mode}}"
-          @change="change"
-          value="{{value}}"
-          start="{{start}}"
-          end="{{end}}"
-          fields="{{fields}}"
-          class="{{disabled ? 'disabled' : ''}}"
-          disabled="{{disabled}}"
+  <picker
+    mode="{{mode}}"
+    @change="change"
+    value="{{value}}"
+    start="{{start}}"
+    end="{{end}}"
+    fields="{{fields}}"
+    class="{{disabled ? 'disabled' : ''}}"
+    disabled="{{disabled}}"
   >
     <view class="picker {{size}} {{className}}" style="{{style}}">
       <text class="placeholder" wx:if="{{placeholder && value === ''}}">{{placeholder}}</text>
@@ -108,7 +109,6 @@
         this.$emit('change', e)
       },
       reset () {
-        console.log(11111)
         this.value = ''
         this.$emit('change', {detail: {value: this.value}})
       }

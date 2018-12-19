@@ -140,8 +140,10 @@
 
   <modal :show.sync="isModalShow" title="修改邮箱">
     <view>
-      <view class="form-item bordered">
-        <input type="text" value="{{email}}" class="input normal" @input="emailChange"/>
+      <view class="form-item">
+        <view class="form-item-bd bordered">
+          <input type="text" value="{{email}}" class="input normal" @input="emailChange"/>
+        </view>
       </view>
     </view>
     <view class="modal-footer">

@@ -3,12 +3,13 @@
 </style>
 
 <template>
-  <picker mode="region"
-          @change="change"
-          value="{{value}}"
-          custom-item="{{custom-item}}"
-          class="{{disabled ? 'disabled' : ''}}"
-          disabled="{{disabled}}"
+  <picker
+    mode="region"
+    @change="change"
+    value="{{value}}"
+    custom-item="{{custom-item}}"
+    class="{{disabled ? 'disabled' : ''}}"
+    disabled="{{disabled}}"
   >
     <view class="picker {{size}} {{className}}" style="{{style}}">
       <text>{{value}}</text>

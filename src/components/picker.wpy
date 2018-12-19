@@ -7,13 +7,14 @@
 </style>
 
 <template>
-  <picker mode="selector"
-          @change="change"
-          @columnchange="columnchange"
-          class="{{disabled ? 'disabled' : ''}}"
-          value="{{value}}"
-          range="{{names}}"
-          disabled="{{disabled}}"
+  <picker
+    mode="selector"
+    @change="change"
+    @columnchange="columnchange"
+    class="{{disabled ? 'disabled' : ''}}"
+    value="{{value}}"
+    range="{{names}}"
+    disabled="{{disabled}}"
   >
     <view class="picker {{size}} {{className}}" style="{{style}}">
       <text class="placeholder" wx:if="{{placeholder && value === ''}}">{{placeholder}}</text>
