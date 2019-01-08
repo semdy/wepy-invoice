@@ -48,7 +48,7 @@ let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
     }
 
     wepy.request({
-      url: `${serverUrl}dev/${url}?version=${version}`,
+      url: `${serverUrl}api/${url}?version=${version}`,
       data: Object.assign({}, params.data, params.method === 'POST' && {ref}),
       method: params.method || 'GET',
       header: Object.assign(defHeaders, params.header)
