@@ -99,7 +99,7 @@
         }, */
         {
           icon: 'stock-check.svg',
-          text: '库存盘点',
+          text: '云盘库',
           visible: true
         }
         /* {

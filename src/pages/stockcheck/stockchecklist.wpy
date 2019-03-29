@@ -183,7 +183,7 @@
 
   export default class Index extends wepy.page {
     config = {
-      navigationBarTitleText: '库存盘点'
+      navigationBarTitleText: '云盘库'
     }
 
     components = {

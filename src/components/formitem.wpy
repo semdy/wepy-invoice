@@ -86,7 +86,7 @@
       <view class="form-item-bd {{bordered ? 'bordered' : ''}}">
         <icon wx:if="{{icon}}" class="icon-left" :type="iconType" color="#999" :name="icon" :size="size"/>
         <input password="{{password}}" type="{{type}}" class="input {{size}}" focus="{{focus}}" disabled="{{disabled}}"
-               placeholder="{{placeholder}}" placeholder-class="{{placeholderClass}}" confirm-type="{{confirmType}}" value="{{value}}" maxlength="{{maxlength}}" @tap="tap" @input="input"
+               placeholder="{{placeholder}}" placeholder-class="{{placeholderClass}}" confirm-type="{{confirmType}}" value="{{value}}" maxlength="{{maxlength}}" @tap="tap" @input="input" @change="change"
                @focus="focus" @blur="blur" @confirm="confirm" style="text-align:{{textAlign}}"/>
         <view class="icon-right" wx:if="{{showClear || showEye}}">
           <view class="ctrl-icon iconfont icon-close-circle" wx:if="{{showClear}}" @tap="clearField"
@@ -228,6 +228,10 @@
       input(e) {
         this.value = e.detail.value
         this.$emit('input', e)
+      },
+      change(e) {
+        this.value = e.detail.value
+        this.$emit('change', e)
       },
       focus(e) {
         this.$emit('focus', e)

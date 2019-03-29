@@ -254,11 +254,11 @@
     </view>
   </confirmModal>
 
-  <hintModal :show.sync="isHintModalShow" title="库存盘点须知">
+  <hintModal :show.sync="isHintModalShow" title="云盘库须知">
     <view class="stock-modal-hints">
       <view>1. 目前创建盘点任务支持立即盘点和预约盘点；</view>
       <view>2. 创建盘点任务时可选择查看报告的时间：对比昨天库存（10分钟），对比当天库存（隔天）；</view>
-      <view>3. 目前支持库存盘点的产品线为所有产品线，仓库类型为所有仓库。</view>
+      <view>3. 目前支持云盘库的产品线为所有产品线，仓库类型为所有仓库。</view>
     </view>
     <view class="modal-footer">
       <view class="update-button" @tap="closeHintModal">知道了</view>
@@ -305,7 +305,7 @@
 
   export default class Index extends wepy.page {
     config = {
-      navigationBarTitleText: '库存盘点'
+      navigationBarTitleText: '云盘库'
     }
 
     components = {

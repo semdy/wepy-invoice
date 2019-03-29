@@ -465,10 +465,8 @@
       },
       remarkChange (e) {
         let val = e.detail.value
-        if (this.remark !== val) {
-          this.remark = e.detail.value
-          this.updateReceipt()
-        }
+        this.remark = val
+        this.updateReceipt()
       },
       remarkFocus () {
         this.remarkHistory = this.history.getAll()
@@ -682,7 +680,7 @@
         type: this.uploadType,
         remark: this.remark
       }
-      fetch.post('update/receipt', params).then(res => {
+      fetch.post('update/receipt', params, true, false).then(res => {
         if (res.success) {
           // showToast(res.message)
         } else {

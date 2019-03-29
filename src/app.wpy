@@ -188,7 +188,7 @@
         navigationBarBackgroundColor: '#01458e',
         // 类型：String；默认值：white
         // 导航栏标题颜色，仅支持 black/white
-        navigationBarTextStyle: '#fff',
+        navigationBarTextStyle: 'white',
         // 类型：String；默认值：无
         // 导航栏标题文字内容
         navigationBarTitleText: '迪乐助手',
@@ -208,7 +208,7 @@
       tabBar: {
         color: '#777',
         selectedColor: '#01458e',
-        borderStyle: '#ddd',
+        borderStyle: 'black',
         backgroundColor: '#fff',
         list: [
           {
@@ -235,7 +235,12 @@
       },
       // Debug log to console
       // https://mp.weixin.qq.com/debug/wxadoc/dev/framework/config.html#debug
-      debug: false
+      debug: false,
+      permission: {
+        'scope.userLocation': {
+          desc: '你的位置信息将用于小程序位置接口的效果展示'
+        }
+      }
     }
 
     constructor () {
