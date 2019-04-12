@@ -245,6 +245,34 @@
     }
   }
 
+  .expQr-modal {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,.5);
+    z-index: 500;
+  }
+
+  .expQr-content {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    padding: 35px 20px;
+    border-radius: 8px;
+    white-space: nowrap;
+    font-size: 15px;
+  }
+
+  .expQr-close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 5px;
+  }
 </style>
 <template>
   <view class="top-actions">
@@ -340,6 +368,15 @@
     <view class="download-url" @tap="onDownloadTap">{{downloadUrl}}</view>
   </modal2>
 
+  <view class="expQr-modal" wx:if="{{expQrVisible}}">
+    <view class="expQr-content" @tap="gotoMessage">
+      <text>{{expQrMsg}}</text>
+      <view class="expQr-close" @tap.stop="hideExpQr">
+        <closeIcon name="close-gray.svg"></closeIcon>
+      </view>
+    </view>
+  </view>
+
   <tabbar :tabBar="tabBar" disabled="true" @tabbarChange.user="tabbarChange"></tabbar>
 
 </template>
@@ -391,7 +428,8 @@
       cauthIcon: Icon,
       tabbar: Tabbar,
       modal1: Modal,
-      modal2: Modal
+      modal2: Modal,
+      closeIcon: Icon
     }
 
     listIndex = 0
@@ -407,8 +445,10 @@
       isModalShow: false,
       isExptModalShow: false,
       showRemarkDropDown: false,
+      expQrVisible: false,
       failedCount: 0,
       uploadType: '移库',
+      expQrMsg: '',
       remark: '',
       lastReceiptId: '',
       lastReceiptNo: '',
@@ -540,6 +580,12 @@
       closeExptModal() {
         this.hideExptModal()
       },
+      hideExpQr() {
+        this.expQrVisible = false
+      },
+      gotoMessage() {
+        this.$navigate('/pages/message/message')
+      },
       onDownloadTap () {
         wx.setClipboardData({
           data: this.downloadUrl,
@@ -610,6 +656,12 @@
         })
     }
 
+    showExpQr(msg) {
+      this.expQrVisible = true
+      this.expQrMsg = msg
+      this.$apply()
+    }
+
     addQrcode (qrcode, scanContinue) {
       return this.queryQrCode(qrcode).then(data => {
         this.lastReceiptId = data.receipt.id
@@ -624,13 +676,30 @@
           this.launchScaner()
         }
       }).catch(msg => {
-        showError(msg)
-        if (scanContinue) {
-          setTimeout(() => {
-            this.launchScaner()
-          }, 1600)
-        }
+        this.dealScanError(msg, scanContinue)
       })
+    }
+
+    dealScanError(msg, scanContinue) {
+      if (Array.isArray(msg)) {
+        for (let i = 0; i < msg.length; i++) {
+          const item = msg[i]
+          if (item.type === 'expQr') {
+            this.showExpQr(item.msg)
+            break
+          }
+          if (item.type === 'normal') {
+            showError(item.msg)
+            if (scanContinue) {
+              setTimeout(() => {
+                this.launchScaner()
+              }, 1600)
+            }
+          }
+        }
+      } else {
+        showError(msg)
+      }
     }
 
     addQrcodeByHistory (list) {

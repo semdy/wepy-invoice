@@ -12,6 +12,12 @@
     margin-bottom: 12rpx;
   }
 
+  .stock-item-header {
+    padding: 3px 5px 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+
   .stock-body {
     .flex();
   }
@@ -106,6 +112,9 @@
 <template>
   <block wx:if="{{loaded}}">
     <view class="stock-item">
+      <view class="stock-item-header">
+        盘库产品总数：{{totalCount}}
+      </view>
       <view class="stock-body">
         <view class="stock-legend">整体差异率</view>
         <view class="stock-main">
@@ -195,6 +204,7 @@
 
     data = {
       result: {},
+      totalCount: '',
       loaded: false,
       isModalShow: false
     }
@@ -255,6 +265,7 @@
       if (params.id) {
         this.inventoryId = params.id
       }
+      this.totalCount = params.count
       this.queryList(this.inventoryId)
     }
   }

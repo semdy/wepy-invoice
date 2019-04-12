@@ -3,13 +3,16 @@ import {showError, uuid, redirectToLogin} from '../utils/util'
 import {version, ref} from '../config'
 import {session} from '../service/auth'
 
-export const serverUrl = 'https://bscqr.qtdatas.com/'
-// export const serverUrl = 'http://bscqrdev.kurite.cn/'
+// export const serverUrl = 'https://bscqr.qtdatas.com/api/'
+export const serverUrl = 'https://bscqr.qtdatas.com/dev/'
 
+let isLogout = false
 const logout = () => {
+  if (isLogout) return
   session.clear()
   wx.removeStorageSync('needRefresh.home')
   redirectToLogin()
+  isLogout = true
 }
 
 let requestCount = 0
@@ -48,7 +51,7 @@ let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
     }
 
     wepy.request({
-      url: `${serverUrl}api/${url}?version=${version}`,
+      url: `${serverUrl}${url}?version=${version}`,
       data: Object.assign({}, params.data, params.method === 'POST' && {ref}),
       method: params.method || 'GET',
       header: Object.assign(defHeaders, params.header)
@@ -56,6 +59,7 @@ let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
     .then(res => {
       if (res.statusCode === 200) {
         if (res.data.tokenValid === false) {
+          isLogout = false
           logout()
           reject('登录信息过期')
         } else {

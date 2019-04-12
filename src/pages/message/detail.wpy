@@ -1,0 +1,104 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page {
+    background-color: #fff;
+    padding: 20rpx;
+  }
+
+  .message-panel {
+    border: 2rpx solid #ddd;
+    border-radius: 12rpx;
+    background-color: #e1edf2;
+  }
+
+  .message-top {
+    padding: 20rpx;
+    border-bottom: 2rpx solid #ddd;
+
+    > view {
+      margin-bottom: 20rpx;
+    }
+  }
+
+  .message-row {
+    .flex();
+    padding-top: 16rpx;
+    padding-bottom: 16rpx;
+
+    > view {
+      flex: 1;
+      text-align: center;
+    }
+  }
+
+  .message-body {
+    view {
+      border-right: 2rpx solid #ddd;
+      font-size: 13px;
+    }
+  }
+
+  .message-footer {
+    margin-top: 20rpx;
+    margin-bottom: 20rpx;
+  }
+</style>
+<template>
+  <view class="message-panel">
+    <view class="message-top">
+      <view>扫码入口：{{detail.model}}</view>
+      <view>产品名称：{{detail.name}}</view>
+    </view>
+    <view class="message-table">
+      <view class="message-row">
+        <view>QR</view>
+        <view>UPN</view>
+        <view>LOT</view>
+      </view>
+      <view class="message-row message-body">
+        <view>{{detail.qrCode}}</view>
+        <view>{{detail.upn}}</view>
+        <view>{{detail.lot}}</view>
+      </view>
+    </view>
+    <view class="message-row message-footer">
+      <view>扫码日期: {{detail.date}}</view>
+      <view>产品效期: {{detail.expDate}}</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import { getPrevPage } from '../../utils/util'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '消息详情'
+    }
+
+    data = {
+      detail: {}
+    }
+
+    computed = {
+
+    }
+
+    methods = {
+    }
+
+    updateMessage(id, index) {
+      fetch.post('update/news', { id }).then(() => {
+        getPrevPage().updateMessage(index)
+      })
+    }
+
+    onLoad ({ detail }) {
+      this.detail = JSON.parse(detail)
+      this.updateMessage(this.detail.id, this.detail.itemIndex)
+    }
+  }
+</script>

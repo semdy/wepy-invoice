@@ -174,6 +174,35 @@
       }
     }
   }
+
+  .expQr-modal {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,.5);
+    z-index: 500;
+  }
+
+  .expQr-content {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    padding: 35px 20px;
+    border-radius: 8px;
+    white-space: nowrap;
+    font-size: 15px;
+  }
+
+  .expQr-close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 5px;
+  }
 </style>
 <template>
   <view class="header-tabs">
@@ -272,6 +301,15 @@
     </view>
   </genderModal>
 
+  <view class="expQr-modal" wx:if="{{expQrVisible}}">
+    <view class="expQr-content" @tap="gotoMessage">
+      <text>{{expQrMsg}}</text>
+      <view class="expQr-close" @tap.stop="hideExpQr">
+        <closeIcon name="close-gray.svg"></closeIcon>
+      </view>
+    </view>
+  </view>
+
   <toast />
 </template>
 
@@ -321,12 +359,14 @@
       datetimepickerStart: DatetimePicker,
       datetimepickerEnd: DatetimePicker,
       stockChemItem: StockChemItem,
-      toast: Toast
-
+      toast: Toast,
+      closeIcon: Icon
     }
 
     data = {
       loaded: false,
+      expQrVisible: false,
+      expQrMsg: '',
       tabIndex: 0,
       createType: 1,
       reportType: 'now',
@@ -364,6 +404,9 @@
       },
       closeGenderModal () {
         this.hideGenderModal()
+      },
+      hideExpQr() {
+        this.expQrVisible = false
       },
       changeCreateType (type) {
         this.createType = +type
@@ -430,7 +473,8 @@
           this.showGenderModal()
         } else {
           const id = this.dataList[index].id
-          this.$navigate('/pages/stockcheck/stockchecklist', { id })
+          const count = this.dataList[index].count
+          this.$navigate('/pages/stockcheck/stockchecklist', { id, count })
         }
       },
       onStockDetailTap (index) {
@@ -444,9 +488,15 @@
       onDelTap (index) {
         const item = this.dataList[index]
         const msg = item.status === 'unStart' ? '确定要取消吗?' : '确定要删除吗?'
+        if (item.type === '波科盘点') {
+          return showError('波科派发的盘点任务无法删除')
+        }
         confirm(msg).then(() => {
           this.deleteTask(item.id)
         })
+      },
+      gotoMessage() {
+        this.$navigate('/pages/message/message')
       }
     }
 
@@ -491,17 +541,41 @@
       this.$apply()
     }
 
+    showExpQr(msg) {
+      this.expQrVisible = true
+      this.expQrMsg = msg
+      this.$apply()
+    }
+
     launchScaner (id) {
       wepy.scanCode()
         .then(res => {
           this.uploadTaskQr(id, res.result).then(() => {
             this.launchScaner(id)
-          }).catch(() => {
-            setTimeout(() => {
-              this.launchScaner(id)
-            }, 2000)
+          }).catch(msg => {
+            this.dealScanError(msg)
           })
         })
+    }
+
+    dealScanError(msg) {
+      if (Array.isArray(msg)) {
+        for (let i = 0; i < msg.length; i++) {
+          const item = msg[i]
+          if (item.type === 'expQr') {
+            this.showExpQr(item.msg)
+            break
+          }
+          if (item.type === 'normal') {
+            this.toast(item.msg)
+            setTimeout(() => {
+              this.launchScaner()
+            }, 2000)
+          }
+        }
+      } else {
+        this.toast(msg)
+      }
     }
 
     switchTab (index) {
@@ -629,7 +703,6 @@
             showToast(res.message)
             resolve()
           } else {
-            this.toast(res.message)
             reject(res.message)
           }
         })

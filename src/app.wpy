@@ -180,7 +180,9 @@
         'pages/orderdetail/orderdetail',
         'pages/receiptcheck/receiptcheck',
         'pages/receiptlist/receiptlist',
-        'pages/receiptlist/receiptdetail'
+        'pages/receiptlist/receiptdetail',
+        'pages/message/message',
+        'pages/message/detail'
       ],
       window: {
         // 类型：HexColor；默认值：#000000
