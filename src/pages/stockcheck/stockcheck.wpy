@@ -301,9 +301,16 @@
     </view>
   </genderModal>
 
+  <delModal :show.sync="isDelModalShow" title="提示">
+    <view style="text-align: center; margin-bottom: 20rpx;">波科派发的盘点任务无法删除</view>
+    <view class="modal-footer">
+      <view class="update-button" @tap="closeDelModal">确定</view>
+    </view>
+  </delModal>
+
   <view class="expQr-modal" wx:if="{{expQrVisible}}">
     <view class="expQr-content" @tap="gotoMessage">
-      <text>{{expQrMsg}}</text>
+      <view>此产品为近效期产品，<text style="color:#10458e;">点击查看</text></view>
       <view class="expQr-close" @tap.stop="hideExpQr">
         <closeIcon name="close-gray.svg"></closeIcon>
       </view>
@@ -353,6 +360,7 @@
       confirmModal: Modal,
       hintModal: Modal,
       genderModal: Modal,
+      delModal: Modal,
       storepicker: Picker,
       divisionpicker: Picker,
       reportpicker: Picker,
@@ -385,7 +393,8 @@
       isModalShow: false,
       isConfirmModalShow: false,
       isHintModalShow: true,
-      isGenderModalShow: false
+      isGenderModalShow: false,
+      isDelModalShow: false
     }
 
     computed = {}
@@ -404,6 +413,9 @@
       },
       closeGenderModal () {
         this.hideGenderModal()
+      },
+      closeDelModal () {
+        this.hideDelModal()
       },
       hideExpQr() {
         this.expQrVisible = false
@@ -489,13 +501,14 @@
         const item = this.dataList[index]
         const msg = item.status === 'unStart' ? '确定要取消吗?' : '确定要删除吗?'
         if (item.type === '波科盘点') {
-          return showError('波科派发的盘点任务无法删除')
+          return this.showDelModal()
         }
         confirm(msg).then(() => {
           this.deleteTask(item.id)
         })
       },
       gotoMessage() {
+        this.expQrVisible = false
         this.$navigate('/pages/message/message')
       }
     }
@@ -538,6 +551,16 @@
 
     hideGenderModal () {
       this.isGenderModalShow = false
+      this.$apply()
+    }
+
+    showDelModal () {
+      this.isDelModalShow = true
+      this.$apply()
+    }
+
+    hideDelModal () {
+      this.isDelModalShow = false
       this.$apply()
     }
 

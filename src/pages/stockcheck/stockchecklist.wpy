@@ -16,6 +16,7 @@
     padding: 3px 5px 10px;
     margin-bottom: 10px;
     border-bottom: 1px solid #ddd;
+    font-size: 32rpx;
   }
 
   .stock-body {

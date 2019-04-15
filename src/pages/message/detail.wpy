@@ -29,6 +29,8 @@
     > view {
       flex: 1;
       text-align: center;
+      padding-left: 10rpx;
+      padding-right: 10rpx;
     }
   }
 
@@ -42,6 +44,14 @@
   .message-footer {
     margin-top: 20rpx;
     margin-bottom: 20rpx;
+
+    > view:first-child {
+      text-align: left;
+    }
+
+    > view:last-child {
+      text-align: right;
+    }
   }
 </style>
 <template>

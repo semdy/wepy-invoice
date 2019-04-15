@@ -370,7 +370,7 @@
 
   <view class="expQr-modal" wx:if="{{expQrVisible}}">
     <view class="expQr-content" @tap="gotoMessage">
-      <text>{{expQrMsg}}</text>
+      <view>此产品为近效期产品，<text style="color:#10458e;">点击查看</text></view>
       <view class="expQr-close" @tap.stop="hideExpQr">
         <closeIcon name="close-gray.svg"></closeIcon>
       </view>
@@ -584,6 +584,7 @@
         this.expQrVisible = false
       },
       gotoMessage() {
+        this.expQrVisible = false
         this.$navigate('/pages/message/message')
       },
       onDownloadTap () {
@@ -662,29 +663,35 @@
       this.$apply()
     }
 
+    _addData(data, qrcode) {
+      this.lastReceiptId = data.receipt.id
+      this.lastQrcode = qrcode
+      this.lastReceiptNo = data.receipt.receiptNo
+      this.submitDisabled = false
+      if (!data.product) {
+        data.product = {}
+      }
+      this.addData(data)
+    }
+
     addQrcode (qrcode, scanContinue) {
       return this.queryQrCode(qrcode).then(data => {
-        this.lastReceiptId = data.receipt.id
-        this.lastQrcode = qrcode
-        this.lastReceiptNo = data.receipt.receiptNo
-        this.submitDisabled = false
-        if (!data.product) {
-          data.product = {}
-        }
-        this.addData(data)
+        this._addData(data, qrcode)
         if (scanContinue) {
           this.launchScaner()
         }
-      }).catch(msg => {
-        this.dealScanError(msg, scanContinue)
+      }).catch(res => {
+        this.dealScanError(res, qrcode, scanContinue)
       })
     }
 
-    dealScanError(msg, scanContinue) {
+    dealScanError(res, qrcode, scanContinue) {
+      const { message: msg, data } = res
       if (Array.isArray(msg)) {
         for (let i = 0; i < msg.length; i++) {
           const item = msg[i]
           if (item.type === 'expQr') {
+            this._addData(data, qrcode)
             this.showExpQr(item.msg)
             break
           }
@@ -720,7 +727,7 @@
           if (res.success) {
             resolve(res.data)
           } else {
-            reject(res.message)
+            reject(res)
           }
         }, errMsg => {
           reject(errMsg)
