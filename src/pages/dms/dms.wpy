@@ -408,6 +408,13 @@
     return `...${str.substr(str.length - subLen, str.length)}`
   }
 
+  const isEmptyObject = obj => {
+    for (let key in obj) {
+      return false
+    }
+    return true
+  }
+
   export default class Index extends wepy.page {
     config = {
       navigationBarTitleText: '二维码上传DMS'
@@ -687,17 +694,19 @@
 
     dealScanError(res, qrcode, scanContinue) {
       const { message: msg, data } = res
+      let hasExpQr = false
       if (Array.isArray(msg)) {
         for (let i = 0; i < msg.length; i++) {
           const item = msg[i]
           if (item.type === 'expQr') {
-            this._addData(data, qrcode)
+            if (!isEmptyObject(data)) {
+              this._addData(data, qrcode)
+            }
             this.showExpQr(item.msg)
-            break
-          }
-          if (item.type === 'normal') {
+            hasExpQr = true
+          } else if (item.type === 'normal') {
             showError(item.msg)
-            if (scanContinue) {
+            if (scanContinue && !hasExpQr) {
               setTimeout(() => {
                 this.launchScaner()
               }, 1600)

@@ -587,18 +587,20 @@
     }
 
     dealScanError(msg) {
+      let hasExpQr = false
       if (Array.isArray(msg)) {
         for (let i = 0; i < msg.length; i++) {
           const item = msg[i]
           if (item.type === 'expQr') {
             this.showExpQr(item.msg)
-            break
-          }
-          if (item.type === 'normal') {
+            hasExpQr = true
+          } else if (item.type === 'normal') {
             this.toast(item.msg)
-            setTimeout(() => {
-              this.launchScaner()
-            }, 2000)
+            if (!hasExpQr) {
+              setTimeout(() => {
+                this.launchScaner()
+              }, 2000)
+            }
           }
         }
       } else {
