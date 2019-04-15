@@ -108,19 +108,10 @@
       this.appendQuery()
     }
 
-    getPrevPage () {
-      const pages = this.getCurrentPages()
-      return pages[pages.length - 2]
-    }
-
     onLoad () {
       this.page = 1
       this.loaded = false
       this.queryMessages(this.page)
-      const resetPrePage = this.getPrevPage().reset
-      if (resetPrePage) {
-        resetPrePage()
-      }
     }
   }
 </script>

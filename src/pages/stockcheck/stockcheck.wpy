@@ -501,7 +501,12 @@
         const item = this.dataList[index]
         const msg = item.status === 'unStart' ? '确定要取消吗?' : '确定要删除吗?'
         if (item.type === '波科盘点') {
-          return this.showDelModal()
+          // return this.showDelModal()
+          return wx.showModal({
+            title: '提示',
+            content: '波科派发的盘点任务无法删除',
+            showCancel: false
+          })
         }
         confirm(msg).then(() => {
           this.deleteTask(item.id)
