@@ -204,6 +204,7 @@
         let sessionData = Object.assign({}, userInfo, res.data)
         session.set(sessionData)
         sessionGroup.add(res.data.user.id, sessionData)
+        wx.removeStorageSync('__ISLOGOUT')
         this.$switch('/pages/home/home')
       }, errorHandler)
     }

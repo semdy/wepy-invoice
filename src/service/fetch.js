@@ -6,13 +6,12 @@ import {session} from '../service/auth'
 export const serverUrl = 'https://bscqr.qtdatas.com/api/'
 // export const serverUrl = 'https://bscqr.qtdatas.com/dev/'
 
-let isLogout = false
 const logout = () => {
-  if (isLogout) return
+  if (wx.getStorageSync('__ISLOGOUT')) return
   session.clear()
   wx.removeStorageSync('needRefresh.home')
   redirectToLogin()
-  isLogout = true
+  wx.setStorageSync('__ISLOGOUT', '1')
 }
 
 let requestCount = 0
@@ -23,7 +22,6 @@ let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
 
     requestCount++
     errorMsg = ''
-    isLogout = false
 
     if (requestCount === 1) {
       showLoading && wx.showLoading({
