@@ -3,8 +3,8 @@ import {showError, uuid, redirectToLogin} from '../utils/util'
 import {version, ref} from '../config'
 import {session} from '../service/auth'
 
-// export const serverUrl = 'https://bscqr.qtdatas.com/api/'
-export const serverUrl = 'https://bscqr.qtdatas.com/dev/'
+export const serverUrl = 'https://bscqr.qtdatas.com/api/'
+// export const serverUrl = 'https://bscqr.qtdatas.com/dev/'
 
 let isLogout = false
 const logout = () => {
