@@ -581,12 +581,12 @@
           this.uploadTaskQr(id, res.result).then(() => {
             this.launchScaner(id)
           }).catch(msg => {
-            this.dealScanError(msg)
+            this.dealScanError(msg, id)
           })
         })
     }
 
-    dealScanError(msg) {
+    dealScanError(msg, id) {
       let hasExpQr = false
       if (Array.isArray(msg)) {
         for (let i = 0; i < msg.length; i++) {
@@ -598,7 +598,7 @@
             this.toast(item.msg)
             if (!hasExpQr) {
               setTimeout(() => {
-                this.launchScaner()
+                this.launchScaner(id)
               }, 2000)
             }
           }
