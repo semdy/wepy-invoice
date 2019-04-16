@@ -23,6 +23,7 @@ let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
 
     requestCount++
     errorMsg = ''
+    isLogout = false
 
     if (requestCount === 1) {
       showLoading && wx.showLoading({
@@ -59,7 +60,6 @@ let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
     .then(res => {
       if (res.statusCode === 200) {
         if (res.data.tokenValid === false) {
-          isLogout = false
           logout()
           reject('登录信息过期')
         } else {
