@@ -1,3 +1,4 @@
+/* global wx */
 import wepy from 'wepy'
 import {showError, uuid, redirectToLogin} from '../utils/util'
 import {version, ref} from '../config'
@@ -20,7 +21,7 @@ let errorMsg = ''
 let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
   return new Promise((resolve, reject) => {
 
-    requestCount++
+    showLoading && requestCount++
     errorMsg = ''
 
     if (requestCount === 1) {
@@ -71,7 +72,8 @@ let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
       reject(errorMsg = '与服务器连接失败')
     })
     .finally(() => {
-      if (--requestCount === 0) {
+      showLoading && requestCount--
+      if (requestCount === 0) {
         if (errorMsg) {
           showError(errorMsg)
         } else {
