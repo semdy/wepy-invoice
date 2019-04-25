@@ -668,6 +668,11 @@
       this.expQrVisible = true
       this.expQrMsg = msg
       this.$apply()
+
+      setTimeout(() => {
+        this.expQrVisible = false
+        this.$apply()
+      }, 1000)
     }
 
     _addData(data, qrcode) {
