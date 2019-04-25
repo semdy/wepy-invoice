@@ -672,6 +672,7 @@
       setTimeout(() => {
         this.expQrVisible = false
         this.$apply()
+        this.launchScaner()
       }, 1000)
     }
 

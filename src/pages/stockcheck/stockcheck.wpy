@@ -569,7 +569,7 @@
       this.$apply()
     }
 
-    showExpQr(msg) {
+    showExpQr(msg, id) {
       this.expQrVisible = true
       this.expQrMsg = msg
       this.$apply()
@@ -577,6 +577,7 @@
       setTimeout(() => {
         this.expQrVisible = false
         this.$apply()
+        this.launchScaner(id)
       }, 1000)
     }
 
@@ -597,7 +598,7 @@
         for (let i = 0; i < msg.length; i++) {
           const item = msg[i]
           if (item.type === 'expQr') {
-            this.showExpQr(item.msg)
+            this.showExpQr(item.msg, id)
             hasExpQr = true
           } else if (item.type === 'normal') {
             this.toast(item.msg)
