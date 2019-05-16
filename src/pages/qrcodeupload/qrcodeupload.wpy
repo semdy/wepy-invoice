@@ -382,6 +382,7 @@
 
     onShow () {
       this.queryCount(this.day)
+      log.add('二维码照片上报')
     }
 
     onLoad () {
@@ -393,11 +394,14 @@
           title: '产品信息收集'
         })
       }
-      log.add('二维码照片上报')
     }
 
     onPullDownRefresh () {
       this.queryCount(this.day)
+    }
+
+    onHide() {
+      log.update()
     }
 
     onUnload() {

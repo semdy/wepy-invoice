@@ -784,7 +784,14 @@
       this.scanTimer = null
       this.queryStockType()
       this.handleQuery()
+    }
+
+    onShow() {
       log.add('云盘库')
+    }
+
+    onHide() {
+      log.update()
     }
 
     onUnload() {

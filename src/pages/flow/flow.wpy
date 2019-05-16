@@ -434,7 +434,14 @@
         })
       }
       this.showRecords()
+    }
+
+    onShow() {
       log.add('二维码流向查询')
+    }
+
+    onHide() {
+      log.update()
     }
 
     onUnload() {
