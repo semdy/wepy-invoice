@@ -7,6 +7,7 @@ export default {
       const data = await fetch.post('pageLog/addPageLog', { model })
       this._logId = data.data
     } catch (err) {
+      this._logId = ''
       console.error(err)
     }
   },
