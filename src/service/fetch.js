@@ -4,8 +4,8 @@ import {showError, uuid, redirectToLogin} from '../utils/util'
 import {version, ref} from '../config'
 import {session} from '../service/auth'
 
-export const serverUrl = 'https://bscqr.qtdatas.com/'
-// export const serverUrl = 'https://bscqr.qtdatas.com/dev/'
+// export const serverUrl = 'https://bscqr.qtdatas.com/'
+export const serverUrl = 'https://bscqr.qtdatas.com/dev/'
 
 let isLogout = false
 const logout = () => {
@@ -66,14 +66,14 @@ let fetchApi = (url, params = {}, useToken = true, showLoading = true) => {
           resolve(res.data)
         } else {
           logout()
-          reject('登录信息过期')
+          reject('登录信息过期') // eslint-disable-line
         }
       } else {
         reject(errorMsg = (res.data.message || '服务器发生错误'))
       }
     })
     .catch(() => {
-      reject(errorMsg = '与服务器连接失败')
+      reject(errorMsg = '与服务器连接失败') // eslint-disable-line
     })
     .finally(() => {
       if (showLoading) {

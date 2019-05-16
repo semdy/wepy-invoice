@@ -252,7 +252,7 @@
     top: 0;
     bottom: 0;
     background-color: rgba(0,0,0,.5);
-    z-index: 500;
+    z-index: 5000;
   }
 
   .expQr-content {
@@ -392,6 +392,7 @@
   import Modal from '../../components/modal'
   import {History} from '../../service/history'
   import {session} from '../../service/auth'
+  import log from '../../service/log'
   import {showError, showToast} from '../../utils/util'
 
   const STATUS_MAP = {
@@ -591,6 +592,7 @@
         this.expQrVisible = false
       },
       gotoMessage() {
+        if (this.scanTimer) clearTimeout(this.scanTimer)
         this.expQrVisible = false
         this.$navigate('/pages/message/message')
       },
@@ -669,11 +671,11 @@
       this.expQrMsg = msg
       this.$apply()
 
-      setTimeout(() => {
+      this.scanTimer = setTimeout(() => {
         this.expQrVisible = false
         this.$apply()
         this.launchScaner()
-      }, 1000)
+      }, 2000)
     }
 
     _addData(data, qrcode) {
@@ -940,7 +942,13 @@
 
     onLoad () {
       this.listIndex = 0
+      this.scanTimer = null
       this.userCode = session.get().user.code
+      log.add('二维码上传DMS')
+    }
+
+    onUnload() {
+      log.update()
     }
   }
 </script>

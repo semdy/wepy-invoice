@@ -242,6 +242,7 @@
   import {showError, formatDate} from '../../utils/util'
   import {session} from '../../service/auth'
   import {History} from '../../service/history'
+  import log from '../../service/log'
 
   export default class Index extends wepy.page {
     config = {
@@ -433,6 +434,11 @@
         })
       }
       this.showRecords()
+      log.add('二维码流向查询')
+    }
+
+    onUnload() {
+      log.update()
     }
   }
 </script>

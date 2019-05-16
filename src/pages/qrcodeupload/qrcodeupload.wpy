@@ -137,6 +137,7 @@
   import {showError, showToast} from '../../utils/util'
   import {uploadFile} from '../../utils/wechat'
   import {session} from '../../service/auth'
+  import log from '../../service/log'
 
   const PICKER_ITEMS = [
     {
@@ -392,10 +393,15 @@
           title: '产品信息收集'
         })
       }
+      log.add('二维码照片上报')
     }
 
     onPullDownRefresh () {
       this.queryCount(this.day)
+    }
+
+    onUnload() {
+      log.update()
     }
   }
 </script>
