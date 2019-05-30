@@ -717,7 +717,7 @@
             if (scanContinue && !hasExpQr) {
               setTimeout(() => {
                 this.launchScaner()
-              }, 1600)
+              }, 1500)
             }
           }
         }
@@ -938,17 +938,13 @@
           console.log('add history done!')
         })
       }
-      log.add('二维码上传DMS')
     }
 
     onLoad () {
       this.listIndex = 0
       this.scanTimer = null
       this.userCode = session.get().user.code
-    }
-
-    onHide() {
-      log.update()
+      log.add('二维码上传DMS')
     }
 
     onUnload() {

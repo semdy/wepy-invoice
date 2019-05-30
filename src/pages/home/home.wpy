@@ -202,8 +202,19 @@
     onShow () {
       let sessionInfo = session.get()
       if (!sessionInfo) return
-      this.isDoctor = session.get().user.role === 5
-      if (sessionInfo.user.role === 3) {
+      this.isDoctor = sessionInfo.user.role === 5
+      if (sessionInfo.user.role === 2) {
+        this.listgroup.forEach((e, i) => {
+          if (i === 1 || i === 3) {
+            e.visible = true
+            if (i === 1) {
+              e.text = '二维码流向查询'
+            }
+          } else {
+            e.visible = false
+          }
+        })
+      } else if (sessionInfo.user.role === 3) {
         this.listgroup.forEach((e, i) => {
           if (i !== 1) {
             e.visible = false
