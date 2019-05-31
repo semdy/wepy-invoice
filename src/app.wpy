@@ -182,7 +182,8 @@
         'pages/receiptlist/receiptlist',
         'pages/receiptlist/receiptdetail',
         'pages/message/message',
-        'pages/message/detail'
+        'pages/message/detail',
+        'pages/feedback/feedback'
       ],
       window: {
         // 类型：HexColor；默认值：#000000

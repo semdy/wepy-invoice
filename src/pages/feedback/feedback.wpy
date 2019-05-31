@@ -1,0 +1,222 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  page {
+    background-color: #fff;
+  }
+
+  .fd-heading {
+    color: @gcolor;
+    font-size: 32rpx;
+    font-weight: bold;
+    padding: 30rpx 20rpx 20rpx;
+  }
+
+  .questions {
+    .flex();
+    flex-wrap: wrap;
+    padding-bottom: 40rpx;
+    border-bottom: 1rpx solid #ccc;
+  }
+
+  .question-item {
+    width: 50%;
+    padding-left: 20rpx;
+    padding-bottom: 16rpx;
+    box-sizing: border-box;
+
+    checkbox {
+      transform: scale(.8);
+      vertical-align: middle;
+    }
+  }
+
+  .feed-message {
+    padding: 10px;
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+    }
+  }
+
+  .feedback-uploader {
+    .flex();
+    padding: 0 10px 25px;
+    border-bottom: 1rpx solid #ccc;
+  }
+
+  .uploader-btn {
+    margin-right: 20px;
+
+    .icon {
+      padding: 0;
+    }
+  }
+
+  .feedback-imgList {
+    flex: 1;
+    .flex();
+    flex-wrap: wrap;
+  }
+
+  .feedback-hint {
+    color: #888;
+    padding-top: 16rpx;
+  }
+
+  .feedback-img {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    background-color: #f0f0f0;
+
+    image {
+      width: 100%;
+      height: 100%;
+    }
+
+    .remove-icon {
+      position: absolute;
+      right: 5rpx;
+      top: 5rpx;
+      transform: translate(50%, -50%);
+    }
+  }
+
+  .feedback-actions {
+    padding: 30px 40px 20px;
+  }
+</style>
+<template>
+  <view class="fd-heading">请选择您遇到的问题分类</view>
+  <view class="questions">
+    <repeat for="{{questionTypes}}" key="index">
+      <view class="question-item" @tap="selectQuestion({{index}})">
+        <checkbox color="#01458e" checked="{{item.checked}}" />
+        <text>{{item.name}}</text>
+      </view>
+    </repeat>
+  </view>
+  <view class="feed-message">
+    <textarea placeholder="请简单描述问题或建议..." @change="changeFeedMsg"></textarea>
+  </view>
+  <view class="feedback-uploader">
+    <view class="uploader-btn">
+      <uploadbtn name="plus_outline.svg" size="large" @tap.user="chooseImg" />
+    </view>
+    <view class="feedback-hint" wx:if="{{imgPaths.length === 0}}">
+      添加图片说明
+    </view>
+    <view class="feedback-imgList" wx:else>
+      <repeat for="{{imgPaths}}" key="index">
+        <view class="feedback-img">
+          <view class="remove-icon" @tap="removeImg({{item}})">
+            <removeIcon name="remove.svg" />
+          </view>
+          <image src="{{item}}" mode="aspectFill" @tap="previewImg({{item}})"></image>
+        </view>
+      </repeat>
+    </view>
+  </view>
+  <view class="feedback-actions">
+    <submitbutton @tap.user="submitFeedback" size="large">提交</submitbutton>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Icon from '../../components/icon'
+  import Button from '../../components/button'
+  import { showToast, showError } from '../../utils/util'
+  import { uploadFile } from '../../utils/wechat'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '意见反馈'
+    }
+
+    components = {
+      uploadbtn: Icon,
+      removeIcon: Icon,
+      submitbutton: Button
+    }
+
+    data = {
+      questionTypes: [
+        { checked: false, name: '二维码上传DMS' },
+        { checked: false, name: '二维码流向查询' },
+        { checked: false, name: '二维码照片上报' },
+        { checked: false, name: '云盘库' },
+        { checked: false, name: '其它' }
+      ],
+      feedMsg: '',
+      imgPaths: []
+    }
+
+    methods = {
+      selectQuestion(index) {
+        this.questionTypes[index].checked = !this.questionTypes[index].checked
+      },
+      changeFeedMsg(e) {
+        this.feedMsg = e.detail.value
+      },
+      async submitFeedback() {
+        const questions = this.questionTypes.filter(item => item.checked).map(item => item.name)
+        if (!questions.length) {
+          return showError('请选择问题分类')
+        }
+        const res = await fetch.post('/comment/add', {questions, msg: this.feedMsg, imgs: this.imgPaths})
+        if (this.imgPaths.length === 0) {
+          this.handleSuccess()
+        } else {
+          this.uploadImages(res.datas.commentCode)
+        }
+      },
+      async chooseImg() {
+        try {
+          const { tempFilePaths: filePaths } = await wepy.chooseImage({count: 5})
+          if (this.imgPaths.length + filePaths.length > 5) {
+            showError('您最多可以上传5张图片')
+          }
+          this.imgPaths = this.imgPaths.concat(filePaths.slice(0, 5 - this.imgPaths.length))
+          this.$apply()
+        } catch (e) {
+        }
+      },
+      previewImg(url) {
+        wx.previewImage({
+          current: url,
+          urls: this.imgPaths
+        })
+      },
+      removeImg(url) {
+        this.imgPaths = this.imgPaths.filter(path => path !== url)
+      }
+    }
+
+    async uploadImages(commentCode) {
+      const uploadQueue = this.imgPaths.map(path => () => {
+        return uploadFile('/comment/add/image', path, { commentCode })
+      })
+      const results = await Promise.queue(uploadQueue)
+      if (results.every(res => res.code === 0)) {
+        this.handleSuccess()
+      } else {
+        showError('图片上传失败')
+      }
+    }
+
+    handleSuccess() {
+      showToast('提交成功')
+      this.$back()
+    }
+
+    onLoad () {
+
+    }
+  }
+</script>
