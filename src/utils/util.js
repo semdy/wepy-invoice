@@ -60,12 +60,12 @@ const uuid = function () {
   }
 }()
 
-function showError (msg, duration = 2000) {
+function showError (msg, duration = 2000, icon = false) {
   return new Promise((resolve, reject) => {
     setTimeout(function(){
       wx.showToast({
         title: msg,
-        //image: '../../images/error.png',
+        image: icon ? '../../images/error.png' : '',
         icon: 'none',
         duration: duration
       })

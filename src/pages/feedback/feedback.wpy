@@ -101,7 +101,7 @@
     </repeat>
   </view>
   <view class="feed-message">
-    <textarea placeholder="请简单描述问题或建议..." @change="changeFeedMsg"></textarea>
+    <textarea placeholder="请简述问题或建议..." @input="changeFeedMsg"></textarea>
   </view>
   <view class="feedback-uploader">
     <view class="uploader-btn">
@@ -122,7 +122,7 @@
     </view>
   </view>
   <view class="feedback-actions">
-    <submitbutton @tap.user="submitFeedback" size="large">提交</submitbutton>
+    <submitbutton @tap.user="submitFeedback" size="large" :disabled.sync="submitDisabled">提交</submitbutton>
   </view>
 </template>
 
@@ -157,6 +157,12 @@
       imgPaths: []
     }
 
+    computed = {
+      submitDisabled() {
+        return this.feedMsg === '' || this.questionTypes.filter(item => item.checked).length === 0
+      }
+    }
+
     methods = {
       selectQuestion(index) {
         this.questionTypes[index].checked = !this.questionTypes[index].checked
@@ -167,14 +173,18 @@
       async submitFeedback() {
         const questions = this.questionTypes.filter(item => item.checked).map(item => item.name)
         if (!questions.length) {
-          return showError('请选择问题分类')
+          return showError('请选择问题分类', 2000, true)
         }
-        const res = await fetch.post('/comment/add', {questions, msg: this.feedMsg, imgs: this.imgPaths})
-        if (this.imgPaths.length === 0) {
-          this.handleSuccess()
-        } else {
-          this.uploadImages(res.datas.commentCode)
+        if (!this.feedMsg) {
+          return showError('请输入问题或建议', 2000, true)
         }
+        const { files, msg } = await this.uploadImages()
+        if (msg) {
+          return showError(msg)
+        }
+        await fetch.post('feedBack/addFeedBack', {models: questions, description: this.feedMsg, files})
+        showToast('提交成功')
+        this.$back()
       },
       async chooseImg() {
         try {
@@ -199,20 +209,22 @@
     }
 
     async uploadImages(commentCode) {
+      if (!this.imgPaths.length) {
+        return Promise.resolve({files: []})
+      }
       const uploadQueue = this.imgPaths.map(path => () => {
-        return uploadFile('/comment/add/image', path, { commentCode })
+        return uploadFile('feedBack/uploadImage', path)
       })
       const results = await Promise.queue(uploadQueue)
-      if (results.every(res => res.code === 0)) {
-        this.handleSuccess()
-      } else {
-        showError('图片上传失败')
+      if (results.every(res => res.success === true)) {
+        return {
+          files: results.map(item => item.data)
+        }
       }
-    }
-
-    handleSuccess() {
-      showToast('提交成功')
-      this.$back()
+      return {
+        files: [],
+        msg: '图片上传失败'
+      }
     }
 
     onLoad () {
