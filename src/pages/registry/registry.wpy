@@ -258,12 +258,14 @@
       if (!this.vcode) {
         return showError('请输入公司码')
       }
-      if (/^[a-zA-Z]+$/.test(this.vcode)) {
-        if (!/^(qt|audiths|auditbt)$/i.test(this.vcode)) {
+      if (/^SA/.test(this.vcode)) {
+        if (/^[a-zA-Z]+$/.test(this.vcode)) {
+          if (!/^(qt|audiths|auditbt)$/i.test(this.vcode)) {
+            return showError('公司码不合法')
+          }
+        }/* else if (!/^\d{4,6}$/.test(this.vcode)) {
           return showError('公司码不合法')
-        }
-      } else if (!/^\d{4,6}$/.test(this.vcode)) {
-        return showError('公司码不合法')
+        } */
       }
       if (!this.vname) {
         return showError('请输入公司全称')
