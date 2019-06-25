@@ -208,7 +208,7 @@
       }
     }
 
-    async uploadImages(commentCode) {
+    async uploadImages() {
       if (!this.imgPaths.length) {
         return Promise.resolve({files: []})
       }

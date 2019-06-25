@@ -6,13 +6,17 @@
       margin-bottom: 0;
       margin-top: -2rpx;
 
-      &:nth-child(3) {
+      &:last-child {
         margin-top: 10rpx;
       }
     }
+
+    .list-item2 {
+      margin-bottom: 10rpx;
+    }
   }
 
-  .list-item:nth-child(3){
+  .list-item:last-child {
     background-color: #f8f8f8; //#e5e5e5;
   }
 
@@ -42,13 +46,32 @@
     overflow: hidden;
   }
 
+  .list-item-text2 {
+    padding-top: 10rpx;
+    padding-bottom: 10rpx;
+
+    &:before {
+      content: '';
+      display: inline-block;
+      width: 10rpx;
+      height: 10rpx;
+      border-radius: 50%;
+      background-color: #000;
+      margin-left: 5px;
+      margin-right: 20px;
+      vertical-align: text-bottom;
+    }
+  }
 </style>
 <template>
   <view class="point-listgroup">
     <repeat key="index" for="{{listgroup}}">
-      <listitem :visible="item.visible" :icon="item.icon" :hasArrow="item.hasArrow" @tap.user="listitemTap">
+      <listitem wx:if="{{item.key !== 'extMessage'}}" :visible="item.visible" :icon="item.icon" :hasArrow="item.hasArrow" @tap.user="listitemTap">
         <view class="list-item-text">{{item.text}}</view>
       </listitem>
+      <listitem2 class="list-item2" wx:else hidden="{{!extMessage}}">
+        <view class="list-item-text2">{{extMessage}}</view>
+      </listitem2>
     </repeat>
   </view>
 
@@ -74,14 +97,16 @@
     }
 
     components = {
-      listitem: Listitem
+      listitem: Listitem,
+      listitem2: Listitem
     }
 
     page = 1
 
     data = {
       dataList: [],
-      listgroup: []
+      listgroup: [],
+      extMessage: null
     }
 
     computed = {
@@ -89,10 +114,10 @@
     }
 
     methods = {
-      listitemTap (index, e) {
+      listitemTap (index) {
         if (index === 0) {
           this.$navigate('/pages/pointflow/pointflow')
-        } else if (index === 1) {
+        } else if (index === 2) {
           this.$navigate('/pages/exchange/exchange')
         }
       }
@@ -105,6 +130,13 @@
           text: this.isDoctor ? '积分总数：0积分' : '剩余积分：0积分',
           hasArrow: true,
           key: 'pointValue',
+          visible: true
+        },
+        {
+          icon: '',
+          text: '',
+          hasArrow: false,
+          key: 'extMessage',
           visible: true
         },
         {
@@ -162,6 +194,13 @@
       this.queryExcRecords()
     }
 
+    getMessage() {
+      fetch.get('score/getCleanScore').then(res => {
+        this.extMessage = res.data
+        this.$apply()
+      })
+    }
+
     onLoad () {
       this.dataList = []
       this.page = 1
@@ -169,6 +208,7 @@
       this.buildMenu()
       this.queryUserPoint()
       this.queryExcRecords()
+      this.getMessage()
       if (this.isDoctor) {
         wx.setNavigationBarTitle({
           title: '项目积分'
