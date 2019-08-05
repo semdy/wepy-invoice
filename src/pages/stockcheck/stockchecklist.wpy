@@ -331,8 +331,11 @@
     }
 
     createPieChart(series, canvasId, width, height) {
-      series = series.map(item => ({
-        ...item, format: () => item.name + ', ' + item.data
+      const step = 1 / series.length
+      series = series.map((item, i) => ({
+        ...item,
+        color: `rgba(61, 141, 164, ${1 - i * step})`,
+        format: () => item.name + ', ' + item.data
       }))
       return new WxCharts({
         animation: true,
