@@ -2,14 +2,15 @@
   @import "../../less/mixin";
 
   page {
-    padding: 12rpx 12rpx 120rpx;
+    height: auto;
+    padding-bottom: 120rpx;
   }
 
   .stock-item {
     background-color: #fff;
     border-radius: 20rpx;
     padding: 20rpx 30rpx;
-    margin-bottom: 12rpx;
+    margin: 12rpx;
   }
 
   .stock-item-header {
@@ -90,6 +91,7 @@
     text-align: center;
 
     .export-button {
+      display: block;
       width: 35%;
     }
   }
@@ -109,9 +111,50 @@
     }
   }
 
+  .pie-container {
+    background-color: #fff;
+    margin-bottom: 10px;
+  }
+
+  .pie-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #666;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+
+  .pie-chart {
+    width: 100%;
+    height: 240px;
+    margin: 0 auto;
+
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .pie-summary {
+    margin-top: -10px;
+    font-weight: bold;
+    color: #666;
+    padding: 0 15px 10px;
+  }
 </style>
 <template>
   <block wx:if="{{loaded}}">
+    <repeat for="{{result.chart}}" key="index">
+      <view class="pie-container">
+        <view class="pie-title">{{item.title}}</view>
+        <view class="pie-chart">
+          <canvas canvas-id="pieCanvas{{index}}" wx:if="{{!hideCanvas}}"></canvas>
+        </view>
+        <view class="pie-summary">汇总：{{item.total}}</view>
+      </view>
+    </repeat>
+
     <view class="stock-item">
       <view class="stock-item-header">
         盘库产品总数：{{totalCount}}
@@ -173,9 +216,10 @@
       </view>
     </repeat>
 
-    <view class="stock-action">
-      <exportButton inline="true" class="export-button" @tap.user="onExportTap">导出</exportButton>
-    </view>
+    <cover-view class="stock-action">
+      <!--<exportButton inline="true" class="export-button" @tap.user="onExportTap">导出</exportButton>-->
+      <button class="button primary export-button" @tap="onExportTap">导出</button>
+    </cover-view>
 
     <modal :show.sync="isModalShow" title="提示信息">
       <view>点击复制下面的链接去浏览器下载</view>
@@ -190,6 +234,7 @@
   import Button from '../../components/button'
   import Modal from '../../components/modal'
   import {showError, showToast} from '../../utils/util'
+  import WxCharts from '../../utils/wxcharts'
 
   export default class Index extends wepy.page {
     config = {
@@ -211,11 +256,18 @@
     }
 
     computed = {
-
+      hideCanvas() {
+        return this.isModalShow
+      }
     }
 
     watch = {
-
+      isModalShow(val) {
+        this.hideCanvas = val
+        if (!val) {
+          this.createPieCharts(this.result.chart)
+        }
+      }
     }
 
     methods = {
@@ -250,10 +302,13 @@
     queryList(inventoryId) {
       fetch.get('query/inventoryResult', { inventoryId }).then(res => {
         if (res.success) {
-          this.result = res.data
+          let data = res.data
+          data.chart = (data.chart || []).map(item => ({...item, total: item.list.reduce((p, c) => c.data + p, 0)}))
+          this.result = data
           this.result.fileName = serverUrl + 'inventory/' + this.result.fileName
           this.loaded = true
           this.$apply()
+          this.createPieCharts(this.result.chart)
         } else {
           showError(res.message)
         }
@@ -262,7 +317,37 @@
       })
     }
 
+    createPieCharts(chartsData) {
+      let windowWidth = 320
+      try {
+        let res = wx.getSystemInfoSync()
+        windowWidth = res.windowWidth
+      } catch (e) {
+        console.error('getSystemInfoSync failed!')
+      }
+      chartsData.forEach((item, i) => {
+        this.createPieChart(item.list, `pieCanvas${i}`, windowWidth, 240)
+      })
+    }
+
+    createPieChart(series, canvasId, width, height) {
+      series = series.map(item => ({
+        ...item, format: () => item.name + ', ' + item.data
+      }))
+      return new WxCharts({
+        animation: true,
+        legend: false,
+        dataLabel: true,
+        type: 'pie',
+        canvasId,
+        series,
+        width,
+        height
+      })
+    }
+
     onLoad (params) {
+      params = { ...params, id: '5d1ed31b55a9fc009d84fbe9' }
       if (params.id) {
         this.inventoryId = params.id
       }

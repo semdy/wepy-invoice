@@ -203,6 +203,21 @@
     top: 0;
     padding: 5px;
   }
+
+  .download-url {
+    padding: 16rpx 30rpx;
+    border: 2rpx solid #c5c5c5;
+    background-color: #f0f0f0;
+    color: #01458e;
+    border-radius: 8rpx;
+    margin-top: 10rpx;
+    word-wrap: break-word;
+    word-break: break-all;
+
+    &:active {
+      background-color: #ececec;
+    }
+  }
 </style>
 <template>
   <view class="header-tabs">
@@ -317,12 +332,17 @@
     </view>
   </view>
 
+  <copyModal :show.sync="isCopyModalShow" title="提示信息">
+    <view>点击复制下面的链接去浏览器下载</view>
+    <view class="download-url" @tap="onDownloadTap">{{fileName}}</view>
+  </copyModal>
+
   <toast />
 </template>
 
 <script>
   import wepy from 'wepy'
-  import fetch from '../../service/fetch'
+  import fetch, {serverUrl} from '../../service/fetch'
   import log from '../../service/log'
   import Icon from '../../components/icon'
   import Modal from '../../components/modal'
@@ -362,6 +382,7 @@
       hintModal: Modal,
       genderModal: Modal,
       delModal: Modal,
+      copyModal: Modal,
       storepicker: Picker,
       divisionpicker: Picker,
       reportpicker: Picker,
@@ -391,11 +412,13 @@
         {name: '对比当天库存（隔天）', value: 'night'}
       ],
       remark: '',
+      fileName: '',
       isModalShow: false,
       isConfirmModalShow: false,
       isHintModalShow: true,
       isGenderModalShow: false,
-      isDelModalShow: false
+      isDelModalShow: false,
+      isCopyModalShow: false
     }
 
     computed = {}
@@ -488,6 +511,7 @@
           const id = this.dataList[index].id
           const count = this.dataList[index].count
           this.$navigate('/pages/stockcheck/stockchecklist', { id, count })
+          // this.queryStocklist(id)
         }
       },
       onStockDetailTap (index) {
@@ -517,6 +541,16 @@
         if (this.scanTimer) clearTimeout(this.scanTimer)
         this.expQrVisible = false
         this.$navigate('/pages/message/message')
+      },
+      async onDownloadTap () {
+        const data = this.fileName
+        await wepy.setClipboardData({ data })
+        const res = await wepy.getClipboardData()
+        if (res.data === data) {
+          showToast('复制成功')
+        } else {
+          showError('复制失败，请手动长按复制')
+        }
       }
     }
 
@@ -727,7 +761,8 @@
       this.hideConfirmModal()
       let res = await fetch.post('submit/Inventory', {id})
       if (res.success) {
-        this.switchTab(1)
+        // this.switchTab(1)
+        this.switchTab(2)
       } else {
         showError(res.message)
       }
@@ -771,6 +806,20 @@
 
     onEndReached () {
       this.appendQuery()
+    }
+
+    queryStocklist(inventoryId) {
+      fetch.get('query/inventoryResult', { inventoryId }).then(res => {
+        if (res.success) {
+          this.fileName = serverUrl + 'inventory/' + res.data.fileName
+          this.isCopyModalShow = true
+          this.$apply()
+        } else {
+          showError(res.message)
+        }
+      }, errMsg => {
+        showError(errMsg)
+      })
     }
 
     onLoad () {
