@@ -338,7 +338,6 @@
       return new WxCharts({
         animation: true,
         legend: false,
-        ignoreLabelWidth: true,
         dataLabel: true,
         type: 'pie',
         canvasId,

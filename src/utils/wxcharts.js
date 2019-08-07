@@ -1537,7 +1537,7 @@ function drawPieDataPoints (series, opts, config, context) {
     x: opts.width / 2,
     y: (opts.height - config.legendHeight) / 2
   }
-  var radius = opts.radius ? opts.width * opts.radius / 2 : Math.min(centerPosition.x - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, centerPosition.y - config.pieChartLinePadding - config.pieChartTextPadding)
+  var radius = Math.min(centerPosition.x - config.pieChartLinePadding - config.pieChartTextPadding/* - config._pieTextMaxLength_ */, centerPosition.y - config.pieChartLinePadding - config.pieChartTextPadding)
   if (opts.dataLabel) {
     radius -= 10
   } else {
@@ -1717,7 +1717,7 @@ function Animation (opts) {
   opts.duration = typeof opts.duration === 'undefined' ? 1000 : opts.duration
   opts.timing = opts.timing || 'linear'
 
-  var delay = 17
+  var delay = 16.7
 
   var createAnimationFrame = function createAnimationFrame () {
     if (typeof requestAnimationFrame !== 'undefined') {
@@ -1792,9 +1792,9 @@ function drawCharts (type, opts, config, context) {
     config.xAxisHeight = xAxisHeight
     config._xAxisTextAngle_ = angle
   }
-  if (type === 'pie' || type === 'ring') {
-    config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : (opts.ignoreLabelWidth ? 0 : getPieTextMaxLength(series))
-  }
+  // if (type === 'pie' || type === 'ring') {
+  //   config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : (opts.ignoreLabelWidth ? 0 : getPieTextMaxLength(series))
+  // }
 
   var duration = opts.animation ? 1000 : 0
   this.animationInstance && this.animationInstance.stop()
