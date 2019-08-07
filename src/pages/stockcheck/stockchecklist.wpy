@@ -325,20 +325,17 @@
       } catch (e) {
         console.error('getSystemInfoSync failed!')
       }
-      const colors = ['61, 141, 164', '173, 104, 46', '109, 133, 61']
       chartsData.forEach((item, i) => {
-        this.createPieChart(item.list, `pieCanvas${i}`, windowWidth, 240, colors[i], item.total)
+        this.createPieChart(item.list, `pieCanvas${i}`, windowWidth, 240)
       })
     }
 
-    createPieChart(series, canvasId, width, height, color, total) {
-      const values = series.map(item => item.data)
-      const maxValue = Math.max(...values)
+    createPieChart(series, canvasId, width, height) {
       series = series.map(item => ({
         ...item,
-        color: `rgba(${color}, ${item.data / total + (1 - maxValue / total)})`,
         format: () => item.name + ', ' + item.data
       }))
+      console.log(width, height)
       return new WxCharts({
         animation: true,
         legend: false,
