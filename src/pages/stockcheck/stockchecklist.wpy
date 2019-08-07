@@ -137,7 +137,7 @@
   }
 
   .pie-summary {
-    margin-top: -10px;
+    margin-top: -5px;
     font-weight: bold;
     color: #666;
     padding: 0 15px 10px;
@@ -333,12 +333,12 @@
     createPieChart(series, canvasId, width, height) {
       series = series.map(item => ({
         ...item,
-        format: () => item.name + ', ' + item.data
+        format: () => item.name + ',' + item.data
       }))
-      console.log(width, height)
       return new WxCharts({
         animation: true,
         legend: false,
+        ignoreLabelWidth: true,
         dataLabel: true,
         type: 'pie',
         canvasId,

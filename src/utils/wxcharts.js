@@ -289,7 +289,7 @@ function measureText (text) {
 
   // wx canvas 未实现measureText方法, 此处自行实现
   text = String(text)
-  var text = text.split('')
+  text = text.split('')
   var width = 0
   text.forEach(function (item) {
     if (/[a-zA-Z]/.test(item)) {
@@ -315,6 +315,25 @@ function measureText (text) {
   return width * fontSize / 10
 }
 
+function calcTextArr (str, limitWidth) {
+  var lineWidth = 0
+  var strArr = str.split('')
+
+  for (var i = 0; i < strArr.length; i++) {
+    if (strArr[i] === '\n') {
+      lineWidth = 0
+      continue
+    }
+    lineWidth += measureText(strArr[i])
+    if (lineWidth > limitWidth) {
+      lineWidth = 0
+      strArr.splice(i, 0, '\n')
+    }
+  }
+
+  return strArr.join('')
+}
+
 function dataCombine (series) {
   return series.reduce(function (a, b) {
     return (a.data ? a.data : a).concat(b.data)
@@ -324,7 +343,7 @@ function dataCombine (series) {
 function getSeriesDataItem (series, index) {
   var data = []
   series.forEach(function (item) {
-    if (item.data[index] !== null && typeof item.data[index] !== 'undefinded') {
+    if (item.data[index] !== null && typeof item.data[index] !== 'undefined') {
       var seriesItem = {}
       seriesItem.color = item.color
       seriesItem.name = item.name
@@ -370,7 +389,7 @@ function getToolTipData (seriesData, calPoints, index, categories) {
     y: 0
   }
   calPoints.forEach(function (points) {
-    if (typeof points[index] !== 'undefinded' && points[index] !== null) {
+    if (typeof points[index] !== 'undefined' && points[index] !== null) {
       validCalPoints.push(points[index])
     }
   })
@@ -498,7 +517,7 @@ function calLegendData (series, opts, config) {
   var widthCount = 0
   var currentRow = []
   series.forEach(function (item) {
-    var itemWidth = 3 * padding + shapeWidth + measureText(item.name || 'undefinded')
+    var itemWidth = 3 * padding + shapeWidth + measureText(item.name || 'undefined')
     if (widthCount + itemWidth > opts.width) {
       legendList.push(currentRow)
       widthCount = itemWidth
@@ -935,7 +954,15 @@ function drawPieText (series, opts, config, context, radius, center) {
     context.fill()
     context.beginPath()
     context.setFillStyle('#666666')
-    context.fillText(item.text, textStartX, textPosition.y + 3)
+    if (textStartX < 0) {
+      var textLimitWidth = curveStartX - 10
+      var textArr = calcTextArr(item.text, textLimitWidth).split(/\n/)
+      for (var i = 0; i < textArr.length; i++) {
+        context.fillText(textArr[i], 5, textPosition.y + 3 + i * (config.fontSize + 2))
+      }
+    } else {
+      context.fillText(item.text, textStartX, textPosition.y + 3)
+    }
     context.closePath()
     context.stroke()
 
@@ -1510,7 +1537,7 @@ function drawPieDataPoints (series, opts, config, context) {
     x: opts.width / 2,
     y: (opts.height - config.legendHeight) / 2
   }
-  var radius = Math.min(centerPosition.x - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, centerPosition.y - config.pieChartLinePadding - config.pieChartTextPadding)
+  var radius = opts.radius ? opts.width * opts.radius / 2 : Math.min(centerPosition.x - config.pieChartLinePadding - config.pieChartTextPadding - config._pieTextMaxLength_, centerPosition.y - config.pieChartLinePadding - config.pieChartTextPadding)
   if (opts.dataLabel) {
     radius -= 10
   } else {
@@ -1766,7 +1793,7 @@ function drawCharts (type, opts, config, context) {
     config._xAxisTextAngle_ = angle
   }
   if (type === 'pie' || type === 'ring') {
-    config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : getPieTextMaxLength(series)
+    config._pieTextMaxLength_ = opts.dataLabel === false ? 0 : (opts.ignoreLabelWidth ? 0 : getPieTextMaxLength(series))
   }
 
   var duration = opts.animation ? 1000 : 0
