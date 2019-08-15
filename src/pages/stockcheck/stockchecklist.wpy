@@ -348,7 +348,6 @@
     }
 
     onLoad (params) {
-      params = { ...params, id: '5d1ed31b55a9fc009d84fbe9' }
       if (params.id) {
         this.inventoryId = params.id
       }
