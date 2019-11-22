@@ -176,6 +176,7 @@
         'pages/stockcheck/stockcheck',
         'pages/stockcheck/stockchecklist',
         'pages/stockcheck/stockdetail',
+        'pages/stockcheck/stockdetaillist',
         'pages/orderquery/orderquery',
         'pages/orderdetail/orderdetail',
         'pages/receiptcheck/receiptcheck',

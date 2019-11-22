@@ -134,10 +134,10 @@ function getNodeRect(selector, scope, all) {
   })
 }
 
-function getPrevPage () {
+function getPrevPage (prevLength = 1) {
   // eslint-disable-next-line
   const pages = getCurrentPages()
-  return pages[pages.length - 2]
+  return pages[pages.length - 1 - prevLength]
 }
 
 function getCurrentPage () {

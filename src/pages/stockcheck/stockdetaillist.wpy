@@ -1,0 +1,183 @@
+<style lang="less">
+  @import "../../less/mixin";
+
+  .stockdetail-table {
+    .flex();
+    flex: 1;
+    flex-direction: column;
+    border-radius: 8rpx;
+    overflow: hidden;
+
+    .table-body {
+      flex: 1;
+      height: 100%;
+      overflow: hidden;
+    }
+  }
+
+  .table-row {
+    &:active {
+      background-color: #f2f2f2;
+    }
+  }
+
+  .table-cell {
+    font-size: 26rpx;
+
+    &.upn {
+      flex: none;
+      width: 240rpx;
+    }
+
+    &.lot {
+      flex: none;
+      width: 130rpx;
+    }
+
+    &.opt {
+      flex: none;
+      width: 60rpx;
+    }
+
+    .icon {
+      padding: 0;
+    }
+  }
+</style>
+<template>
+  <view class="table stockdetail-table">
+    <view class="table-row table-header">
+      <view class="table-cell th order">序号</view>
+      <view class="table-cell th qr">二维码</view>
+      <view class="table-cell th upn">upn</view>
+      <view class="table-cell th lot">lot</view>
+      <view class="table-cell th opt" wx:if="{{hasDel}}"></view>
+    </view>
+    <scroll-view scroll-y="true" class="table-body" lower-threshold="0" bindscrolltolower="onEndReached">
+      <block wx:for="{{dataList}}" wx:key="index">
+        <view class="table-row">
+          <view class="table-cell td order">{{item.index}}</view>
+          <view class="table-cell td qr">{{item.qrCode}}</view>
+          <view class="table-cell td upn">{{item.upn}}</view>
+          <view class="table-cell td lot">{{item.lot}}</view>
+          <view class="table-cell td opt" wx:if="{{hasDel}}">
+            <view class="icon-delete" @tap.stop="delTap({{item}})">
+              <deleteIcon name="delete.svg"></deleteIcon>
+            </view>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
+
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import fetch from '../../service/fetch'
+  import Icon from '../../components/icon'
+  import { showError, confirm, showToast, getPrevPage } from '../../utils/util'
+
+  const subSuffix = (str, subLen) => {
+    if (typeof str !== 'string') return ''
+    if (str.length <= subLen || typeof subLen !== 'number') return str
+    return `...${str.substr(str.length - subLen, str.length)}`
+  }
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '云盘库'
+    }
+
+    components = {
+      deleteIcon: Icon
+    }
+
+    page = 1
+    loaded = false
+    inventoryId = ''
+
+    data = {
+      dataList: [],
+      hasDel: false
+    }
+
+    computed = {}
+
+    watch = {}
+
+    methods = {
+      delTap (item) {
+        confirm('确定要删除吗?').then(() => {
+          this.deleteQrcode(item.id, item.inventory)
+        })
+      }
+    }
+
+    handleQuery () {
+      this.page = 1
+      this.dataList = []
+      this.queryList(this.inventoryId, this.page)
+    }
+
+    appendQuery () {
+      if (!this.loaded) return
+      this.queryList(this.inventoryId, ++this.page)
+    }
+
+    queryList (inventoryId, page) {
+      let params = {
+        inventoryId,
+        page,
+        limit: 20
+      }
+      this.loaded = false
+      return new Promise((resolve, reject) => {
+        fetch.get('query/InventoryQr', params).then(res => {
+          if (res.success) {
+            this.dataList = this.dataList.concat(res.data.docs.map(item =>
+              ({...item, qrCode: subSuffix(item.qrCode, 8)})
+            ))
+            let len = this.dataList.length
+            this.dataList = this.dataList.map(item => ({...item, index: len--}))
+            resolve(res.data.docs)
+            this.$apply()
+          } else {
+            reject(res.message)
+            showError(res.message)
+          }
+        }, errMsg => {
+          reject(errMsg)
+          showError(errMsg)
+        })
+      }).finally(res => {
+        this.loaded = true
+      })
+    }
+
+    deleteQrcode (id, inventoryId) {
+      fetch.post('delete/InventoryQr', {id, inventoryId}).then(res => {
+        if (res.success) {
+          showToast(res.message)
+          this.handleQuery()
+          getPrevPage(2).handleQuery()
+        } else {
+          showError(res.message)
+        }
+      }, showError)
+    }
+
+    onEndReached () {
+      this.appendQuery()
+    }
+
+    onLoad (params) {
+      if (params.inventoryId) {
+        this.inventoryId = params.inventoryId
+      }
+      this.hasDel = Number(params.tabIndex) === 1
+      this.page = 1
+      this.handleQuery()
+    }
+  }
+</script>

@@ -476,7 +476,7 @@
         this.curIndex = index
         let curItem = this.dataList[this.curIndex]
         if (curItem) {
-          this.launchScaner(curItem.id)
+          this.launchScaner(curItem.id, curItem.number)
         }
       },
       onSubmitTap (index) {
@@ -517,9 +517,9 @@
       onStockDetailTap (index) {
         this.curIndex = index
         const item = this.dataList[index]
-        const inventoryId = item.id
+        const inventoryNumber = item.number
         if ((item.status === 'start' && item.count > 0) || item.status === 'submit' || item.status === 'finish') {
-          this.$navigate('/pages/stockcheck/stockdetail', {inventoryId, tabIndex: this.tabIndex})
+          this.$navigate('/pages/stockcheck/stockdetail', {inventoryNumber, tabIndex: this.tabIndex})
         }
       },
       onDelTap (index) {
@@ -605,7 +605,7 @@
       this.$apply()
     }
 
-    showExpQr(msg, id) {
+    showExpQr(msg, id, number) {
       this.expQrVisible = true
       this.expQrMsg = msg
       this.$apply()
@@ -613,34 +613,34 @@
       this.scanTimer = setTimeout(() => {
         this.expQrVisible = false
         this.$apply()
-        this.launchScaner(id)
+        this.launchScaner(id, number)
       }, 2000)
     }
 
-    launchScaner (id) {
+    launchScaner (id, number) {
       wepy.scanCode()
         .then(res => {
-          this.uploadTaskQr(id, res.result).then(() => {
-            this.launchScaner(id)
+          this.uploadTaskQr(id, res.result, number).then(() => {
+            this.launchScaner(id, number)
           }).catch(msg => {
-            this.dealScanError(msg, id)
+            this.dealScanError(msg, id, number)
           })
         })
     }
 
-    dealScanError(msg, id) {
+    dealScanError(msg, id, number) {
       let hasExpQr = false
       if (Array.isArray(msg)) {
         for (let i = 0; i < msg.length; i++) {
           const item = msg[i]
           if (item.type === 'expQr') {
-            this.showExpQr(item.msg, id)
+            this.showExpQr(item.msg, id, number)
             hasExpQr = true
           } else if (item.type === 'normal') {
             this.toast(item.msg)
             if (!hasExpQr) {
               setTimeout(() => {
-                this.launchScaner(id)
+                this.launchScaner(id, number)
               }, 1500)
             }
           }
@@ -768,9 +768,9 @@
       }
     }
 
-    uploadTaskQr (id, qrCode) {
+    uploadTaskQr (inventoryId, qrCode, number) {
       return new Promise((resolve, reject) => {
-        fetch.post('create/InventoryQr', {id, qrCode}).then(res => {
+        fetch.post('create/InventoryQr', {inventoryId, qrCode, number}).then(res => {
           wx.nextTick(() => {
             this.handleQuery()
           })
