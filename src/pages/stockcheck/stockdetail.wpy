@@ -71,8 +71,12 @@
     watch = {}
 
     methods = {
-      viewDetailList (inventoryId) {
-        this.$navigate('/pages/stockcheck/stockdetaillist', { inventoryId, tabIndex: this.tabIndex })
+      viewDetailList (id) {
+        this.$navigate('/pages/stockcheck/stockdetaillist', {
+          inventoryId: id,
+          tabIndex: this.tabIndex,
+          canDelete: id === this.inventoryId
+        })
       }
     }
 
@@ -102,6 +106,7 @@
 
     onLoad (params) {
       this.tabIndex = params.tabIndex
+      this.inventoryId = params.inventoryId
       this.queryList(params.inventoryNumber)
     }
   }

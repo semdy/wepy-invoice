@@ -74,6 +74,7 @@
     .flex();
     flex: 1;
     flex-direction: column;
+    overflow: hidden;
 
     .table-body {
       flex: 1;

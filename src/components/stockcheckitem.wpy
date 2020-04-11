@@ -96,14 +96,14 @@
     <view class="stock-check-item-right">
       <view class="stock-check-info">盘点任务名称：{{stock.name}}</view>
       <view class="stock-check-info">盘点任务状态：{{stock.statusText}}</view>
-      <view class="stock-check-info">盘点任务编码：{{stock.number}}</view>
+      <!--<view class="stock-check-info">盘点任务编码：{{stock.number}}</view>-->
       <view class="stock-check-info">产品线：{{stock.divisionName}}</view>
       <view class="stock-check-info">仓库类型：{{stock.stockType}}</view>
       <view class="stock-check-info">任务有效期：{{stock.strDate}} - {{stock.endDate}}</view>
       <view class="stock-check-action">
         <cancelButton bordered="true" @tap.user="onDelTap" wx:if="{{stock.status==='unStart'}}">取消预约</cancelButton>
         <checkButton @tap.user="checkButtonTap" wx:if="{{stock.status==='start'}}">盘点</checkButton>
-        <view class="button normal primary {{stock.count === 0 ? 'disabled' : ''}}" wx:if="{{stock.status==='start'}}" @tap="submitButtonTap">提交</view>
+        <view class="button normal primary {{!stock.isAdmin || stock.count === 0 ? 'disabled' : ''}}" wx:if="{{stock.status==='start'}}" @tap="submitButtonTap">提交</view>
         <genButton @tap.user="buttonTap" wx:if="{{stock.status==='submit'}}">报告生成中</genButton>
         <historyButton @tap.user="buttonTap" wx:if="{{stock.status==='finish'}}">查看报告</historyButton>
         <delIcon name="trash.png" class="delete-icon"  wx:if="{{stock.status === 'start'}}" @tap.user="onDelTap"></delIcon>

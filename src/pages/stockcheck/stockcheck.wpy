@@ -518,8 +518,9 @@
         this.curIndex = index
         const item = this.dataList[index]
         const inventoryNumber = item.number
+        const inventoryId = item.id
         if ((item.status === 'start' && item.count > 0) || item.status === 'submit' || item.status === 'finish') {
-          this.$navigate('/pages/stockcheck/stockdetail', {inventoryNumber, tabIndex: this.tabIndex})
+          this.$navigate('/pages/stockcheck/stockdetail', {inventoryNumber, inventoryId, tabIndex: this.tabIndex})
         }
       },
       onDelTap (index) {

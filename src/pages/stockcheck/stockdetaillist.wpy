@@ -95,9 +95,9 @@
 
     page = 1
     loaded = false
-    inventoryId = ''
 
     data = {
+      inventoryId: '',
       dataList: [],
       hasDel: false
     }
@@ -175,7 +175,7 @@
       if (params.inventoryId) {
         this.inventoryId = params.inventoryId
       }
-      this.hasDel = Number(params.tabIndex) === 1
+      this.hasDel = Number(params.tabIndex) === 1 && params.canDelete === 'true'
       this.page = 1
       this.handleQuery()
     }
