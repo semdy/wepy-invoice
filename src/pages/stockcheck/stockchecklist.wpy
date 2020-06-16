@@ -157,10 +157,11 @@
 
     <view class="stock-item">
       <view class="stock-item-header">
-        盘库产品总数：{{totalCount}}
+        <view>扫码盘库产品总数：{{totalCount}}</view>
+        <view wx:if="{{newVersion}}">DMS系统库存总数：{{dmsTotalCount}}</view>
       </view>
       <view class="stock-body">
-        <view class="stock-legend">整体差异率</view>
+        <view class="stock-legend">整体准确率</view>
         <view class="stock-main">
           <view class="stock-diff-item">
             <view class="title">UPN</view>
@@ -251,6 +252,8 @@
     data = {
       result: {},
       totalCount: '',
+      dmsTotalCount: '',
+      newVersion: false,
       loaded: false,
       isModalShow: false
     }
@@ -307,6 +310,8 @@
           this.result = data
           this.result.fileName = serverUrl + 'inventory/' + this.result.fileName
           this.loaded = true
+          this.newVersion = data.isNewFile
+          this.dmsTotalCount = data.sysTotal
           this.$apply()
           this.createPieCharts(this.result.chart)
         } else {
