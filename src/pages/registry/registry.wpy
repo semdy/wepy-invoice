@@ -144,6 +144,10 @@
     </view>
   </modal>
 
+  <verifyHintModal :show.sync="isVerifyHintModalShow" title="提示">
+    <view style="padding: 20rpx 20rpx 60rpx; font-size: 30rpx; line-height: 1.4;">单日获取验证码已超6次！请致电物联网热线：021-33563567</view>
+  </verifyHintModal>
+
 </template>
 
 <script>
@@ -169,7 +173,8 @@
       formitemmobile: Formitem,
       formitemcode: Formitem,
       submitbutton: Button,
-      modal: Modal
+      modal: Modal,
+      verifyHintModal: Modal
     }
 
     data = {
@@ -181,7 +186,8 @@
       compername: '',
       secs: SEND_WAIT_TIME,
       isCodeGet: false,
-      isModalShow: false
+      isModalShow: false,
+      isVerifyHintModalShow: false
     }
 
     isReging = false
@@ -201,6 +207,16 @@
 
     hideModal() {
       this.isModalShow = false
+      this.$apply()
+    }
+
+    showVerifyHintModal () {
+      this.isVerifyHintModalShow = true
+      this.$apply()
+    }
+
+    hideVerifyHintModal () {
+      this.isVerifyHintModalShow = false
       this.$apply()
     }
 

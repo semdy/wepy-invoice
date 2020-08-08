@@ -250,6 +250,7 @@
         @tap.user="onItemTap"
         @checkTap.user="onCheckTap"
         @submitTap.user="onSubmitTap"
+        @advanceTap.user="onAdvanceTap"
         @buttonTap.user="onButtonTap"
         @stockDetailTap.user="onStockDetailTap"
         @delTap.user="onDelTap"
@@ -301,8 +302,8 @@
   <hintModal :show.sync="isHintModalShow" title="云盘库须知">
     <view class="stock-modal-hints">
       <view>1. 目前创建盘点任务支持立即盘点和预约盘点；</view>
-      <view>2. 创建盘点任务时可选择查看报告的时间：对比昨天库存（10分钟），对比当天库存（隔天）；</view>
-      <view>3. 目前支持云盘库的产品线为所有产品线，仓库类型为所有仓库。</view>
+      <view>2. 创建盘点任务时可选择查看报告的时间：对比昨天库存（10分钟），对比今天库存（隔天）；</view>
+      <view>3. 目前云盘库支持全量对比，如需查看某一产线或某一仓库类型的对比情况，可导出盘库报告，在报告明细页中按条件筛选。</view>
     </view>
     <view class="modal-footer">
       <view class="update-button" @tap="closeHintModal">知道了</view>
@@ -482,6 +483,11 @@
       onSubmitTap (index) {
         this.curIndex = index
         this.showConfirmModal()
+      },
+      onAdvanceTap (index) {
+        this.curIndex = index
+        const id = this.dataList[index].id
+        this.queryStocklist(id)
       },
       saveStockTap () {
         let curItem = this.dataList[this.curIndex]

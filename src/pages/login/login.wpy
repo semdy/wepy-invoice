@@ -97,12 +97,18 @@
     <view class="my-version">版本号: V1.2</view>
     <view>服务热线：021-33563567</view>
   </view>
+
+  <verifyHintModal :show.sync="isVerifyHintModalShow" title="提示">
+    <view style="padding: 20rpx 20rpx 60rpx; font-size: 30rpx; line-height: 1.4;">单日获取验证码已超6次！请致电物联网热线：021-33563567</view>
+  </verifyHintModal>
+
 </template>
 
 <script>
   import wepy from 'wepy'
   import Formitem from '../../components/formitem'
   import Button from '../../components/button'
+  import Modal from '../../components/modal'
   import {showError, showToast} from '../../utils/util'
   import {login, sendMessage} from '../../service/user'
   import {session, sessionGroup} from '../../service/auth'
@@ -119,7 +125,8 @@
       formitemmobile: Formitem,
       formitemcode: Formitem,
       loginButton: Button,
-      regButton: Button
+      regButton: Button,
+      verifyHintModal: Modal
     }
 
     data = {
@@ -127,7 +134,8 @@
       mobile: '',
       code: '',
       secs: SEND_WAIT_TIME,
-      isCodeGet: false
+      isCodeGet: false,
+      isVerifyHintModalShow: false
     }
 
     isLogining = false
@@ -173,6 +181,16 @@
       regButtonTap () {
         this.$navigate('/pages/registry/registry')
       }
+    }
+
+    showVerifyHintModal () {
+      this.isVerifyHintModalShow = true
+      this.$apply()
+    }
+
+    hideVerifyHintModal () {
+      this.isVerifyHintModalShow = false
+      this.$apply()
     }
 
     doLogin (userInfo) {
