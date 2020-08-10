@@ -99,7 +99,7 @@
   </view>
 
   <verifyHintModal :show.sync="isVerifyHintModalShow" title="提示">
-    <view style="padding: 20rpx 20rpx 60rpx; font-size: 30rpx; line-height: 1.4;">单日获取验证码已超6次！请致电物联网热线：021-33563567</view>
+    <view style="padding: 20rpx 20rpx 60rpx; font-size: 30rpx; line-height: 1.4;">{{verifyHint}}</view>
   </verifyHintModal>
 
 </template>
@@ -135,7 +135,8 @@
       code: '',
       secs: SEND_WAIT_TIME,
       isCodeGet: false,
-      isVerifyHintModalShow: false
+      isVerifyHintModalShow: false,
+      verifyHint: ''
     }
 
     isLogining = false
@@ -172,6 +173,9 @@
         }
         let params = {code: this.username, password: this.mobile, type: 'login'}
         sendMessage(params).then(res => {
+          if (res.data && res.data.warn) {
+            return this.showVerifyHintModal(res.data.msg)
+          }
           showToast(res.message)
           this.startCountDown()
         }, err => {
@@ -183,8 +187,9 @@
       }
     }
 
-    showVerifyHintModal () {
+    showVerifyHintModal (msg) {
       this.isVerifyHintModalShow = true
+      this.verifyHint = msg
       this.$apply()
     }
 

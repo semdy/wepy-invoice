@@ -486,8 +486,10 @@
       },
       onAdvanceTap (index) {
         this.curIndex = index
-        const id = this.dataList[index].id
-        this.queryStocklist(id)
+        const nmReportLink = this.dataList[index].nmReportLink
+        this.fileName = serverUrl + nmReportLink
+        this.isCopyModalShow = true
+        this.$apply()
       },
       saveStockTap () {
         let curItem = this.dataList[this.curIndex]

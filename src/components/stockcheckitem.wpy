@@ -110,8 +110,8 @@
         <delIcon name="trash.png" class="delete-icon"  wx:if="{{stock.status === 'start'}}" @tap.user="onDelTap"></delIcon>
       </view>
       <view class="stock-check-action">
-        <view class="button normal primary {{stock.status === 'finish' ? 'disabled' : ''}}" wx:if="{{stock.status==='submit' || stock.status==='finish'}}" @tap="advanceButtonTap">
-          {{stock.status === 'finish' ? '调整建议生成中' : '查看调整建议'}}
+        <view class="button normal primary {{stock.nmReportStatus !== 'end' ? 'disabled' : ''}}" wx:if="{{stock.nmReportStatus !=='none'}}" @tap="advanceButtonTap">
+          {{stock.nmReportStatus !== 'end' ? '调整建议生成中' : '查看调整建议'}}
         </view>
       </view>
     </view>
