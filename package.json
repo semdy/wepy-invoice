@@ -13,6 +13,7 @@
   "author": "semdy <501859275@qq.com>",
   "license": "MIT",
   "dependencies": {
+    "less": "^3.12.2",
     "promise-polyfill": "^8.1.0",
     "regenerator-runtime": "^0.12.1",
     "wepy": "^1.7.2",
